@@ -1,0 +1,429 @@
+# Me² — Build Brief v0.7
+Owner: Elliot Crabb (EC) · Decision-maker: Patrick · Date: 9 Oct 2026 · Mode: New build
+
+Changes from v0.6 (5 Oct 2026): rebuilt to the premium build standard. Adds a design-proof stop (Phase 1a), a routes file, `llms.txt`, IndexNow, security headers, FAQ schema, the owner `docs/` set and git working rules. Colour tokens now come from the me² logo file EC supplied on 7 Oct (navy `#1B3853`, coral `#E7785C`) instead of the provisional values. All copy in Appendix A is unchanged from v0.6.
+
+## 0. Read this first
+- You are building a single-page sales site for Me² (pronounced "Me Squared"). Me² sets up AI roles for repetitive back-office work and pairs them with trained human operators who run them and check the output. Buyers are Australian business owners and managers. Real estate agencies are the first market, but the brand is industry-agnostic: real estate appears in one section only, never as the identity.
+- Primary goal: the visitor clicks **Talk to us**, which in v1 opens an email to `CONTACT_EMAIL`.
+- Work in phases (§10). There are two stops: after Phase 1a (design proof) and after Phase 1b (full site). At each stop, report back and wait.
+- Between stops, if something here is ambiguous, pick the simpler option, log it in `DECISIONS.md`, and keep going. Don't stop to ask.
+- All visible text comes from Appendix A. Do not write, rewrite or "improve" copy. If a block has no copy, hide it.
+- Never invent names, testimonials, statistics, results, awards, logos or prices. Never name individual people anywhere on the site.
+- Use git from the first commit. Work on branches; never push to `main` once it's connected to the host (it deploys the live site). Commit messages say in plain English what changed for the visitor, and why.
+
+## 0b. Project variables
+Single source of truth. Build these into `src/config/site.config.ts` (public values) and `.env` / Cloudflare env vars (secrets). Never type these values anywhere else in the code.
+
+| Variable | Value | Used for |
+|---|---|---|
+| `SITE_NAME` | `Me²` | titles, schema `name`, footer |
+| `SITE_NAME_PLAIN` | `Me Squared` | mailto subjects, schema `alternateName`, aria-labels where "²" may be read badly |
+| `SITE_DOMAIN` | `mesquaredagency.com` | canonical, sitemap, OG URLs, Astro `site` |
+| `CONTACT_EMAIL` | `hello@mesquaredagency.com` | every mailto, visible email text, schema |
+| `PRIVACY_EMAIL` | `privacy@mesquaredagency.com` | privacy page (Phase 2) |
+| `FORM_FROM_EMAIL` | `website@mesquaredagency.com` (provisional, §13 #11) | form notifications (Phase 2) |
+| `FORM_TO_EMAIL` | `hello@mesquaredagency.com` | form notifications (Phase 2) |
+| `BOOKING_URL` | `""` (empty until EC supplies the Cal.com or Calendly link; empty means booking stays hidden) | booking button (Phase 2) |
+| `HOST_ACCOUNT` | `tech@mesquaredagency.com` (Cloudflare) | §1 pre-flight only |
+| `HOST_PROJECT` | `mesquared` (Cloudflare Pages) | §1 pre-flight, DEPLOY.md |
+| `LOCALE` | `en-AU` | `<html lang>`, date and currency formatting |
+
+Copy in Appendix A writes `{SITE_NAME}`, `{SITE_NAME_PLAIN}`, `{CONTACT_EMAIL}`, `{PRIVACY_EMAIL}` and `{YEAR}`. Render these from the config (`{YEAR}` = current year at build time), never as literal text.
+
+## 1. Pre-flight (do this before writing code)
+- Check for hosting credentials: `npx wrangler whoami`.
+- Deploy only if ALL are true: you're logged in; the account is `HOST_ACCOUNT`; the Pages project `HOST_PROJECT` already exists (`npx wrangler pages project list`); and you deploy to a non-production preview (`npx wrangler pages deploy dist --project-name mesquared --branch preview`). Never create projects, never deploy to production, never use a different account.
+- Otherwise: build and preview locally, and write `DEPLOY.md` with the exact commands the owner runs (log in, create project, deploy). Don't retry blocked commands.
+- The domain currently shows the registrar's (VentraIP) parking page. There is no existing site, so there are no URLs to keep.
+- Package versions: current stable versions that work together. If an allowed package is deprecated or incompatible, use its official replacement and log it in `DECISIONS.md`.
+- Node: 22 or later (this PC runs 26). Package manager: npm. Add `"engines": { "node": ">=22" }` to `package.json`.
+- Skills: if `frontend-design` is installed, use it for build craft (hierarchy, spacing, responsive behaviour, polish). This brief overrides any skill: never change the tokens in §5, the copy in Appendix A, the section order or the dependency list because a skill suggests it. Log any conflict in `DECISIONS.md`.
+
+## 2. Audience and message
+- Audience: owners, principals and operations managers of Australian small and mid-size businesses whose teams are stretched by repetitive admin (inbox, reporting, chasing, data entry). First market: real estate agencies, especially property management teams.
+- What they need to believe to click:
+  - This takes work off my team; it isn't another tool for them to learn and manage.
+  - A person checks what the AI produces, so mistakes don't reach my clients.
+  - I can start small (one job) before handing over more.
+  - These people are straight with me: no hype, no inflated claims.
+- Tone and spelling: plain-spoken, practical, confident, outcome-focused. Australian English (organise, colour, enquiry). Sentence case for headings and buttons.
+- Brand rules:
+  - Visible name is always `Me²` (capital M, superscript two). "Me Squared" only in `alternateName`, aria-labels and mailto subjects. Never "ME2", "Me2", "MeSquared" or "Me Squared Agency" in visible copy.
+  - Banned words (rendered text, case-insensitive, whole word): revolutionary, game-changing, supercharge, seamless, cutting-edge, unlock, guarantee, guaranteed.
+- Competitors: none named. Never copy another AI-services or offshore-staffing site's wording, imagery or programmes.
+
+## 3. Stack and hosting
+- Astro + TypeScript, static output. Tailwind CSS v4 via `@tailwindcss/vite` (not the deprecated `@astrojs/tailwind`). No UI framework: interactive bits use native HTML (`<details>`/`<summary>` for the FAQ) or small inline vanilla JS.
+- Host: Cloudflare Pages. Build command: `npm run build`. Output dir: `dist`. Phase 2 form handler: Pages Function at `functions/api/enquiry.ts`.
+- Allowed dependencies: `astro`, `typescript`, `@astrojs/check`, `tailwindcss`, `@tailwindcss/vite`, `@fontsource-variable/instrument-sans` (fallback `@fontsource-variable/inter`), `sharp` (logo and OG image generation at build time). Dev only: `@playwright/test`, `@axe-core/playwright`, `lighthouse`, `linkinator`, `wrangler`. Phase 2 only: `resend`. Any other dependency needs a one-line justification in `DECISIONS.md`.
+- The sitemap is written by a small build step reading the routes file (one page; no `@astrojs/sitemap` needed).
+- Out of scope: CMS, auth, database, client-side routing, Preact/React/Vue, animation libraries, icon libraries, carousels, chat widgets, cookie banners, newsletter signup, Google Fonts CDN links, any third-party script in Phase 1.
+
+## 4. Repo structure
+```
+/
+├── BRIEF.md · CLAUDE.md · DECISIONS.md · DEPLOY.md · README.md
+├── astro.config.mjs          # site: from site.config; fixture mode via SITE_FIXTURE
+├── package.json
+├── .gitignore                # .verify/, .env, node_modules, dist
+├── docs/                     # owner docs (§14)
+├── functions/api/enquiry.ts  # Phase 2 only
+├── public/
+│   ├── _headers              # security headers
+│   ├── robots.txt · llms.txt · favicon.svg
+│   ├── <indexnow-key>.txt
+│   └── logo.png              # ≥1200px wide, fixed public URL (generated)
+├── scripts/
+│   ├── brand-assets.mjs      # logo variants + OG image from src/assets/brand
+│   ├── verify.mjs            # every Phase 1 check, both builds
+│   └── indexnow.mjs
+├── screenshots/              # design-proof and Phase 1b screenshots (committed)
+├── src/
+│   ├── assets/brand/         # supplied logo file(s)
+│   ├── config/site.config.ts # §0b values
+│   ├── config/flags.ts       # §7 flags
+│   ├── content/site.ts       # all Appendix A copy, section order
+│   ├── data/routes.json      # path, title, description, noindex, og image
+│   ├── components/           # Header, Hero, Problem, HowItWorks, Offers, RealEstate, Faq, FinalCta, Footer, Logo, EmailLink, Section
+│   ├── layouts/Base.astro
+│   ├── pages/index.astro · 404.astro · privacy.astro (only when showPrivacyPage)
+│   └── styles/tokens.css     # §5 tokens via Tailwind @theme
+└── .verify/fixture/          # git-ignored fixture config (§6b)
+```
+
+## 5. Design direction and tokens
+- Direction: **calm, confident and typographic.** Deep ink-navy and warm paper, one clean sans at large sizes, and one bold brand moment: a very large coral "²" in the hero. No photography. Why it fits: Me² sells judgement and reliability to busy owners, so the page should feel like a well-run operation, not a tech demo; the "²" carries the brand without stock imagery of people or houses.
+- The brand is still being finalised by the designer. Tokens live in `src/styles/tokens.css` so a change is one file.
+- Colours (navy and coral match the supplied logo exactly):
+  - `ink` `#10202F` — header, hero, dark sections, footer; main text on paper
+  - `navy` `#1B3853` — the logo's navy; cards on ink sections; H2s on paper
+  - `paper` `#F6F2EA` — light sections; text on ink
+  - `coral` `#E7785C` — the logo's coral; primary buttons, the "²", focus rings on dark, final CTA band. Never text on paper or white.
+  - `coral-deep` `#B9482D` — the only coral allowed as text on paper (inline links, small highlights)
+  - `muted` `#566170` — secondary text on paper
+  - `muted-on-dark` `#A7B1BE` — secondary text on ink and navy
+  - `line-dark` `rgba(246,242,234,0.12)` and `line-light` `rgba(16,32,47,0.12)` — dividers only
+- Allowed text/background pairs (computed, WCAG 2.1). Anything not listed is banned.
+  - ink on paper 14.81 · paper on ink 14.81 · paper on navy 10.83 · navy on paper 10.83
+  - muted on paper 5.63 · muted-on-dark on ink 7.62 · muted-on-dark on navy 5.57
+  - coral on ink 5.70 (headings, the "²", or ≥18px only, as a style rule)
+  - ink on coral 5.70 (button labels, final CTA band text and links)
+  - coral-deep on paper 4.67 · paper on ink (ink buttons on the coral band) 14.81
+- Banned: paper or white on coral (2.60 / 2.90), coral on paper (2.60), coral on navy for text (4.17), muted or muted-on-dark on coral.
+- Non-text contrast (≥3:1): coral on ink 5.70, navy on paper 10.83. Focus ring: 3px coral outline, 3px offset on ink/navy; 3px ink outline on paper and coral.
+- Buttons: primary = coral background, ink text, 600 weight, radius 999px, min height 48px, padding 0 28px. On the coral band: ink background, paper text. Secondary = underlined text link in the surrounding text colour. No arrows or icons in labels.
+- Type: Instrument Sans Variable (OFL), self-hosted via `@fontsource-variable/instrument-sans` (latin subset only). Weights 400 and 600 only. Fallback: `"Instrument Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`. Preload the latin WOFF2. If the package fails, use `@fontsource-variable/inter` and log it.
+- Scale: body 18px / 1.6 (17px under 640px); H1 `clamp(2.6rem, 6.2vw, 5rem)` / 1.02, 600, letter-spacing -0.025em; H2 `clamp(1.85rem, 3.6vw, 2.9rem)` / 1.12, 600, -0.015em; H3 1.25rem / 1.3, 600; small 0.875rem. Text max width 64ch; H1 max width 14ch.
+- Typographic rules: no all-caps labels, no eyebrow labels above headings, no single highlighted word in a headline, no middle-dot meta strings.
+- Logo: the me² mark EC supplied (`src/assets/brand/me2-logo-supplied.png`: navy "me", coral "2", no reflection). `scripts/brand-assets.mjs` trims it and makes: a light version for dark backgrounds (navy → paper, coral kept), the navy original for light backgrounds, and `public/logo.png` (≥1200px wide, padded). The file is small (427×328), so it's upscaled for `logo.png`; a vector (SVG) or ≥2000px master is listed in `docs/supplied-assets.md`. If the logo files are missing, fall back to a type wordmark: lowercase "me" + superscript coral "²", weight 600. Never use the designer's reflected "we" concept or the "from me to we." tagline (not approved; §13 #9).
+- Signature element (the one bold thing): in the hero, a very large coral "²" (about `clamp(13rem, 34vw, 30rem)`, weight 600, line-height 0.8) to the right of the headline on desktop, partly cropped by the hero's right edge; on phones it sits behind the top-right of the hero at 18% opacity so it never sits under text at full strength. Inline `<svg aria-hidden="true" focusable="false">` with a `<text>` element in the brand font. No other decoration: no gradients, no shadows, no patterns.
+- Motion: one moment. On load, the hero "²" fades in and rises 16px over 700ms. Respect `prefers-reduced-motion`. Hover states (button colour shift, link underline offset) only inside `@media (hover: hover) and (pointer: fine)`. Nothing else animates except the native FAQ open/close.
+- Spacing: section padding 112px desktop / 72px phone; content max width 1160px; side padding 20px phone / 40px desktop. Radius 20px cards, 999px buttons.
+- Images: none supplied and none wanted: no stock photos, no AI-generated people, no property or house imagery. Icons, if any, are inline SVG you draw, 1.5px stroke, coral on ink or navy on paper.
+- OG image: `scripts/brand-assets.mjs` writes `public/og-image.png` (1200×630): ink background, light logo, coral "²", and the A.meta OG text in paper. Commit the PNG.
+
+## 6. Page structure
+Section order below. Backgrounds alternate ink/paper from the sections actually rendered, starting with header + hero on ink, so two same-colour sections never touch whatever the flags. Exceptions: the final CTA is always coral; the footer is always ink with a 1px `line-dark` top border. The section before the final CTA may be either colour.
+
+### 6.1 Header
+- Purpose: identity and a way to act from the top. Copy: A.1
+- Layout: skip link (visible on focus), logo left (links to `/`, 34px tall desktop / 28px phone), one "Talk to us" button right. Not sticky. No nav menu. Flag: none.
+
+### 6.2 Hero
+- Purpose: say what Me² does in one breath and get the click. Copy: A.2
+- Layout: left-aligned H1, subhead (muted-on-dark, max 52ch), primary button and secondary "See how it works" link (anchors to `#how`) in a row, location line below. Signature "²" per §5. Min height 78vh on desktop; content vertically centred.
+- Flag: `showLocations` controls the location line. If off: not rendered, no empty space.
+
+### 6.3 Problem
+- Purpose: name the pain in the buyer's words. Copy: A.3
+- Layout: H2 left column (5/12), two paragraphs right column (6/12, offset 1) on desktop; stacked on phone. Flag: none.
+
+### 6.4 How it works (`id="how"`)
+- Purpose: show AI plus a person, in order. Copy: A.4
+- Layout: H2 + intro, then three steps in a row on desktop with a 1px connecting line between number circles, stacked on phone. Each step has its number (1, 2, 3) inside a 44px outlined circle; this is a real sequence, so numbering is correct here and nowhere else. Flag: none.
+
+### 6.5 Offers (`id="offers"`)
+- Purpose: show the two ways to buy. Copy: A.5
+- Layout: H2 + intro, two equal cards side by side (stacked on phone). On a paper section, cards are ink with paper text; on an ink section, cards are navy. Each card: name (H3), body, "Best for" line, price line, button. Buttons are mailtos with the card's subject (A.ui).
+- Flag: `showPricing` controls both price lines. If off: not rendered, cards stay equal height, and no "$" appears anywhere in the page.
+
+### 6.6 Starting with real estate
+- Purpose: show the first market without making the brand real-estate-only. Copy: A.6
+- Layout: H2 + body, a two-column list of six example roles (small coral or navy square markers) on desktop, one column on phone, then the closing line. Proof block below.
+- Flag: `showProof` controls the proof block. If off: not rendered.
+
+### 6.7 FAQ
+- Purpose: answer the questions that stop a click. Copy: A.7
+- Layout: H2 left column, native `<details>`/`<summary>` items right column on desktop (stacked on phone), all closed by default, full-width rows with a 1px divider, a "+" that rotates to "×" via CSS. Visible keyboard focus on each summary.
+- Flag: the "Where is the team based?" item is controlled by `showLocations`. If off: not rendered.
+
+### 6.8 Final CTA
+- Purpose: last, clearest ask. Copy: A.8
+- Layout: coral band, centred H2 + body, ink button, visible email address below as an underlined ink link.
+- Flags: `enableBooking` adds "Book a call" linking to `BOOKING_URL` (new tab, `rel="noopener"`); off or `BOOKING_URL` empty → only "Talk to us". `enableContactForm` replaces body + email line with the form (A.ui); the mailto stays as a fallback link beneath it.
+
+### 6.9 Footer
+- Copy: A.9. Layout: logo left; email link, then copyright; privacy link and entity line where flagged.
+- Flags: `showLegalEntity` controls the entity line; `showPrivacyPage` controls the privacy link. If off: not rendered.
+
+### 6.10 404 page
+- Copy: A.10. Layout: header, centred H1 + body + button back to `/`, footer. Ink background. `noindex`.
+
+### Data rule (applies to every form and every future change)
+- Forms ask for contact details and a short task description only. The hint tells people not to include client, customer or tenant personal details. Never add fields for financial, health or identity information. Write this rule into `CLAUDE.md`.
+
+## 6b. Fixture build (for testing only)
+- A second build config in git-ignored `.verify/fixture/` that overrides `site.config.ts` and `flags.ts` and fills every `[[TBC]]` with reserved fake values. Select it with `SITE_FIXTURE=1`, output to `.verify/fixture/dist`. It must never be deployed, carries `noindex`, and is exempt from the Lighthouse SEO score.
+- Reserved values: email `test@example.com`; domain `example.com`; booking URL `https://example.com/book`; entity line `Test Entity Pty Ltd, ABN 00 000 000 000`; prices `From $1 AUD per test`; proof `Test Customer said this is a test.`; privacy body `Test privacy policy.`
+- Run every Phase 1b check against both builds. Real build serves on 4321, fixture on 4322. A check that can only pass with real values passes on the fixture and is reported "blocked by TBC" on the real build, not as a fail.
+
+## 7. Feature flags
+All flags live in `src/config/flags.ts`. The site must build and look complete with all flags false. Flipping a flag never needs a code change.
+
+| Flag | Default | Controls | Turn on when | Owner |
+|---|---|---|---|---|
+| `showPricing` | false | price lines on both offer cards | billing basis and GST wording confirmed, price copy filled in | Patrick |
+| `showProof` | false | real estate proof block | written permission from the named client and copy approved; any numbers substantiated | EC |
+| `showLocations` | false | hero location line, "Where is the team based?" FAQ item | disclosure approved and privacy policy names offshore handling | Patrick |
+| `showLegalEntity` | false | footer entity + registration line | contracting entity confirmed | Patrick + lawyer |
+| `showPrivacyPage` | false | `/privacy/` page and footer link | lawyer-reviewed policy text supplied | Patrick + lawyer |
+| `enableContactForm` | false | enquiry form in final CTA | privacy page live, Resend domain verified, Turnstile keys set | EC |
+| `enableBooking` | false | "Book a call" button | `BOOKING_URL` set and privacy page live | EC |
+| `enableTracking` | false | any analytics script beyond Cloudflare Web Analytics | privacy page live and tool chosen | EC |
+
+`enableContactForm`, `enableBooking` and `enableTracking` also require `showPrivacyPage`; if it's false they stay off and the build logs a warning.
+
+## 8. Integrations
+- Email CTA (Phase 1): `mailto:{CONTACT_EMAIL}?subject=...` using subjects in A.ui, URL-encoded, through one `EmailLink` component.
+- Analytics: Cloudflare Web Analytics, enabled by the owner in the dashboard; no code. Nothing else unless `enableTracking`. No conversion events in v1 (the CTA is a mailto); `docs/gtm-events.md` is N/A until a form or booking ships.
+- Booking (Phase 2): plain link to `BOOKING_URL`, no embed. Missing value → hidden.
+- Form (Phase 2): one form, source name `Website enquiry`. Pages Function `functions/api/enquiry.ts`. Env vars: `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, public `TURNSTILE_SITE_KEY`, plus `FORM_FROM_EMAIL` / `FORM_TO_EMAIL` from config. Protections: hidden honeypot (silently drop), Turnstile verified server-side, server-side validation (required fields, email format, max 2,000 characters for the task), and a Cloudflare rate-limiting rule documented in `DEPLOY.md`. Without JS (Turnstile can't run) the visible fallback is the email link. Missing env var → form not rendered, mailto shows.
+- Lead destination: email only to `FORM_TO_EMAIL` (low volume; a sheet or CRM is a later decision).
+  | Source | Inbox |
+  |---|---|
+  | Website enquiry | `FORM_TO_EMAIL` |
+- Funnels, feeds: N/A for v1.
+
+## 9. SEO, performance, accessibility
+- `src/data/routes.json` holds every page's path, title, description, noindex flag and OG image; `<head>`, the sitemap and any links read from it. Values: A.meta.
+- Pre-rendered HTML; one H1 per page; canonical on every page (`https://{SITE_DOMAIN}/`); trailing slashes consistent; custom 404 (noindex).
+- Schema.org JSON-LD: `Organization` (`name`, `alternateName`, `url`, `email`, `logo` → `/logo.png`), one `Service` per offer (name + description; no `offers`/price unless `showPricing`), `FAQPage` matching the visible FAQ items exactly (respecting `showLocations`). No address, no `LocalBusiness`.
+- `robots.txt` allows all and points to `/sitemap.xml`, written at the end of the build from the routes file (indexable pages only). Fixture build: `noindex` + `Disallow: /`.
+- OG/Twitter tags with `/og-image.png`. `llms.txt`: what Me² is, the two offers, first market, contact email, key URL, also-known-as "Me Squared". IndexNow key file plus `npm run indexnow`.
+- Performance: no images apart from the logo (served as WebP/PNG with width/height); fonts self-hosted and preloaded; zero third-party requests; inline critical CSS is fine. Targets: Lighthouse ≥ 90 / 95 / 95 / 95, CLS < 0.1.
+- `public/_headers`: HSTS (`max-age=31536000`), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`, `X-Frame-Options: DENY`, and a CSP of `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self' mailto:` (Phase 2 adds Turnstile and Cloudflare Analytics hosts). Turn off Cloudflare Email Obfuscation for the zone (it rewrites the mailtos into `/cdn-cgi/l/email-protection` links).
+- WCAG 2.1 AA: only §5 pairs, visible focus everywhere, one H1, logical heading order, skip link, `<html lang="en-AU">`, reduced motion respected, tap targets ≥ 44px.
+
+## 10. Phases and acceptance criteria
+Every check names how to run it. Put Phase 1b checks in `npm run verify` (`scripts/verify.mjs`) and report pass/fail per check, per build.
+
+### Phase 0 — Skeleton
+- [ ] Scaffolded; `npm run build` passes; `npm run preview` serves (or preview deploy if §1 allows)
+- [ ] `src/content/site.ts`, `src/config/flags.ts`, `src/config/site.config.ts`, `src/data/routes.json`, `src/styles/tokens.css`, `CLAUDE.md`, `DECISIONS.md` exist
+- [ ] Git initialised; brief and skeleton committed
+
+### Phase 1a — Design proof (STOP for owner approval)
+- [ ] Header, hero and the Problem + How it works sections built with the §5 tokens and real Appendix A copy
+- [ ] Screenshots at 375 and 1280px in `screenshots/design-proof/`; no horizontal scroll; the hero "²" never sits under text at full strength
+- [ ] Report: the screenshots, the tokens used, and any §5 value you had to fall back on. Wait for a yes before Phase 1b. If changes are asked for, update §5 and the proof, not the rest of the site.
+
+### Phase 1b — Full site, flags off
+- [ ] Every §6 section renders its Appendix A copy word for word (Playwright: compare each section's text to `site.ts` values)
+- [ ] `grep -rn "\[\[TBC" dist/` returns nothing on the real build
+- [ ] No price text (`$`) in `dist/index.html` while `showPricing` is false (ignoring scripts/JSON-LD)
+- [ ] Playwright screenshots at 375, 768 and 1280px, real build and fixture build with all flags on, in `screenshots/`; `document.documentElement.scrollWidth <= innerWidth` at each size
+- [ ] Lighthouse desktop and mobile on the real build: Performance ≥ 90, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 95
+- [ ] `npx linkinator http://localhost:4321 --recurse --skip "mesquaredagency.com" --skip "^mailto:"`: no broken internal links; `#how` resolves
+- [ ] Every "Talk to us" and offer button is a `mailto:` to `CONTACT_EMAIL` with the A.ui subject
+- [ ] No hardcoded identity: `grep -rn "mesquaredagency\|hello@" src/ functions/ public/ scripts/` matches only `src/config/site.config.ts` (generated `llms.txt` excepted if built from config)
+- [ ] No third-party requests on load (Playwright network log: all same-origin)
+- [ ] Layout checks (section alternation, no two same-colour sections touching, equal card heights, no empty gaps) with all flags off, all on, and each of `showPricing`, `showProof`, `showLocations`, `enableContactForm` on alone
+- [ ] Banned-words and brand-naming checks on rendered text, titles, alt text and aria labels (case-insensitive, whole word)
+- [ ] Head check over `dist/`: unique title and description within length limits, one H1, canonical; sitemap lists only indexable pages
+- [ ] JSON-LD parses; FAQPage matches visible questions; `llms.txt`, `robots.txt`, `_headers`, `og-image.png`, `logo.png` exist
+- [ ] `@axe-core/playwright`: zero violations on both builds, flags off and on; keyboard-only pass of header, FAQ and buttons
+- [ ] `/404` renders A.10; `/privacy/` absent from `dist/` while `showPrivacyPage` is false
+- [ ] `docs/` files from §14 exist and describe what was built
+
+### Phase 2 — Flagged features (only after owner review)
+- [ ] Each flag on → feature works; off → §6 fallback renders
+- [ ] Form: one test submission arrives at `FORM_TO_EMAIL` (EC's go-ahead first); honeypot submission silently dropped; failed Turnstile rejected; missing env var → mailto fallback
+- [ ] Booking button opens `BOOKING_URL` in a new tab
+
+## 11. Redirects and SEO preservation
+N/A — new build; the domain only shows a parking page.
+
+## 12. CLAUDE.md (write in the repo root in Phase 0)
+- One-page sales site for Me²; primary goal: visitor clicks "Talk to us" (mailto to `CONTACT_EMAIL`).
+- Client identity lives only in `src/config/site.config.ts`; copy and section order only in `src/content/site.ts`; titles/descriptions only in `src/data/routes.json`; tokens only in `src/styles/tokens.css`; flags only in `src/config/flags.ts`. Never hardcode; never remove a fallback; the site must look complete with all flags off.
+- Brand rules (§2): visible name `Me²`; banned words; Australian English; sentence case. Grep before committing copy.
+- Never invent names, testimonials, statistics, results, logos or prices. Never name individuals. Real estate appears only in its own section.
+- Forms collect contact details and a short task description only; never fields for financial, health or identity information.
+- Design: keep the approved identity (§5). Refine within it; mock up one page and get a yes before any wider restyle.
+- Allowed dependencies and out-of-scope list: BRIEF §3, in full.
+- Git: branch + PR for every change; run `git branch --show-current` right before every commit and push; never push to `main` once connected to Cloudflare; plain-English commit messages.
+- Ask EC before merging, deploying to production, DNS changes, or anything that emails real people.
+- When behaviour changes, update the matching `docs/` file and the README launch checklist in the same change.
+- Verify with `npm run verify` plus a look at 375 and 1280px. Deploy: see `DEPLOY.md`.
+
+## 13. Open decisions
+| # | Decision | Options | Recommended | Owner | Blocks |
+|---|---|---|---|---|---|
+| 1 | Launch domain and CTA inbox | `mesquaredagency.com` or `mesquared.co.uk`; confirm `hello@` receives mail | `mesquaredagency.com`; send a test email to `hello@` before launch | EC | Launch (one-file change if switched) |
+| 2 | Service claims | Keep or cut each of the six example roles and the "a person checks it" line | Keep only what can be delivered within 30 days of signing | EC | Launch |
+| 3 | Billing basis and GST wording | One-off, monthly, setup + monthly; "+ GST" or not | Setup + monthly for AI Roles; monthly with a minimum term for EBUs. GST depends on which entity invoices | Patrick + accountant | `showPricing` |
+| 4 | Contracting entity | Australian, Cambodian, other | Needs Australian and Cambodian legal advice | Patrick + lawyer | `showLegalEntity` |
+| 5 | Disclose Phnom Penh team | Show or don't | Show it; the privacy policy must disclose offshore handling (APP 8) anyway | Patrick | `showLocations` |
+| 6 | Privacy policy | Lawyer-reviewed text covering the APPs incl. APP 8 | Review before any form, booking or tracking goes live | Patrick + lawyer | `showPrivacyPage`, form, booking, tracking |
+| 7 | Named proof (first client) | Named case study, anonymised, none | Anonymised until written permission; numbers substantiated and reviewed under the ACL | EC | `showProof` |
+| 8 | Agent-licensing boundary | — | Lawyer check that the real estate roles read as admin support, not work needing an agent's registration (e.g. SA Land Agents Act 1994) | Patrick + lawyer | A.6 copy at launch |
+| 9 | Brand finals | Vector logo, final palette, tagline ("from me to we." is in the designer's concept, not approved) | Build on the supplied logo now; swap `tokens.css` and the logo file when the designer delivers | Patrick + designer | Nothing |
+| 10 | Trademark and font licence | IP Australia search; Instrument Sans is OFL | Run the search before paid marketing | EC | Nothing |
+| 11 | Booking tool and sending address | Cal.com or Calendly; `website@` | Cal.com; `website@` as a send-only alias | EC | `enableBooking`, form |
+
+Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 numbers, #8.
+
+## 14. Deliverables back from the agent
+- Local run steps + `DEPLOY.md` (incl. the rate-limiting rule and Email Obfuscation note); preview URL if §1 allows
+- Phase check report (pass/fail per item, both builds, command used) with `screenshots/`
+- `README.md`: what the site is, pages table, run locally, edit copy, flip each flag, swap tokens and logo, launch checklist ticked only when verified
+- `docs/`: `supplied-assets.md` (What / Where it goes / Until then), `media.md` (logo source, OG image, no stock), `flags.md` (each flag, what it shows, who signs off), and in Phase 2 `forms.md` and `lead-notifications.md`
+- `DECISIONS.md`: every judgement call
+- Remaining `[[TBC]]` list across the repo, with the file for each
+
+## 15. After launch (owner's checklist)
+- Create the Cloudflare account under `tech@mesquaredagency.com` (if not done) and the `mesquared` Pages project; connect `mesquaredagency.com` and a `www` → apex redirect; confirm HTTPS.
+- Cloudflare Pages can only serve the apex (`mesquaredagency.com`, not just `www`) when the domain's DNS is on Cloudflare. The domain already answers through Cloudflare, so check the zone is in the `tech@` account; if it isn't, move it there. Before any nameserver change, copy every Google Workspace record (MX, SPF, DKIM, DMARC, verification TXT), keep one merged SPF record, and send and receive a test email straight after.
+- Turn off Email Obfuscation (Scrape Shield) for the zone; enable Cloudflare Web Analytics.
+- Before the form goes live: verify the sending domain in Resend; add its SPF/DKIM alongside Google's (one SPF record); set DMARC.
+- Hosting, domain and analytics accounts owned by the business, not a person.
+- Submit the sitemap in Google Search Console; run `npm run indexnow`.
+
+---
+
+## Appendix A — Copy
+
+### A.meta
+- Title: `Me²: AI roles and trained operators for back-office work`
+- Description: `Me² sets up AI roles for repetitive back-office work, with trained operators to run them and check the output. Starting with real estate.`
+- OG title: `AI does the volume. People own the outcome.`
+- OG image text: logo + `AI does the volume. People own the outcome.`
+- 404 title: `Page not found | Me²` · 404 description: `This page doesn't exist or has moved. Go back to the Me² home page.`
+- Privacy title: `Privacy | Me²` · Privacy description: `How Me² collects, uses and protects personal information sent through this website, and who to contact with a privacy question.`
+
+### A.1 Header
+- Logo (links home, aria-label `{SITE_NAME_PLAIN} home`)
+- Button: `Talk to us`
+
+### A.2 Hero
+- H1: `The back-office work that buries your team, handled.`
+- Subhead: `{SITE_NAME} sets up AI roles for the repetitive work, and trained operators to run them and check what they produce. You get the work done without hiring for it or babysitting another tool.`
+- Primary button: `Talk to us`
+- Secondary link: `See how it works`
+- Location line (`showLocations`): `Command Centre teams in Adelaide and Phnom Penh.`
+
+### A.3 Problem
+- H2: `Admin grows faster than headcount.`
+- Paragraph 1: `Every new client brings more inbox, more reports and more chasing. Hiring to keep up is slow and expensive, and the work still lands on your best people.`
+- Paragraph 2: `AI tools on their own don't fix it. Someone still has to set them up, check what they produce and fix what they get wrong. That someone is usually you.`
+
+### A.4 How it works
+- H2: `AI does the volume. People own the outcome.`
+- Intro: `We don't hand you software and walk away. We take on the work.`
+- Step 1 title: `We map the work`
+- Step 1 body: `We start with the tasks that eat the most hours and get done the same way every time.`
+- Step 2 title: `AI roles do the first pass`
+- Step 2 body: `Each AI role handles one job: drafting a report, sorting an inbox, working out what's owed, preparing a summary.`
+- Step 3 title: `A person checks it`
+- Step 3 body: `Every output gets checked before it counts, by your team or by a trained {SITE_NAME} operator. AI drafts, people decide.`
+
+### A.5 Offers
+- H2: `Two ways to start`
+- Intro: `Start with one job, or hand over a whole workload.`
+- Card 1 name: `AI Roles`
+- Card 1 body: `One AI role for one job, set up around how your team already works. Your team reviews the output and stays in control.`
+- Card 1 best for: `Best for teams that know exactly which task is eating their week.`
+- Card 1 price (`showPricing`): `From $2,000 AUD [[TBC: billing basis and GST wording — Patrick]]`
+- Card 1 button: `Ask about AI Roles`
+- Card 2 name: `Effective Business Units`
+- Card 2 body: `A trained Command Centre operator runs a set of AI roles for you as a managed service. They check the work, handle the exceptions and report back to you.`
+- Card 2 best for: `Best for businesses that want a whole workload off their plate.`
+- Card 2 price (`showPricing`): `From $3,000 AUD [[TBC: billing basis and GST wording — Patrick]]`
+- Card 2 button: `Ask about Effective Business Units`
+
+### A.6 Starting with real estate
+- H2: `Starting with real estate`
+- Body: `Real estate is our first market. Property management runs on high-volume, repeatable admin, which is exactly the kind of work AI roles and trained operators are built for.`
+- List intro: `Roles we set up for agencies include:`
+- List items:
+  - `Drafting routine inspection reports for review`
+  - `Tracking rent arrears and preparing reminders`
+  - `Sorting and routing the property management inbox`
+  - `Drafting replies to leasing enquiries`
+  - `Logging and following up maintenance requests`
+  - `Preparing owner and landlord reports`
+- Closing line: `Not in real estate? If your team has repeatable back-office work, we'd like to hear about it.`
+- Proof block (`showProof`): `[[TBC: client case study, approved in writing by the client — EC]]`
+
+### A.7 FAQ
+- H2: `Common questions`
+- Q: `Do we have to change the software we use?`
+  A: `We start from the tools and processes you already use and set each AI role up around them. If something would need to change, we'll tell you before we start.`
+- Q: `Who checks the AI's work?`
+  A: `With an AI Role, your team reviews the output. With an Effective Business Unit, a trained {SITE_NAME} operator checks it before it reaches you. Either way, a person signs off.`
+- Q: `What's the difference between the two options?`
+  A: `An AI Role is one tool for one job that your team runs. An Effective Business Unit is a managed service: a {SITE_NAME} operator runs several AI roles for you and owns the result.`
+- Q: `Is this only for real estate?`
+  A: `No. Real estate is where we started. The same approach suits any business with repeatable back-office work.`
+- Q (`showLocations`): `Where is the team based?`
+  A: `Our Command Centre runs across Adelaide and Phnom Penh, Cambodia.`
+- Q: `How do we get started?`
+  A: `Email us about the task that takes up the most time. We'll tell you whether it's a fit, and what an AI Role or Effective Business Unit for it would look like.`
+
+### A.8 Final CTA
+- H2: `Tell us which task is eating your week.`
+- Body: `Send a short email about the work you'd like off your plate. We'll tell you straight whether we can help.`
+- Button: `Talk to us`
+- Booking button (`enableBooking`): `Book a call`
+- Email line: `Or email us at {CONTACT_EMAIL}`
+
+### A.9 Footer
+- Logo (no link)
+- Email link text: `{CONTACT_EMAIL}`
+- Copyright: `© {YEAR} {SITE_NAME}`
+- Entity line (`showLegalEntity`): `[[TBC: legal entity name and registration number — Patrick + lawyer]]`
+- Privacy link (`showPrivacyPage`): `Privacy`
+
+### A.10 404 page
+- H1: `Page not found`
+- Body: `This page doesn't exist or has moved.`
+- Button: `Go to the home page`
+
+### A.privacy (`showPrivacyPage`)
+- H1: `Privacy`
+- Body: `[[TBC: lawyer-reviewed privacy policy text, including offshore disclosure — Patrick + lawyer]]`
+- Contact line: `Questions about privacy: {PRIVACY_EMAIL}`
+
+### A.ui
+- Skip link: `Skip to content`
+- Mailto subjects: header, hero and final CTA use `Website enquiry`; AI Roles card uses `AI Roles enquiry`; Effective Business Units card uses `Effective Business Units enquiry`
+- Logo alt / aria-label: `{SITE_NAME_PLAIN}` (header link: `{SITE_NAME_PLAIN} home`)
+- Hero "²" graphic: decorative, `aria-hidden="true"`, no alt
+- FAQ toggle: the native `<summary>`; no extra label
+- Form (`enableContactForm`):
+  - Heading: none (sits under the A.8 H2)
+  - Name label: `Your name`
+  - Email label: `Work email`
+  - Business label: `Business name`
+  - Task label: `What work would you like off your plate?`
+  - Task hint: `A sentence or two is plenty. Please don't include client, customer or tenant details.`
+  - Submit button: `Send enquiry`
+  - Sending state: `Sending…`
+  - Required error: `Please fill in this field.`
+  - Email error: `Enter an email address like name@business.com.au.`
+  - Too long error: `Keep this under 2,000 characters.`
+  - Success: `Enquiry sent. We'll reply to the email you gave us.`
+  - Failure: `Your enquiry didn't send. Email us at {CONTACT_EMAIL} instead.`
+  - Turnstile failure: `We couldn't confirm you're not a bot. Try again, or email us at {CONTACT_EMAIL}.`
+- Fallback link under the form: `Prefer email? Write to {CONTACT_EMAIL}`
