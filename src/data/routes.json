@@ -1,0 +1,25 @@
+[
+  {
+    "path": "/",
+    "title": "Me²: AI roles and trained operators for back-office work",
+    "description": "Me² sets up AI roles for repetitive back-office work, with trained operators to run them and check the output. Starting with real estate.",
+    "ogTitle": "AI does the volume. People own the outcome.",
+    "ogImage": "/og-image.png",
+    "noindex": false
+  },
+  {
+    "path": "/404.html",
+    "title": "Page not found | Me²",
+    "description": "This page doesn't exist or has moved. Go back to the Me² home page.",
+    "ogImage": "/og-image.png",
+    "noindex": true
+  },
+  {
+    "path": "/privacy/",
+    "title": "Privacy | Me²",
+    "description": "How Me² collects, uses and protects personal information sent through this website, and who to contact with a privacy question.",
+    "ogImage": "/og-image.png",
+    "noindex": false,
+    "flag": "showPrivacyPage"
+  }
+]

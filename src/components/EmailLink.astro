@@ -1,0 +1,11 @@
+---
+import { config } from '../config';
+
+interface Props {
+  subject: string;
+  class?: string;
+}
+const { subject, class: className } = Astro.props;
+const href = `mailto:${config.CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`;
+---
+<a href={href} class={className}><slot /></a>

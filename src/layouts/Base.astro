@@ -1,0 +1,54 @@
+---
+import '../styles/global.css';
+import fontUrl from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url';
+import routes from '../data/routes.json';
+import { config, isFixture, siteUrl } from '../config';
+
+interface Props {
+  /** Path as listed in src/data/routes.json */
+  path: string;
+  /** JSON-LD objects for this page */
+  schema?: object[];
+}
+const { path, schema = [] } = Astro.props;
+const route = routes.find((r) => r.path === path);
+if (!route) throw new Error(`No entry for ${path} in src/data/routes.json`);
+
+const base = isFixture ? 'https://example.com' : siteUrl;
+const canonical = new URL(path === '/404.html' ? '/' : path, base).href;
+const ogImage = new URL(route.ogImage, base).href;
+const ogTitle = route.ogTitle ?? route.title;
+const noindex = route.noindex || isFixture;
+---
+<!doctype html>
+<html lang={config.LOCALE}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{route.title}</title>
+    <meta name="description" content={route.description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
+    <style is:inline set:html={`@font-face{font-family:'Instrument Sans Variable';font-style:normal;font-display:swap;font-weight:400 700;src:url(${fontUrl}) format('woff2-variations');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#10202f" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={config.SITE_NAME} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={route.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={config.LOCALE.replace('-', '_')} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={route.description} />
+    <meta name="twitter:image" content={ogImage} />
+    {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,30 @@
+---
+import { Image } from 'astro:assets';
+import light from '../assets/brand/me2-logo-light.png';
+import navy from '../assets/brand/me2-logo-navy.png';
+import { config, fill } from '../config';
+import { content } from '../content/site';
+
+interface Props {
+  /** "light" for ink/navy backgrounds, "navy" for paper */
+  tone?: 'light' | 'navy';
+  /** CSS height in px */
+  height?: number;
+  class?: string;
+}
+const { tone = 'light', height = 34, class: className } = Astro.props;
+const src = tone === 'light' ? light : navy;
+---
+<Image
+  src={src}
+  alt={fill(content.ui.logoLabel)}
+  height={height}
+  densities={[1, 2]}
+  format="webp"
+  loading="eager"
+  class:list={['logo', className]}
+  data-site={config.SITE_NAME_PLAIN}
+/>
+<style>
+  .logo { display: block; width: auto; }
+</style>

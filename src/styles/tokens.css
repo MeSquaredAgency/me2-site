@@ -1,0 +1,42 @@
+/*
+ * Me² design tokens (BRIEF §5). Change a colour or size here and it changes everywhere.
+ * Navy and coral match the supplied me² logo. Only the text/background pairs listed in
+ * BRIEF §5 are allowed; anything else needs its contrast computed first.
+ */
+@theme {
+  --color-ink: #10202f;
+  --color-navy: #1b3853;
+  --color-paper: #f6f2ea;
+  --color-coral: #e7785c;
+  --color-coral-hover: #ee8e75; /* hover only; ink on it 6.9:1 */
+  --color-coral-deep: #b9482d;
+  --color-muted: #566170;
+  --color-muted-on-dark: #a7b1be;
+  --color-line-dark: rgb(246 242 234 / 0.12);
+  --color-line-light: rgb(16 32 47 / 0.12);
+
+  --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --radius-card: 20px;
+}
+
+:root {
+  --text-body: 1.125rem;
+  --text-small: 0.875rem;
+  --text-h1: clamp(2.6rem, 6.2vw, 5rem);
+  --text-h2: clamp(1.85rem, 3.6vw, 2.9rem);
+  --text-h3: 1.25rem;
+  --measure: 64ch;
+  --content-max: 1160px;
+  --gutter: 20px;
+  --section-y: 72px;
+}
+@media (min-width: 640px) {
+  :root { --gutter: 40px; }
+}
+@media (min-width: 900px) {
+  :root { --section-y: 112px; }
+}
+@media (max-width: 639px) {
+  :root { --text-body: 1.0625rem; }
+}

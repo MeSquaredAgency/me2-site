@@ -1,0 +1,24 @@
+---
+import { content } from '../content/site';
+const c = content.problem;
+interface Props { surface: 'ink' | 'paper' }
+const { surface } = Astro.props;
+---
+<section class:list={['section', `surface-${surface}`]} aria-labelledby="problem-title">
+  <div class="wrap grid">
+    <h2 id="problem-title">{c.h2}</h2>
+    <div class="body">
+      {c.paragraphs.map((p) => <p>{p}</p>)}
+    </div>
+  </div>
+</section>
+<style>
+  .grid { display: grid; gap: 28px; }
+  .surface-paper h2 { color: var(--color-navy); }
+  .body { display: grid; gap: 1.1em; max-width: var(--measure); }
+  .surface-paper .body { color: var(--color-ink); }
+  @media (min-width: 900px) {
+    .grid { grid-template-columns: 5fr 6fr; column-gap: calc(100% / 12); align-items: start; }
+    .body { font-size: 1.1875rem; padding-top: 0.35em; }
+  }
+</style>

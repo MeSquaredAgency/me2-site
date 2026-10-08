@@ -1,0 +1,32 @@
+---
+import Logo from './Logo.astro';
+import EmailLink from './EmailLink.astro';
+import { fill } from '../config';
+import { content } from '../content/site';
+---
+<a class="skip-link" href="#main">{content.ui.skipLink}</a>
+<header class="surface-ink site-header">
+  <div class="wrap bar">
+    <a href="/" class="home" aria-label={fill(content.ui.logoHomeLabel)}>
+      <Logo tone="light" height={34} class="header-logo" />
+    </a>
+    <EmailLink subject={content.ui.subjects.general} class="btn btn-primary header-cta">{content.header.button}</EmailLink>
+  </div>
+</header>
+<style>
+  .site-header { position: relative; z-index: 2; }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 22px;
+  }
+  .home { display: inline-flex; padding: 6px 0; border-radius: 6px; }
+  .home :global(.header-logo) { height: 34px; }
+  @media (max-width: 639px) {
+    .bar { padding-block: 16px; }
+    .home :global(.header-logo) { height: 28px; }
+    .header-cta { min-height: 44px; padding: 0 20px; font-size: 0.9375rem; }
+  }
+</style>

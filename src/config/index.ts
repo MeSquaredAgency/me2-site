@@ -1,0 +1,39 @@
+import { siteConfig as realConfig, type SiteConfig } from './site.config';
+import { flags as realFlags, type Flags } from './flags';
+
+/**
+ * The fixture build (BRIEF §6b) overrides config and flags from the git-ignored
+ * `.verify/fixture/overrides.ts`, selected with SITE_FIXTURE=1. It is never deployed.
+ */
+const fixtureModules = import.meta.glob<{ config?: Partial<SiteConfig>; flags?: Partial<Flags> }>(
+  '../../.verify/fixture/overrides.ts',
+  { eager: true },
+);
+export const isFixture = process.env.SITE_FIXTURE === '1';
+const fixture = isFixture ? Object.values(fixtureModules)[0] : undefined;
+if (isFixture && !fixture) throw new Error('SITE_FIXTURE=1 but .verify/fixture/overrides.ts is missing');
+
+export const config: SiteConfig = { ...realConfig, ...fixture?.config };
+
+const merged: Flags = { ...realFlags, ...fixture?.flags };
+// Anything that collects personal information needs the privacy page live first.
+for (const key of ['enableContactForm', 'enableBooking', 'enableTracking'] as const) {
+  if (merged[key] && !merged.showPrivacyPage) {
+    console.warn(`[flags] ${key} needs showPrivacyPage; leaving it off.`);
+    merged[key] = false;
+  }
+}
+if (merged.enableBooking && !config.BOOKING_URL) merged.enableBooking = false;
+export const flags: Flags = merged;
+
+/** Fills {SITE_NAME}-style placeholders in copy from the config. */
+export function fill(text: string): string {
+  return text
+    .replaceAll('{SITE_NAME_PLAIN}', config.SITE_NAME_PLAIN)
+    .replaceAll('{SITE_NAME}', config.SITE_NAME)
+    .replaceAll('{CONTACT_EMAIL}', config.CONTACT_EMAIL)
+    .replaceAll('{PRIVACY_EMAIL}', config.PRIVACY_EMAIL)
+    .replaceAll('{YEAR}', String(new Date().getFullYear()));
+}
+
+export const siteUrl = `https://${config.SITE_DOMAIN}`;

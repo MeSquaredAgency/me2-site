@@ -1,0 +1,103 @@
+---
+import EmailLink from './EmailLink.astro';
+import { fill, flags } from '../config';
+import { content } from '../content/site';
+const c = content.hero;
+// Keep hyphenated words ("back-office") on one line; the words themselves are unchanged.
+const h1Parts = c.h1.split(/(\S+-\S+)/);
+---
+<section class="surface-ink hero" aria-labelledby="hero-title">
+  <!-- The one bold brand moment: the coral "2" from the me² logo, decorative only. -->
+  <svg class="squared" viewBox="0 0 520 700" aria-hidden="true" focusable="false">
+    <text x="0" y="600">2</text>
+  </svg>
+  <div class="wrap inner">
+    <h1 id="hero-title">{h1Parts.map((part) => (part.includes('-') ? <span class="nowrap">{part}</span> : part))}</h1>
+    <p class="subhead">{fill(c.subhead)}</p>
+    <div class="actions">
+      <EmailLink subject={content.ui.subjects.general} class="btn btn-primary">{c.primary}</EmailLink>
+      <a href="#how" class="text-link secondary">{c.secondary}</a>
+    </div>
+    {flags.showLocations && <p class="location">{c.location}</p>}
+  </div>
+</section>
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .inner {
+    position: relative;
+    padding-top: clamp(40px, 9vh, 112px);
+    padding-bottom: clamp(72px, 14vh, 152px);
+  }
+  h1 { max-width: 14ch; }
+  .nowrap { white-space: nowrap; }
+  .subhead {
+    margin-top: 28px;
+    max-width: 52ch;
+    color: var(--color-muted-on-dark);
+    font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+    line-height: 1.6;
+  }
+  .actions {
+    margin-top: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 32px;
+  }
+  .secondary { padding-block: 12px; }
+  .location {
+    margin-top: 40px;
+    color: var(--color-muted-on-dark);
+    font-size: var(--text-small);
+  }
+
+  .squared {
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    fill: var(--color-coral);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 760px;
+    animation: rise-full 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  /* Desktop: beside the headline, cropped by the right edge. */
+  @media (min-width: 900px) {
+    .hero { min-height: calc(78vh - 88px); display: flex; align-items: center; }
+    .inner { width: 100%; }
+    .subhead { max-width: 46ch; }
+    .squared {
+      width: clamp(16rem, 35vw, 33rem);
+      right: calc(-0.16 * clamp(16rem, 35vw, 33rem));
+      top: -4%;
+    }
+  }
+  /* Phones and tablets: behind the top-right corner, faint, never under text at full strength. */
+  @media (max-width: 899px) {
+    .squared {
+      width: clamp(9rem, 46vw, 18rem);
+      right: -6vw;
+      top: -10px;
+      opacity: 0.18;
+    }
+  }
+  /* Two named moments so each width ends at the right strength. */
+  @keyframes rise-full {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes rise-faint {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 0.18; transform: none; }
+  }
+  @media (max-width: 899px) {
+    .squared { animation-name: rise-faint; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .squared { animation: none; }
+  }
+</style>
