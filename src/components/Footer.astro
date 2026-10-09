@@ -6,9 +6,7 @@ const c = content.footer;
 ---
 <footer class="site-footer on-dark render-later">
   <div class="wrap top">
-    <div class="brand">
-      <Logo tone="light" height={56} />
-    </div>
+    <div class="brand"><Logo tone="light" height={44} /></div>
     <div class="col">
       <h2 class="col-title">{c.contactHeading}</h2>
       <a href={`mailto:${config.CONTACT_EMAIL}`} class="tlink mail">{config.CONTACT_EMAIL}</a>
@@ -25,27 +23,26 @@ const c = content.footer;
     {flags.showLegalEntity && <p>{config.LEGAL_ENTITY}</p>}
     {flags.showPrivacyPage && <a href="/privacy/">{c.privacy}</a>}
   </div>
-  <!-- The wordmark, edge to edge: the last thing on the page. Decorative (the logo above is the link). -->
+  <!-- The wordmark, edge to edge, sinking into the bottom of the page. Decorative (the logo above is the link). -->
   <div class="wrap giant" aria-hidden="true"><Logo tone="light" height={400} /></div>
 </footer>
 <style>
   .site-footer { border-top: 1px solid var(--color-line-dark); }
   .top { display: grid; gap: 48px; padding-top: 88px; padding-bottom: 72px; }
-  .col { display: grid; gap: 16px; align-content: start; }
-  .col-title { font-family: var(--font-sans); font-size: var(--text-label); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-muted-dark); }
-  .mail { font-family: var(--font-display); font-size: 1.6rem; justify-self: start; }
-  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-  ul a { display: inline-flex; min-height: 32px; align-items: center; color: var(--color-on-dark); text-decoration: none; }
-  @media (hover: hover) and (pointer: fine) { ul a:hover { color: #fff; text-decoration: underline; text-underline-offset: 0.25em; text-decoration-thickness: 1px; } }
+  .col { display: grid; gap: 14px; align-content: start; }
+  .col-title { font-size: 0.95rem; font-weight: 500; font-stretch: 100%; letter-spacing: 0; line-height: 1.4; color: var(--color-haze); }
+  .mail { font-size: clamp(1.3rem, 2vw, 1.8rem); font-weight: 520; letter-spacing: -0.02em; justify-self: start; }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  ul a { display: inline-flex; min-height: 34px; align-items: center; color: var(--color-mist); text-decoration: none; font-weight: 500; }
+  @media (hover: hover) and (pointer: fine) { ul a:hover { text-decoration: underline; text-underline-offset: 0.25em; text-decoration-thickness: 1px; } }
   .bottom {
     position: relative; display: flex; flex-wrap: wrap; gap: 8px 32px; align-items: center;
-    padding-top: 24px; padding-bottom: 32px; font-size: var(--text-small); color: var(--color-muted-dark);
+    padding-top: 24px; padding-bottom: 32px; font-size: var(--text-small); color: var(--color-haze);
   }
   .bottom::before { content: ''; position: absolute; top: 0; left: var(--gutter); right: var(--gutter); border-top: 1px solid var(--color-line-dark); }
-  .bottom a { color: var(--color-on-dark); }
-  /* A quiet, tonal wordmark that sinks into the bottom edge of the page. */
-  .giant { padding-top: clamp(32px, 5vw, 72px); overflow: hidden; height: calc(min(100vw, var(--content-max) + 2 * var(--gutter)) * 0.39); box-sizing: border-box; }
-  .giant :global(.logo) { display: block; opacity: 0.07; }
+  .bottom a { color: var(--color-mist); }
+  .giant { padding-top: clamp(24px, 4vw, 56px); overflow: hidden; height: calc(min(100vw, var(--content-max) + 2 * var(--gutter)) * 0.36); box-sizing: border-box; }
+  .giant :global(.logo) { display: block; opacity: 0.06; }
   .giant :global(.logo .logo-svg) { width: 100%; height: auto; }
   @media (min-width: 900px) { .top { grid-template-columns: 2fr 1.2fr 1fr; } }
 </style>

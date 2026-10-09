@@ -1,63 +1,52 @@
 ---
-import Emph from './Emph.astro';
 import EmailLink from './EmailLink.astro';
 import { fill } from '../config';
 import { content } from '../content/site';
 import { visibleFaq } from '../lib/faq';
-interface Props { n: number }
-const { n } = Astro.props;
 const c = content.faq;
 const items = visibleFaq();
 ---
-<section id="faq" class="section bg-ivory render-later" aria-labelledby="faq-title">
-  <div class="wrap">
-    <p class="label">{c.eyebrow}<sup>{n}</sup></p>
-    <div class="layout">
-      <div class="head">
-        <h2 id="faq-title"><Emph text={c.h2} /></h2>
-        <p class="aside">{c.aside}</p>
-        <EmailLink subject={content.ui.subjects.general} class="tlink ask">{c.asideButton}</EmailLink>
-      </div>
-      <div class="items">
-        {items.map((item) => (
-          <details>
-            <summary>
-              <span class="q">{item.q}</span>
-              <span class="toggle" aria-hidden="true"></span>
-            </summary>
-            <p>{fill(item.a)}</p>
-          </details>
-        ))}
-      </div>
+<section id="faq" class="faq on-paper render-later" aria-labelledby="faq-title">
+  <div class="wrap grid">
+    <div class="side">
+      <p class="kicker">{c.kicker}</p>
+      <h2 id="faq-title">{c.h2}</h2>
+      <p class="aside">{c.aside}</p>
+      <EmailLink subject={content.ui.subjects.general} class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.asideButton}</EmailLink>
+    </div>
+    <div class="list">
+      {items.map((item) => (
+        <details>
+          <summary><span class="q">{fill(item.q)}</span><span class="pm" aria-hidden="true"></span></summary>
+          <p class="a">{fill(item.a)}</p>
+        </details>
+      ))}
     </div>
   </div>
 </section>
+
 <style>
-  .layout { margin-top: 56px; display: grid; gap: 56px; }
-  .head { display: grid; gap: 24px; align-content: start; justify-items: start; }
-  .head h2 { max-width: 9ch; }
-  .aside { color: var(--color-muted); max-width: 30ch; }
-  .head :global(.ask) { font-weight: 500; }
-  .items { border-top: 1px solid var(--color-text); }
+  .faq { padding-block: var(--section-y); }
+  .grid { display: grid; gap: 56px; }
+  .side { display: grid; gap: 24px; align-content: start; justify-items: start; }
+  .aside { color: var(--color-slate); max-width: 30ch; font-size: 1.08rem; }
+  .list { border-top: 1px solid var(--color-ink); }
   details { border-bottom: 1px solid var(--color-line); }
   summary {
-    list-style: none; cursor: pointer;
-    display: flex; justify-content: space-between; align-items: center; gap: 24px;
-    padding: 28px 0; min-height: 44px;
-    font-family: var(--font-display); font-size: clamp(1.4rem, 2.1vw, 1.85rem); line-height: 1.2;
+    list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 24px;
+    min-height: 44px; padding: 26px 0;
   }
   summary::-webkit-details-marker { display: none; }
-  .toggle { position: relative; flex: none; width: 18px; height: 18px; }
-  .toggle::before, .toggle::after {
-    content: ''; position: absolute; left: 0; top: 50%; width: 18px; height: 1px; background: var(--color-text);
-    transition: transform 400ms var(--ease);
-  }
-  .toggle::after { transform: rotate(90deg); }
-  details[open] .toggle::after { transform: rotate(0deg); }
-  details p { padding: 0 0 30px; color: var(--color-muted); max-width: 58ch; font-size: 1.05rem; }
-  @media (prefers-reduced-motion: reduce) { .toggle::before, .toggle::after { transition: none; } }
+  .q { font-size: clamp(1.2rem, 1.6vw, 1.55rem); font-weight: 520; letter-spacing: -0.02em; line-height: 1.25; }
+  /* Plus that turns into a minus. */
+  .pm { position: relative; width: 16px; height: 16px; flex: none; }
+  .pm::before, .pm::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; margin-top: -0.75px; background: currentColor; transition: transform 400ms var(--ease-out); }
+  .pm::after { transform: rotate(90deg); }
+  details[open] .pm::after { transform: rotate(0deg); }
+  .a { padding: 0 0 30px; max-width: 60ch; color: var(--color-slate); font-size: 1.08rem; }
+  @media (hover: hover) and (pointer: fine) { summary:hover .q { text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px; } }
   @media (min-width: 1000px) {
-    .layout { grid-template-columns: 1fr 1.6fr; gap: 120px; }
-    .head { position: sticky; top: 120px; align-self: start; }
+    .grid { grid-template-columns: 1fr 1.5fr; column-gap: clamp(48px, 6vw, 112px); }
+    .side { position: sticky; top: 120px; align-self: start; }
   }
 </style>

@@ -2,7 +2,7 @@ import { config, fill, siteUrl } from '../config';
 import { content } from '../content/site';
 import { visibleFaq } from './faq';
 
-/** JSON-LD for the home page: Organization, one Service per offer, and the visible FAQ. */
+/** JSON-LD for the home page: Organization, one Service per service (Design, Build, Run), and the visible FAQ. */
 export function homeSchema() {
   const org = {
     '@context': 'https://schema.org',
@@ -14,11 +14,11 @@ export function homeSchema() {
     email: config.CONTACT_EMAIL,
     logo: `${siteUrl}/logo.png`,
   };
-  const services = content.offers.cards.map((card) => ({
+  const services = content.services.items.map((s) => ({
     '@context': 'https://schema.org',
     '@type': 'Service',
-    name: card.name,
-    description: card.body,
+    name: `${s.name}: ${s.title}`,
+    description: s.body,
     provider: { '@id': `${siteUrl}/#organization` },
     areaServed: 'AU',
   }));
@@ -27,7 +27,7 @@ export function homeSchema() {
     '@type': 'FAQPage',
     mainEntity: visibleFaq().map((item) => ({
       '@type': 'Question',
-      name: item.q,
+      name: fill(item.q),
       acceptedAnswer: { '@type': 'Answer', text: fill(item.a) },
     })),
   };

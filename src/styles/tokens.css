@@ -1,40 +1,40 @@
 /*
- * Me² design tokens (BRIEF §5, v0.12 "Squared"). Change a value here and it changes everywhere.
- * Near-black and warm ivory, hairlines, one accent. Coral (from the logo) is used only for the
- * "²" motif, for errors caught by the human check, and (since v0.14) as a soft glow of light on ink.
- * Coral is never text on ivory (use coral-deep). Every text/background pair used is listed
- * with its contrast in BRIEF §5; compute any new pair before using it.
+ * Me² design tokens (BRIEF §5, v0.15 "Lit": the agency redesign).
+ * The palette is the logo, lit: its navy deepened to a night sky, its coral used as light.
+ * Coral is light and the ² mark, never body text on paper (use coral-deep there).
+ * Every text/background pair used is listed with its contrast in BRIEF §5; compute any new pair before using it.
  */
 @theme {
-  --color-ink: #0d1116;        /* dark sections, footer */
-  --color-ink-2: #161b22;      /* raised surfaces on ink (the demo document) */
-  --color-ivory: #f3efe7;      /* light sections */
-  --color-bone: #e7e1d5;       /* alternate light sections */
-  --color-text: #111418;       /* text on ivory and bone */
-  --color-muted: #585d64;      /* secondary text on ivory and bone */
-  --color-on-dark: #ece7de;    /* text on ink */
-  --color-muted-dark: #9da2a8; /* secondary text on ink */
-  --color-coral: #e7785c;      /* the logo's coral: the ² motif and caught errors; text only on ink */
-  --color-coral-deep: #a6412a; /* coral as text on ivory */
-  --color-sage: #7fb59a;       /* "checked" marks on ink, never alone (always with a word) */
-  --color-navy: #1b3853;       /* the logo's navy (logo only) */
-  --color-line: rgb(17 20 24 / 0.14);
-  --color-line-dark: rgb(236 231 222 / 0.14);
+  --color-abyss: #08121c;      /* dark sections: the logo navy, deepened */
+  --color-abyss-2: #0f1d2b;    /* raised surfaces on abyss */
+  --color-navy: #1b3853;       /* the logo navy: glass, rules, the mark */
+  --color-mist: #e8edf1;       /* text on abyss */
+  --color-haze: #93a3b3;       /* secondary text on abyss and abyss-2 */
+  --color-paper: #eef1f4;      /* light sections */
+  --color-paper-2: #e2e7ec;    /* raised surfaces on paper */
+  --color-ink: #08121c;        /* text on paper */
+  --color-slate: #4e5c6a;      /* secondary text on paper */
+  --color-coral: #e7785c;      /* the logo coral: light, and the ² mark; text only on abyss */
+  --color-coral-deep: #a6412a; /* coral as text on paper */
+  --color-line: rgb(8 18 28 / 0.14);
+  --color-line-dark: rgb(232 237 241 / 0.13);
 
-  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 :root {
   --text-body: 1.0625rem;
   --text-small: 0.875rem;
-  --text-label: 0.74rem;
-  --content-max: 1240px;
-  --gutter: 22px;
-  --section-y: 96px;
+  --content-max: 1520px;
+  --gutter: 20px;
+  --section-y: 112px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  /* The logo coral as RGB channels, for the glow: rgb(var(--glow) / 0.2). Light on ink only, never behind body text at full strength. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* The logo coral as RGB channels, for light: rgb(var(--glow) / 0.2). */
   --glow: 231 120 92;
+  /* Display type: one family, pulled narrower and tighter as it grows. */
+  --display-stretch: 88%;
 }
-@media (min-width: 640px) { :root { --gutter: 44px; } }
-@media (min-width: 1000px) { :root { --section-y: 160px; --gutter: 56px; } }
+@media (min-width: 640px) { :root { --gutter: 40px; } }
+@media (min-width: 1000px) { :root { --section-y: 176px; --gutter: 56px; } }
+@media (min-width: 1600px) { :root { --gutter: 72px; } }

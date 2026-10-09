@@ -1,0 +1,162 @@
+---
+import { Picture } from 'astro:assets';
+import { content } from '../content/site';
+const c = content.work;
+// Project images live in src/assets/work/<image>.png (screenshots of the real sites; never photos of individual people).
+const images = import.meta.glob<{ default: ImageMetadata }>('../assets/work/*.png', { eager: true });
+const imageFor = (key: string) => (key ? images[`../assets/work/${key}.png`]?.default : undefined);
+// Only projects with a picture are shown; the rest wait in site.ts until their case study is ready.
+const items = c.items.filter((p) => imageFor(p.image));
+---
+<section id="work" class="work on-dark render-later" aria-labelledby="work-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">{c.kicker}</p>
+      <h2 id="work-title">{c.h2}</h2>
+    </div>
+
+    <ol class="projects" data-work>
+      {items.map((p, i) => {
+        const img = imageFor(p.image);
+        const Tag = p.url ? 'a' : 'div';
+        return (
+          <li class:list={['project', { feature: i === 0, empty: !img }]}>
+            <Tag class="link" {...(p.url ? { href: p.url, target: '_blank', rel: 'noopener' } : {})}>
+              <div class="frame" data-frame>
+                {img ? (
+                  <Picture src={img} alt="" widths={[640, 1080, 1600]} sizes={i === 0 ? '(min-width: 1000px) 92vw, 100vw' : '(min-width: 1000px) 45vw, 100vw'} formats={['avif', 'webp']} fallbackFormat="jpg" class="shot" loading="lazy" decoding="async" />
+                ) : (
+                  <div class="placeholder" aria-hidden="true"><span class="ph-sq"></span></div>
+                )}
+              </div>
+              <div class="meta">
+                <h3 class="name">{p.name}</h3>
+                <p class="what">{p.what}</p>
+                {(p.services.length > 0 || p.year) && (
+                  <p class="tags">{p.services.join(' and ')}{p.year && <span class="year">{p.year}</span>}</p>
+                )}
+              </div>
+            </Tag>
+          </li>
+        );
+      })}
+    </ol>
+    <p class="note">{c.note}</p>
+  </div>
+  <div class="cursor" aria-hidden="true" data-cursor><span>{content.ui.viewProject}</span></div>
+</section>
+
+<script>
+  const list = document.querySelector<HTMLElement>('[data-work]');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (list && !still) {
+    // Each frame opens from the bottom as it arrives, and its image drifts slightly slower than the page.
+    const frames = [...list.querySelectorAll<HTMLElement>('[data-frame]')];
+    // Watch each project, not its frame: a frame clipped shut never counts as on screen.
+    const show = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { e.target.querySelector('[data-frame]')?.classList.add('is-in'); show.unobserve(e.target); }
+    }, { rootMargin: '0px 0px -12% 0px' });
+    frames.forEach((f) => { f.classList.add('will-reveal'); show.observe(f.closest('li')!); });
+
+    let ticking = false;
+    const drift = () => {
+      ticking = false;
+      for (const f of frames) {
+        const r = f.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight) continue;
+        const p = (r.top + r.height / 2 - innerHeight / 2) / (innerHeight + r.height);
+        f.style.setProperty('--drift', `${(p * 9).toFixed(2)}%`);
+      }
+    };
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(drift); } };
+    new IntersectionObserver(([e]) => {
+      e.isIntersecting ? addEventListener('scroll', onScroll, { passive: true }) : removeEventListener('scroll', onScroll);
+    }).observe(list);
+    drift();
+
+    // A "View" disc follows the pointer over projects that open (fine pointers only).
+    const cursor = document.querySelector<HTMLElement>('[data-cursor]');
+    if (cursor && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      let x = 0, y = 0, cx = 0, cy = 0, raf = 0, on = false;
+      const loop = () => {
+        cx += (x - cx) * 0.2; cy += (y - cy) * 0.2;
+        cursor.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+        raf = on || Math.abs(x - cx) > 0.5 ? requestAnimationFrame(loop) : 0;
+      };
+      list.querySelectorAll<HTMLAnchorElement>('a.link').forEach((a) => {
+        a.addEventListener('pointerenter', (e) => { on = true; x = cx = e.clientX; y = cy = e.clientY; cursor.classList.add('on'); if (!raf) raf = requestAnimationFrame(loop); });
+        a.addEventListener('pointermove', (e) => { x = e.clientX; y = e.clientY; });
+        a.addEventListener('pointerleave', () => { on = false; cursor.classList.remove('on'); });
+      });
+    }
+  }
+</script>
+
+<style>
+  .work { padding-block: clamp(24px, 4vw, 64px) var(--section-y); }
+  .head { display: grid; gap: 28px; margin-bottom: clamp(56px, 8vw, 120px); }
+  .head h2 { max-width: 14ch; }
+
+  .projects { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(64px, 8vw, 128px) clamp(24px, 3vw, 48px); }
+  .link { display: grid; gap: 24px; text-decoration: none; color: inherit; }
+  .frame {
+    position: relative; overflow: hidden; aspect-ratio: 16 / 10; background: var(--color-abyss-2);
+    border-radius: 6px; isolation: isolate;
+  }
+  .feature .frame { aspect-ratio: 16 / 8.4; }
+  .frame :global(img), .frame :global(picture) { display: block; width: 100%; height: 100%; }
+  .frame :global(img) {
+    object-fit: cover; object-position: top center;
+    transform: translateY(var(--drift, 0%)) scale(1.12);
+    transition: transform 1200ms var(--ease-out), filter 800ms var(--ease-out);
+  }
+  @media (prefers-reduced-motion: reduce) { .frame :global(img) { transform: none; } }
+  .frame.will-reveal { clip-path: inset(100% 0 0 0 round 6px); transition: clip-path 1400ms var(--ease-out); }
+  .frame.will-reveal.is-in { clip-path: inset(0 0 0 0 round 6px); }
+  @media (hover: hover) and (pointer: fine) {
+    a.link:hover .frame :global(img) { transform: translateY(var(--drift, 0%)) scale(1.17); }
+  }
+
+  /* No case study yet: a quiet panel, so the grid keeps its shape. */
+  .placeholder {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(rgb(232 237 241 / 0.045) 1px, transparent 1px) 0 0 / 48px 48px,
+      linear-gradient(90deg, rgb(232 237 241 / 0.045) 1px, transparent 1px) 0 0 / 48px 48px,
+      radial-gradient(60% 70% at 70% 30%, #12263a, var(--color-abyss-2));
+  }
+  .ph-sq { position: absolute; right: 18%; top: 22%; width: 22px; height: 22px; background: var(--color-coral); box-shadow: 0 0 40px 8px rgb(var(--glow) / 0.35); }
+
+  .meta { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 32px; align-items: baseline; }
+  .name { grid-column: 1; font-size: clamp(1.5rem, 2.2vw, 2.3rem); font-weight: 520; font-stretch: 90%; letter-spacing: -0.03em; line-height: 1.1; }
+  .feature .name { font-size: clamp(1.9rem, 3.4vw, 3.6rem); }
+  .what { grid-column: 1; color: var(--color-haze); max-width: 52ch; }
+  .tags { grid-column: 2; grid-row: 1; display: flex; gap: 20px; font-size: 0.95rem; color: var(--color-haze); white-space: nowrap; }
+  .year { color: var(--color-mist); }
+  .empty .name { color: var(--color-haze); }
+  .note { margin-top: 56px; color: var(--color-haze); font-size: var(--text-small); }
+
+  @media (min-width: 1000px) {
+    .head { grid-template-columns: 1fr 2.4fr; align-items: start; }
+    .head .kicker { margin-top: 0.9em; }
+    .projects { grid-template-columns: 1fr 1fr; }
+    .feature { grid-column: 1 / -1; }
+    .projects li:nth-child(3) { margin-top: clamp(80px, 10vw, 180px); }
+  }
+  @media (max-width: 639px) {
+    .meta { grid-template-columns: 1fr; }
+    .tags { grid-column: 1; grid-row: auto; }
+  }
+
+  .cursor {
+    position: fixed; left: 0; top: 0; z-index: 30; pointer-events: none;
+    width: 0; height: 0;
+  }
+  .cursor span {
+    position: absolute; left: -48px; top: -48px; width: 96px; height: 96px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--color-mist); color: var(--color-abyss); font-weight: 600; font-size: 0.95rem;
+    transform: scale(0); transition: transform 500ms var(--ease-out);
+  }
+  .cursor:global(.on) span { transform: scale(1); }
+</style>

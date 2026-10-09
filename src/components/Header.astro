@@ -9,52 +9,63 @@ const c = content.header;
 <header class="site-header" data-header>
   <div class="wrap bar">
     <a href="/" class="home" aria-label={fill(content.ui.logoHomeLabel)}>
-      <Logo tone="light" height={34} />
+      <Logo tone="light" height={32} />
     </a>
     <nav aria-label={c.navLabel} class="nav">
       <ul>
         {c.nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
       </ul>
     </nav>
-    <EmailLink subject={content.ui.subjects.general} class="btn cta">{c.button}</EmailLink>
+    <EmailLink subject={content.ui.subjects.general} class="btn btn-light cta"><span class="dot" aria-hidden="true"></span>{c.button}</EmailLink>
   </div>
 </header>
 <script>
-  // A quiet frosted bar once the page leaves the top.
+  // Clear over the hero; a frosted bar once the page moves. It tucks away while you read down and comes back when you scroll up.
   const header = document.querySelector<HTMLElement>('[data-header]');
   if (header) {
-    const set = () => header.classList.toggle('is-scrolled', scrollY > 24);
+    let lastY = scrollY;
+    const set = () => {
+      const y = scrollY;
+      header.classList.toggle('is-scrolled', y > 24);
+      if (Math.abs(y - lastY) > 6) {
+        header.classList.toggle('is-tucked', y > lastY && y > innerHeight * 0.9 && !header.contains(document.activeElement));
+        lastY = y;
+      }
+    };
     addEventListener('scroll', set, { passive: true });
+    header.addEventListener('focusin', () => header.classList.remove('is-tucked'));
     set();
   }
 </script>
 <style>
   .site-header {
-    position: fixed; inset: 0 0 auto; z-index: 20; color: var(--color-on-dark);
-    transition: background-color 400ms var(--ease), box-shadow 400ms var(--ease);
+    position: fixed; inset: 0 0 auto; z-index: 40; color: var(--color-mist);
+    transition: background-color 500ms var(--ease-out), box-shadow 500ms var(--ease-out), transform 600ms var(--ease-out);
   }
   .site-header.is-scrolled {
-    background: rgb(13 17 22 / 0.95);
-    backdrop-filter: blur(16px) saturate(130%);
-    -webkit-backdrop-filter: blur(16px) saturate(130%);
+    background: rgb(8 18 28 / 0.78);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
     box-shadow: 0 1px 0 var(--color-line-dark);
   }
-  .bar { display: flex; align-items: center; gap: 28px; padding-block: 26px; transition: padding 400ms var(--ease); }
-  .is-scrolled .bar { padding-block: 14px; }
-  .home { display: inline-flex; margin-right: auto; padding: 4px 0; }
-  .nav ul { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
+  .site-header.is-tucked { transform: translateY(-100%); }
+  @media (prefers-reduced-motion: reduce) { .site-header.is-tucked { transform: none; } }
+  .bar { display: flex; align-items: center; gap: 28px; padding-block: 24px; transition: padding 500ms var(--ease-out); }
+  .is-scrolled .bar { padding-block: 12px; }
+  .home { display: inline-flex; margin-right: auto; padding: 6px 0; }
+  .nav ul { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; }
   .nav a {
-    display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px;
-    font-size: 0.9rem; letter-spacing: 0.01em; color: var(--color-muted-dark); text-decoration: none;
-    transition: color 250ms var(--ease);
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px;
+    font-size: 0.95rem; font-weight: 500; color: var(--color-haze); text-decoration: none;
+    transition: color 300ms var(--ease);
   }
-  @media (hover: hover) and (pointer: fine) { .nav a:hover { color: var(--color-on-dark); } }
-  .bar :global(.cta) { min-height: 44px; padding: 0 22px; font-size: 0.9rem; border-color: rgb(236 231 222 / 0.35); color: var(--color-on-dark); }
-  @media (hover: hover) and (pointer: fine) { .bar :global(.cta:hover) { border-color: var(--color-on-dark); } }
-  .site-header :global(:focus-visible) { outline-color: var(--color-on-dark); }
-  @media (max-width: 999px) { .nav { display: none; } }
+  @media (hover: hover) and (pointer: fine) { .nav a:hover { color: var(--color-mist); } }
+  .bar :global(.cta) { min-height: 46px; padding: 0 20px 0 18px; font-size: 0.95rem; }
+  .site-header :global(:focus-visible) { outline-color: var(--color-mist); }
+  @media (max-width: 899px) { .nav { display: none; } }
   @media (max-width: 639px) {
-    .bar { padding-block: 16px; }
-    .home :global(.logo-svg) { height: 28px; }
+    .bar { padding-block: 14px; }
+    .home :global(.logo-svg) { height: 26px; }
+    .bar :global(.cta) { min-height: 44px; padding: 0 16px 0 14px; font-size: 0.9rem; }
   }
 </style>
