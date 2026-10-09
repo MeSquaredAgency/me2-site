@@ -1,0 +1,14 @@
+---
+/**
+ * Renders copy with **bold part** markers as text + <strong>, without raw HTML.
+ * Hyphenated words ("back-office") are kept on one line.
+ */
+interface Props { text: string }
+const split = (t: string) => t.split(/(\S+-\S+)/);
+const parts = Astro.props.text.split(/\*\*(.+?)\*\*/).map((t, i) => ({ bold: i % 2 === 1, pieces: split(t) }));
+---
+{parts.map(({ bold, pieces }) => {
+  const inner = pieces.map((w, j) => (j % 2 ? <span class="nowrap">{w}</span> : w));
+  return bold ? <strong>{inner}</strong> : inner;
+})}
+<style is:global>.nowrap { white-space: nowrap; }</style>

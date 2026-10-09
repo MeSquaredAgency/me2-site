@@ -1,76 +1,59 @@
 ---
+import Emph from './Emph.astro';
+import EmailLink from './EmailLink.astro';
+import Icon, { type IconName } from './Icon.astro';
 import { fill } from '../config';
 import { content } from '../content/site';
 const c = content.how;
-interface Props { surface: 'ink' | 'paper' }
-const { surface } = Astro.props;
+const icons: IconName[] = ['map', 'spark', 'personCheck'];
 ---
-<section id="how" class:list={['section', `surface-${surface}`]} aria-labelledby="how-title">
+<section id="how" class="section bg-mist" aria-labelledby="how-title">
   <div class="wrap">
-    <div class="head">
-      <h2 id="how-title">{c.h2}</h2>
-      <p class="intro">{c.intro}</p>
+    <div class="section-head">
+      <span class="eyebrow">{c.eyebrow}</span>
+      <h2 id="how-title"><Emph text={c.h2} /></h2>
+      <p>{c.intro}</p>
     </div>
     <ol class="steps">
       {c.steps.map((s, i) => (
-        <li class="step">
-          <span class="num" aria-hidden="true">{i + 1}</span>
+        <li class="card">
+          <span class="well"><Icon name={icons[i]} size={26} /></span>
+          <span class="step-no">{c.stepLabel} {i + 1}</span>
           <h3>{s.title}</h3>
           <p>{fill(s.body)}</p>
         </li>
       ))}
     </ol>
+    <div class="cta">
+      <EmailLink subject={content.ui.subjects.general} class="btn btn-primary">{c.cta}</EmailLink>
+    </div>
   </div>
 </section>
 <style>
-  #how { scroll-margin-top: 16px; }
-  .head { display: grid; gap: 20px; max-width: 34ch; }
-  .head h2 { max-width: 16ch; }
-  .intro { font-size: clamp(1.0625rem, 1.4vw, 1.25rem); max-width: 40ch; }
-  .surface-ink .intro { color: var(--color-muted-on-dark); }
-  .surface-paper h2 { color: var(--color-navy); }
-  .surface-paper .intro { color: var(--color-muted); }
-
-  .steps {
-    list-style: none;
-    margin: 64px 0 0;
-    padding: 0;
-    display: grid;
-    gap: 40px;
+  #how { scroll-margin-top: 0; }
+  .steps { list-style: none; margin: 56px 0 0; padding: 0; display: grid; gap: 20px; }
+  .card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: 36px 30px 34px;
+    box-shadow: var(--shadow-card);
+    display: grid; gap: 10px; align-content: start;
+    text-align: center; justify-items: center;
   }
-  .step { position: relative; display: grid; gap: 12px; align-content: start; }
-  .num {
-    display: inline-grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 1.5px solid var(--color-coral);
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 12px;
-    background: inherit;
-    position: relative;
-    z-index: 1;
+  .well {
+    display: grid; place-items: center;
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--color-navy); color: #fff;
+    margin-bottom: 10px;
   }
-  .surface-ink .num { background: var(--color-ink); }
-  .surface-paper .num { border-color: var(--color-navy); background: var(--color-paper); }
-  .step p { max-width: 34ch; }
-  .surface-ink .step p { color: var(--color-muted-on-dark); }
-  .surface-paper .step p { color: var(--color-muted); }
-
+  .step-no {
+    font-family: var(--font-display); font-size: 0.75rem; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-steel);
+  }
+  h3 { color: var(--color-text); }
+  .card p { color: var(--color-muted); max-width: 32ch; }
+  .cta { margin-top: 48px; display: flex; justify-content: center; }
   @media (min-width: 900px) {
-    .steps { grid-template-columns: repeat(3, 1fr); gap: 48px; margin-top: 80px; }
-    /* A hairline joining the numbers, so the order reads at a glance. */
-    .step:not(:last-child)::before {
-      content: '';
-      position: absolute;
-      top: 22px;
-      left: 44px;
-      width: calc(100% + 48px - 44px);
-      height: 1px;
-      background: var(--color-line-dark);
-    }
-    .surface-paper .step:not(:last-child)::before { background: var(--color-line-light); }
+    .steps { grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 64px; }
   }
 </style>

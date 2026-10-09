@@ -1,24 +1,94 @@
 ---
+import Emph from './Emph.astro';
+import Icon, { type IconName } from './Icon.astro';
 import { content } from '../content/site';
 const c = content.problem;
-interface Props { surface: 'ink' | 'paper' }
-const { surface } = Astro.props;
+const icons: IconName[] = ['inbox', 'chart', 'clock', 'layers'];
 ---
-<section class:list={['section', `surface-${surface}`]} aria-labelledby="problem-title">
-  <div class="wrap grid">
-    <h2 id="problem-title">{c.h2}</h2>
-    <div class="body">
-      {c.paragraphs.map((p) => <p>{p}</p>)}
+<section class="section bg-white problem" aria-labelledby="problem-title">
+  <div class="wrap">
+    <div class="panel on-dark">
+      <!-- Illustration: work piling up, waiting on someone. Decorative. -->
+      <div class="art" aria-hidden="true">
+        <span class="orbit"></span>
+        <div class="disc">
+          <ul class="pile">
+            {c.pile.map((label, i) => (
+              <li style={`--i:${i}`}>
+                <span class="ico"><Icon name={icons[i]} size={18} /></span>
+                <span class="label">{label}</span>
+                <span class="status">{c.pileStatus}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div class="copy">
+        <span class="eyebrow">{c.eyebrow}</span>
+        <h2 id="problem-title"><Emph text={c.h2} /></h2>
+        {c.paragraphs.map((p) => <p>{p}</p>)}
+      </div>
     </div>
   </div>
 </section>
 <style>
-  .grid { display: grid; gap: 28px; }
-  .surface-paper h2 { color: var(--color-navy); }
-  .body { display: grid; gap: 1.1em; max-width: var(--measure); }
-  .surface-paper .body { color: var(--color-ink); }
+  .panel {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(55% 80% at 100% 0%, rgb(36 82 122 / 0.55), transparent 70%),
+      var(--color-ink);
+    display: grid;
+    gap: 48px;
+    padding: 56px 24px;
+    align-items: center;
+  }
+  .copy { display: grid; gap: 18px; max-width: 34rem; }
+  .copy .eyebrow { margin-bottom: -4px; }
+  h2 { color: #fff; }
+  h2 :global(strong) { color: var(--color-pale); }
+  .copy p { color: var(--color-on-dark); }
+
+  .art { position: relative; width: min(100%, 400px); aspect-ratio: 1; margin-inline: auto; }
+  .orbit {
+    position: absolute; inset: -4% 4% -4% -10%;
+    border-radius: 50%;
+    border: 1px solid rgb(185 211 224 / 0.25);
+  }
+  .disc {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #2a4b69, #182c40 72%);
+    box-shadow: inset 0 0 0 1px rgb(185 211 224 / 0.12);
+    display: grid; place-items: center;
+  }
+  .pile { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; width: 72%; }
+  .pile li {
+    display: flex; align-items: center; gap: 12px;
+    background: #fff; color: var(--color-text);
+    border-radius: 12px; padding: 10px 12px;
+    box-shadow: 0 14px 30px -14px rgb(0 0 0 / 0.55);
+    transform: translateX(calc((var(--i) - 1.5) * 10px)) rotate(calc((var(--i) - 1.5) * -1.2deg));
+  }
+  .ico { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: var(--color-chip); color: var(--color-navy); flex: none; }
+  .label { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+  .status {
+    margin-left: auto; font-size: 0.75rem; font-weight: 600; color: var(--color-muted);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--color-coral); }
+
   @media (min-width: 900px) {
-    .grid { grid-template-columns: 5fr 6fr; column-gap: calc(100% / 12); align-items: start; }
-    .body { font-size: 1.1875rem; padding-top: 0.35em; }
+    .panel { grid-template-columns: 1fr 1.05fr; padding: 80px 72px; gap: 72px; }
+  }
+  .label, .status { white-space: nowrap; }
+  @media (max-width: 899px) {
+    .art { width: min(100%, 340px); }
+    /* On phones the cards run past the disc, like a photo breaking its frame. */
+    .pile { width: 104%; }
+    .pile li { padding: 9px 10px; gap: 10px; }
+    .ico { width: 30px; height: 30px; }
+    .label { font-size: 0.875rem; }
   }
 </style>

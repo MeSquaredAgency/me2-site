@@ -13,3 +13,8 @@ Judgement calls made during the build, newest last.
 | 9 Oct 2026 | Screenshots use the installed Microsoft Edge through Playwright (`channel: 'msedge'`) | Avoids downloading another browser; set `PW_CHANNEL=` to use Playwright's Chromium |
 | 9 Oct 2026 | Sitemap written by `scripts/postbuild.mjs` from the routes file instead of `@astrojs/sitemap` | One page; keeps the routes file the single source and one fewer dependency |
 | 9 Oct 2026 | No deploy | `wrangler whoami` shows the APN Real Estate account, not `tech@mesquaredagency.com` (BRIEF §1) |
+| 9 Oct 2026 | First design proof rejected by EC ("atrocious"); redesigned in the spirit of intelligentoffice.com. Brief bumped to v0.8 | Owner's direction. The v0.6 bans on eyebrow labels, emphasised words and decoration are withdrawn |
+| 9 Oct 2026 | New palette: ink/deep/navy/steel/pale/mist with coral only as tiny accents; Outfit (light + bold) for headings, Instrument Sans for body. Added `@fontsource-variable/outfit` | Matches the reference's steel-navy, grey-section register while staying on the logo's navy |
+| 9 Oct 2026 | No stock photos yet; richness comes from drawn icon bubbles and a card-stack illustration | No Me² photos exist, and downloading stock needs EC's OK. Photos can drop in later for atmosphere |
+| 9 Oct 2026 | Pillars band uses words, not numbers | The reference's "50+ locations" style stats would be invented for Me² |
+| 9 Oct 2026 | Renamed the hero's `ring` class to `halo` | `ring` is a Tailwind utility and drew a bright white outline |

@@ -1,42 +1,42 @@
 /*
- * Me² design tokens (BRIEF §5). Change a colour or size here and it changes everywhere.
- * Navy and coral match the supplied me² logo. Only the text/background pairs listed in
- * BRIEF §5 are allowed; anything else needs its contrast computed first.
+ * Me² design tokens (BRIEF §5, v0.8 direction). Change a value here and it changes everywhere.
+ * Navy and coral come from the supplied me² logo. Only the text/background pairs listed in
+ * BRIEF §5 are allowed; compute the contrast of anything new before using it.
  */
 @theme {
-  --color-ink: #10202f;
-  --color-navy: #1b3853;
-  --color-paper: #f6f2ea;
-  --color-coral: #e7785c;
-  --color-coral-hover: #ee8e75; /* hover only; ink on it 6.9:1 */
-  --color-coral-deep: #b9482d;
-  --color-muted: #566170;
-  --color-muted-on-dark: #a7b1be;
-  --color-line-dark: rgb(246 242 234 / 0.12);
-  --color-line-light: rgb(16 32 47 / 0.12);
+  --color-ink: #13212e;        /* hero, dark panels, footer */
+  --color-deep: #1a3047;       /* raised surfaces on ink */
+  --color-navy: #1b3853;       /* logo navy: bold headings, icons on light */
+  --color-steel: #24527a;      /* primary buttons */
+  --color-steel-hover: #1e4566;
+  --color-pale: #b9d3e0;       /* highlight words and labels on dark */
+  --color-on-dark: #c3cdd6;    /* body text on dark */
+  --color-mist: #f3f5f7;       /* light grey sections */
+  --color-chip: #e8eef2;       /* pills and icon wells on light */
+  --color-band: #c9dde6;       /* soft call-to-action band */
+  --color-text: #16232f;       /* body text on light */
+  --color-muted: #56636f;      /* secondary text on light */
+  --color-coral: #e7785c;      /* logo coral: small accents only, never text on light */
+  --color-line: #e1e7ec;
+  --color-line-dark: rgb(185 211 224 / 0.16);
 
+  --font-display: 'Outfit Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-
-  --radius-card: 20px;
 }
 
 :root {
-  --text-body: 1.125rem;
+  --text-body: 1.0625rem;
   --text-small: 0.875rem;
-  --text-h1: clamp(2.6rem, 6.2vw, 5rem);
-  --text-h2: clamp(1.85rem, 3.6vw, 2.9rem);
-  --text-h3: 1.25rem;
-  --measure: 64ch;
-  --content-max: 1160px;
+  --text-h1: clamp(2.5rem, 5.6vw, 4.5rem);
+  --text-h2: clamp(1.9rem, 3.4vw, 2.75rem);
+  --text-h3: 1.3rem;
+  --measure: 62ch;
+  --content-max: 1140px;
   --gutter: 20px;
   --section-y: 72px;
+  --radius: 14px;
+  --radius-lg: 24px;
+  --shadow-card: 0 1px 2px rgb(19 33 46 / 0.06), 0 12px 32px -12px rgb(19 33 46 / 0.18);
 }
-@media (min-width: 640px) {
-  :root { --gutter: 40px; }
-}
-@media (min-width: 900px) {
-  :root { --section-y: 112px; }
-}
-@media (max-width: 639px) {
-  :root { --text-body: 1.0625rem; }
-}
+@media (min-width: 640px) { :root { --gutter: 40px; } }
+@media (min-width: 900px) { :root { --section-y: 110px; --text-body: 1.0625rem; } }

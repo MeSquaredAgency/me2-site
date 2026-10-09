@@ -1,5 +1,7 @@
-# Me² — Build Brief v0.7
+# Me² — Build Brief v0.8
 Owner: Elliot Crabb (EC) · Decision-maker: Patrick · Date: 9 Oct 2026 · Mode: New build
+
+v0.8 (9 Oct 2026): EC rejected the first design proof (minimal ink/paper type with a giant coral "2") and asked for inspiration from intelligentoffice.com. §5 and §6.1–6.4 now describe the richer direction; the v0.6 rules against eyebrow labels, emphasised words and decoration are withdrawn. New copy for the nav, pillars band, eyebrows and the problem illustration is in Appendix A.
 
 Changes from v0.6 (5 Oct 2026): rebuilt to the premium build standard. Adds a design-proof stop (Phase 1a), a routes file, `llms.txt`, IndexNow, security headers, FAQ schema, the owner `docs/` set and git working rules. Colour tokens now come from the me² logo file EC supplied on 7 Oct (navy `#1B3853`, coral `#E7785C`) instead of the provisional values. All copy in Appendix A is unchanged from v0.6.
 
@@ -56,7 +58,7 @@ Copy in Appendix A writes `{SITE_NAME}`, `{SITE_NAME_PLAIN}`, `{CONTACT_EMAIL}`,
 ## 3. Stack and hosting
 - Astro + TypeScript, static output. Tailwind CSS v4 via `@tailwindcss/vite` (not the deprecated `@astrojs/tailwind`). No UI framework: interactive bits use native HTML (`<details>`/`<summary>` for the FAQ) or small inline vanilla JS.
 - Host: Cloudflare Pages. Build command: `npm run build`. Output dir: `dist`. Phase 2 form handler: Pages Function at `functions/api/enquiry.ts`.
-- Allowed dependencies: `astro`, `typescript`, `@astrojs/check`, `tailwindcss`, `@tailwindcss/vite`, `@fontsource-variable/instrument-sans` (fallback `@fontsource-variable/inter`), `sharp` (logo and OG image generation at build time). Dev only: `@playwright/test`, `@axe-core/playwright`, `lighthouse`, `linkinator`, `wrangler`. Phase 2 only: `resend`. Any other dependency needs a one-line justification in `DECISIONS.md`.
+- Allowed dependencies: `astro`, `typescript`, `@astrojs/check`, `tailwindcss`, `@tailwindcss/vite`, `@fontsource-variable/instrument-sans`, `@fontsource-variable/outfit`, `sharp` (logo and OG image generation at build time). Dev only: `@playwright/test`, `@axe-core/playwright`, `lighthouse`, `linkinator`, `wrangler`. Phase 2 only: `resend`. Any other dependency needs a one-line justification in `DECISIONS.md`.
 - The sitemap is written by a small build step reading the routes file (one page; no `@astrojs/sitemap` needed).
 - Out of scope: CMS, auth, database, client-side routing, Preact/React/Vue, animation libraries, icon libraries, carousels, chat widgets, cookie banners, newsletter signup, Google Fonts CDN links, any third-party script in Phase 1.
 
@@ -93,55 +95,54 @@ Copy in Appendix A writes `{SITE_NAME}`, `{SITE_NAME_PLAIN}`, `{CONTACT_EMAIL}`,
 ```
 
 ## 5. Design direction and tokens
-- Direction: **calm, confident and typographic.** Deep ink-navy and warm paper, one clean sans at large sizes, and one bold brand moment: a very large coral "²" in the hero. No photography. Why it fits: Me² sells judgement and reliability to busy owners, so the page should feel like a well-run operation, not a tech demo; the "²" carries the brand without stock imagery of people or houses.
-- The brand is still being finalised by the designer. Tokens live in `src/styles/tokens.css` so a change is one file.
-- Colours (navy and coral match the supplied logo exactly):
-  - `ink` `#10202F` — header, hero, dark sections, footer; main text on paper
-  - `navy` `#1B3853` — the logo's navy; cards on ink sections; H2s on paper
-  - `paper` `#F6F2EA` — light sections; text on ink
-  - `coral` `#E7785C` — the logo's coral; primary buttons, the "²", focus rings on dark, final CTA band. Never text on paper or white.
-  - `coral-deep` `#B9482D` — the only coral allowed as text on paper (inline links, small highlights)
-  - `muted` `#566170` — secondary text on paper
-  - `muted-on-dark` `#A7B1BE` — secondary text on ink and navy
-  - `line-dark` `rgba(246,242,234,0.12)` and `line-light` `rgba(16,32,47,0.12)` — dividers only
+- Direction: **an established business-services company.** Deep navy hero with soft light glows and floating icon "bubbles" (the kinds of work Me² takes on), centred section heads with a small letter-spaced label, headings that mix a light and a bold weight, a pillars band, a rounded dark feature panel with a circular illustration and orbit ring, and white cards with icon wells on soft grey sections. Inspired by intelligentoffice.com (EC's reference); never copy its wording, images or layout details one for one.
+- Tokens live in `src/styles/tokens.css`. Navy and coral match the supplied logo.
+  - `ink` `#13212E` hero, dark panels, footer · `deep` `#1A3047` raised surfaces on ink
+  - `navy` `#1B3853` logo navy: bold heading parts, icon wells on light · `steel` `#24527A` primary buttons (hover `#1E4566`)
+  - `pale` `#B9D3E0` emphasised words and labels on dark · `on-dark` `#C3CDD6` body text on dark
+  - `mist` `#F3F5F7` grey sections · `chip` `#E8EEF2` pills and icon wells · `band` `#C9DDE6` soft call-to-action band
+  - `text` `#16232F` body on light · `muted` `#56636F` secondary on light · `line` `#E1E7EC`
+  - `coral` `#E7785C` logo coral: small accents only (status dots, the logo's 2). Never text on light.
 - Allowed text/background pairs (computed, WCAG 2.1). Anything not listed is banned.
-  - ink on paper 14.81 · paper on ink 14.81 · paper on navy 10.83 · navy on paper 10.83
-  - muted on paper 5.63 · muted-on-dark on ink 7.62 · muted-on-dark on navy 5.57
-  - coral on ink 5.70 (headings, the "²", or ≥18px only, as a style rule)
-  - ink on coral 5.70 (button labels, final CTA band text and links)
-  - coral-deep on paper 4.67 · paper on ink (ink buttons on the coral band) 14.81
-- Banned: paper or white on coral (2.60 / 2.90), coral on paper (2.60), coral on navy for text (4.17), muted or muted-on-dark on coral.
-- Non-text contrast (≥3:1): coral on ink 5.70, navy on paper 10.83. Focus ring: 3px coral outline, 3px offset on ink/navy; 3px ink outline on paper and coral.
-- Buttons: primary = coral background, ink text, 600 weight, radius 999px, min height 48px, padding 0 28px. On the coral band: ink background, paper text. Secondary = underlined text link in the surrounding text colour. No arrows or icons in labels.
-- Type: Instrument Sans Variable (OFL), self-hosted via `@fontsource-variable/instrument-sans` (latin subset only). Weights 400 and 600 only. Fallback: `"Instrument Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`. Preload the latin WOFF2. If the package fails, use `@fontsource-variable/inter` and log it.
-- Scale: body 18px / 1.6 (17px under 640px); H1 `clamp(2.6rem, 6.2vw, 5rem)` / 1.02, 600, letter-spacing -0.025em; H2 `clamp(1.85rem, 3.6vw, 2.9rem)` / 1.12, 600, -0.015em; H3 1.25rem / 1.3, 600; small 0.875rem. Text max width 64ch; H1 max width 14ch.
-- Typographic rules: no all-caps labels, no eyebrow labels above headings, no single highlighted word in a headline, no middle-dot meta strings.
-- Logo: the me² mark EC supplied (`src/assets/brand/me2-logo-supplied.png`: navy "me", coral "2", no reflection). `scripts/brand-assets.mjs` trims it and makes: a light version for dark backgrounds (navy → paper, coral kept), the navy original for light backgrounds, and `public/logo.png` (≥1200px wide, padded). The file is small (427×328), so it's upscaled for `logo.png`; a vector (SVG) or ≥2000px master is listed in `docs/supplied-assets.md`. If the logo files are missing, fall back to a type wordmark: lowercase "me" + superscript coral "²", weight 600. Never use the designer's reflected "we" concept or the "from me to we." tagline (not approved; §13 #9).
-- Signature element (the one bold thing): in the hero, a very large coral "²" (about `clamp(13rem, 34vw, 30rem)`, weight 600, line-height 0.8) to the right of the headline on desktop, partly cropped by the hero's right edge; on phones it sits behind the top-right of the hero at 18% opacity so it never sits under text at full strength. Inline `<svg aria-hidden="true" focusable="false">` with a `<text>` element in the brand font. No other decoration: no gradients, no shadows, no patterns.
-- Motion: one moment. On load, the hero "²" fades in and rises 16px over 700ms. Respect `prefers-reduced-motion`. Hover states (button colour shift, link underline offset) only inside `@media (hover: hover) and (pointer: fine)`. Nothing else animates except the native FAQ open/close.
-- Spacing: section padding 112px desktop / 72px phone; content max width 1160px; side padding 20px phone / 40px desktop. Radius 20px cards, 999px buttons.
-- Images: none supplied and none wanted: no stock photos, no AI-generated people, no property or house imagery. Icons, if any, are inline SVG you draw, 1.5px stroke, coral on ink or navy on paper.
-- OG image: `scripts/brand-assets.mjs` writes `public/og-image.png` (1200×630): ink background, light logo, coral "²", and the A.meta OG text in paper. Commit the PNG.
+  - white on ink 16.35 · pale on ink 10.47 · on-dark on ink 10.14 · on-dark on deep 8.36 · pale on deep 8.64 · white on deep 13.48
+  - white on steel 8.19 · white on steel-hover 10.01 · white on navy 12.09
+  - text on white 15.96 · text on mist 14.61 · text on chip 13.64 · text on band 11.38
+  - navy on white 12.09 · navy on mist 11.06 · navy on chip 10.33 · navy on band 8.62 · steel on white 8.19
+  - muted on white 6.16 · muted on mist 5.63 · coral on ink 5.63 (non-text accents)
+- Buttons: radius 10px, min height 48px (44px in the header), Outfit 600. Primary = steel with white text. Secondary on dark = 1.5px white outline; on light = 1.5px navy outline. No icons in labels.
+- Type: headings in Outfit Variable (OFL, `@fontsource-variable/outfit`), weight 300 with the emphasised part at 600; body in Instrument Sans Variable 400/600. Both self-hosted, latin subset, preloaded. Scale: H1 `clamp(2.5rem, 5.6vw, 4.5rem)`/1.08; H2 `clamp(1.9rem, 3.4vw, 2.75rem)`/1.15; H3 1.3rem 600; body 17px/1.65; eyebrow 0.78rem 600, letter-spacing 0.24em, uppercase.
+- Headings in Appendix A mark their bold part with `**…**`; render it as `<strong>`. Hyphenated words never break across lines.
+- Hero: full-height navy with two soft radial glows, centred copy, and decorative floating circles holding line icons (inbox, report, money, chat, chart, person-check), plus faint orbit rings. Three circles on phones, none behind text. Gentle float animation, off for reduced motion.
+- Imagery: no photography supplied. Visual richness comes from drawn illustrations (icon bubbles, the "work piling up" card stack) that illustrate the copy and make no claims. Licensed stock photos of workplaces may be added later for atmosphere only, with EC's approval, credited in `docs/media.md`, never captioned as Me²'s team, office or clients. No AI-generated people.
+- Icons: drawn for this site (`src/components/Icon.astro`), 24px grid, 1.6 stroke. No icon library.
+- Logo: the supplied me² mark (`src/assets/brand/me2-logo-supplied.png`), light version in the header and footer. Never the reflected "we" concept or the "from me to we." tagline (not approved; §13 #9).
+- Spacing: section padding 110px desktop / 72px phone; content max width 1140px; side padding 20px phone / 40px desktop. Radius 14px small, 24px cards and panels. Soft, low card shadow.
+- Motion: hero bubble float and hover states only (hover inside `@media (hover: hover) and (pointer: fine)`). Respect `prefers-reduced-motion`. Visible focus rings (steel on light, pale on dark).
+- OG image: `public/og-image.png` (1200×630) in the hero style: ink with glows, light logo, the OG title in white with the emphasised part in pale.
 
 ## 6. Page structure
 Section order below. Backgrounds alternate ink/paper from the sections actually rendered, starting with header + hero on ink, so two same-colour sections never touch whatever the flags. Exceptions: the final CTA is always coral; the footer is always ink with a 1px `line-dark` top border. The section before the final CTA may be either colour.
 
 ### 6.1 Header
-- Purpose: identity and a way to act from the top. Copy: A.1
-- Layout: skip link (visible on focus), logo left (links to `/`, 34px tall desktop / 28px phone), one "Talk to us" button right. Not sticky. No nav menu. Flag: none.
+- Purpose: identity, a way round the page, and a way to act. Copy: A.1
+- Layout: sits over the hero. Skip link, light logo left, in-page nav (How it works, Services, Real estate, Questions) and a "Talk to us" primary button right. Nav hidden under 900px (the page is short; the button stays). Not sticky. Flag: none.
 
 ### 6.2 Hero
 - Purpose: say what Me² does in one breath and get the click. Copy: A.2
-- Layout: left-aligned H1, subhead (muted-on-dark, max 52ch), primary button and secondary "See how it works" link (anchors to `#how`) in a row, location line below. Signature "²" per §5. Min height 78vh on desktop; content vertically centred.
-- Flag: `showLocations` controls the location line. If off: not rendered, no empty space.
+- Layout: centred H1 (max 17ch, emphasised word in pale), subhead (on-dark, max 58ch), primary button + white-outline "See how it works" (anchors to `#how`), location line below. Decorative bubbles and rings per §5.
+- Flag: `showLocations` controls the location line. If off: not rendered.
 
-### 6.3 Problem
+### 6.2b Pillars band
+- Purpose: the promise in four glances. Copy: A.2b
+- Layout: white band, four items (two by two on phones) with a big navy word and a small muted line, divided by hairlines. Flag: none. Never numbers or statistics unless substantiated and approved.
+
+### 6.3 Problem (dark feature panel)
 - Purpose: name the pain in the buyer's words. Copy: A.3
-- Layout: H2 left column (5/12), two paragraphs right column (6/12, offset 1) on desktop; stacked on phone. Flag: none.
+- Layout: on white, a rounded ink panel with a glow. Left: a circle with an orbit ring holding a slightly fanned stack of white cards (Inbox, Weekly reports, Overdue reminders, Data entry), each with an icon and a coral "Waiting" dot (decorative, `aria-hidden`). Right: eyebrow, H2, two paragraphs. Stacked on phones (illustration first). Flag: none.
 
 ### 6.4 How it works (`id="how"`)
 - Purpose: show AI plus a person, in order. Copy: A.4
-- Layout: H2 + intro, then three steps in a row on desktop with a 1px connecting line between number circles, stacked on phone. Each step has its number (1, 2, 3) inside a 44px outlined circle; this is a real sequence, so numbering is correct here and nowhere else. Flag: none.
+- Layout: mist section, centred head (eyebrow, H2, intro), three white cards with a navy icon well, a "Step n" label, title and body, then a centred "Talk to us" button. Flag: none.
 
 ### 6.5 Offers (`id="offers"`)
 - Purpose: show the two ways to buy. Copy: A.5
@@ -314,22 +315,34 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
 
 ### A.1 Header
 - Logo (links home, aria-label `{SITE_NAME_PLAIN} home`)
+- Nav (aria-label `Sections`): `How it works` → `#how` · `Services` → `#offers` · `Real estate` → `#real-estate` · `Questions` → `#faq`
 - Button: `Talk to us`
 
 ### A.2 Hero
-- H1: `The back-office work that buries your team, handled.`
+- H1: `The back-office work that buries your team, **handled.**`
 - Subhead: `{SITE_NAME} sets up AI roles for the repetitive work, and trained operators to run them and check what they produce. You get the work done without hiring for it or babysitting another tool.`
 - Primary button: `Talk to us`
 - Secondary link: `See how it works`
 - Location line (`showLocations`): `Command Centre teams in Adelaide and Phnom Penh.`
 
+### A.2b Pillars
+- `AI` — `does the first pass`
+- `People` — `check every output`
+- `One job` — `is enough to start`
+- `Your tools` — `are where we start`
+
 ### A.3 Problem
-- H2: `Admin grows faster than headcount.`
+- Eyebrow: `The problem`
+- H2: `Admin grows faster than **headcount.**`
+- Illustration cards (decorative): `Inbox`, `Weekly reports`, `Overdue reminders`, `Data entry`, each with status `Waiting`
 - Paragraph 1: `Every new client brings more inbox, more reports and more chasing. Hiring to keep up is slow and expensive, and the work still lands on your best people.`
 - Paragraph 2: `AI tools on their own don't fix it. Someone still has to set them up, check what they produce and fix what they get wrong. That someone is usually you.`
 
 ### A.4 How it works
-- H2: `AI does the volume. People own the outcome.`
+- Eyebrow: `How it works`
+- H2: `AI does the volume. **People own the outcome.**`
+- Step labels: `Step 1`, `Step 2`, `Step 3`
+- Button after the steps: `Talk to us`
 - Intro: `We don't hand you software and walk away. We take on the work.`
 - Step 1 title: `We map the work`
 - Step 1 body: `We start with the tasks that eat the most hours and get done the same way every time.`

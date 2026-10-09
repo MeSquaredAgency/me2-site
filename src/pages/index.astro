@@ -2,15 +2,17 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
+import Pillars from '../components/Pillars.astro';
 import Problem from '../components/Problem.astro';
 import HowItWorks from '../components/HowItWorks.astro';
-// Phase 1a (design proof): header, hero, Problem and How it works only.
+// Phase 1a (design proof, round 2): header, hero, pillars, problem panel, how it works.
 ---
 <Base path="/">
   <Header />
   <main id="main">
     <Hero />
-    <Problem surface="paper" />
-    <HowItWorks surface="ink" />
+    <Pillars />
+    <Problem />
+    <HowItWorks />
   </main>
 </Base>

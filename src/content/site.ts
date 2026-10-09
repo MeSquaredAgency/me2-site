@@ -1,4 +1,5 @@
 /**
+ * Headings may wrap their bold part in **double asterisks**; `Emph` renders it as <strong>.
  * All visible copy, word for word from BRIEF Appendix A, in section order.
  * Placeholders like {SITE_NAME} are filled from the config by `fill()`; never type them out.
  * Don't rewrite copy here unless EC asks.
@@ -33,10 +34,17 @@ export const content = {
 
   header: {
     button: 'Talk to us',
+    nav: [
+      { label: 'How it works', href: '#how' },
+      { label: 'Services', href: '#offers' },
+      { label: 'Real estate', href: '#real-estate' },
+      { label: 'Questions', href: '#faq' },
+    ],
+    navLabel: 'Sections',
   },
 
   hero: {
-    h1: 'The back-office work that buries your team, handled.',
+    h1: 'The back-office work that buries your team, **handled.**',
     subhead:
       '{SITE_NAME} sets up AI roles for the repetitive work, and trained operators to run them and check what they produce. You get the work done without hiring for it or babysitting another tool.',
     primary: 'Talk to us',
@@ -45,8 +53,19 @@ export const content = {
     location: 'Command Centre teams in Adelaide and Phnom Penh.',
   },
 
+  pillars: [
+    { big: 'AI', small: 'does the first pass' },
+    { big: 'People', small: 'check every output' },
+    { big: 'One job', small: 'is enough to start' },
+    { big: 'Your tools', small: 'are where we start' },
+  ],
+
   problem: {
-    h2: 'Admin grows faster than headcount.',
+    eyebrow: 'The problem',
+    h2: 'Admin grows faster than **headcount.**',
+    /** Illustration only: the kinds of work that pile up (from the audience description). */
+    pile: ['Inbox', 'Weekly reports', 'Overdue reminders', 'Data entry'],
+    pileStatus: 'Waiting',
     paragraphs: [
       'Every new client brings more inbox, more reports and more chasing. Hiring to keep up is slow and expensive, and the work still lands on your best people.',
       "AI tools on their own don't fix it. Someone still has to set them up, check what they produce and fix what they get wrong. That someone is usually you.",
@@ -54,7 +73,10 @@ export const content = {
   },
 
   how: {
-    h2: 'AI does the volume. People own the outcome.',
+    eyebrow: 'How it works',
+    h2: 'AI does the volume. **People own the outcome.**',
+    stepLabel: 'Step',
+    cta: 'Talk to us',
     intro: "We don't hand you software and walk away. We take on the work.",
     steps: [
       {
