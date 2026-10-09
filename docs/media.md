@@ -1,18 +1,12 @@
 # Photos, logo and link previews
 
 ## The rule
-Real photos of Me² (the Command Centre, the team, real client work) always beat stock. Until those exist, the site uses one licensed stock photo **for atmosphere only**. They are never captioned or described as Me²'s office, team or clients, and the footer says "Photos are illustrative stock images." Never use stock or AI-generated people as staff or testimonials.
+Real photos of Me² (the Command Centre, the team, real client work) always beat stock. Any stock photo is **atmosphere only**: never captioned or described as Me²'s office, team or clients, and when one is used the footer must say "Photos are illustrative stock images." Never use stock or AI-generated people as staff or testimonials.
 
-## Stock photos in use
-All from Unsplash under the [Unsplash License](https://unsplash.com/license): free for commercial use, no permission needed, credit appreciated but not required.
+## Photos in use
+None. Since v0.13 (9 Oct 2026) the page uses no photographs: the real estate keys photo (Unsplash, Maria Ziegler) was removed with the real estate section, and the footer's stock-photo note with it. The hero's Command Centre board, the demo and the type carry the page.
 
-| File (`src/assets/photos/`) | Where it shows | Photographer | Source |
-| --- | --- | --- | --- |
-| `real-estate-keys.jpg` | "Starting with real estate", in black and white | Maria Ziegler | https://unsplash.com/photos/jJnZg7vBfMs |
-
-The originals were downloaded at 2400px wide and saved with their metadata stripped. Astro makes resized AVIF/WebP copies at build time, so the page only loads the size each screen needs. It loads as you scroll. Since the v0.12 "Squared" design it is the only photograph on the site, shown in black and white.
-
-**Swapping a photo:** save the new photo over the file with the same name (landscape, at least 2000px wide), rebuild, and update this table.
+**Adding a photo:** put it in `src/assets/photos/` (landscape, at least 2000px wide, metadata stripped), show it with Astro's `<Image>` so it is resized at build time, add a row here with the photographer and source, and put the footer note back (`footer.imagery` in `src/content/site.ts`).
 
 ## Logo
 | File | What it is |

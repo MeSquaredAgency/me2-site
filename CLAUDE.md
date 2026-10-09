@@ -13,12 +13,12 @@ One-page sales site for Me² (mesquaredagency.com). Primary goal: the visitor cl
 ## Brand rules
 - Visible name is always `Me²`. "Me Squared" only in alternateName, aria-labels and mailto subjects. Never ME2, Me2, MeSquared.
 - Australian English, sentence case, plain-spoken. Banned words: revolutionary, game-changing, supercharge, seamless, cutting-edge, unlock, guarantee, guaranteed. Grep changed copy before committing.
-- Never invent names, testimonials, statistics, results, logos or prices. Never name individuals. Real estate appears only in its own section.
+- Never invent names, testimonials, statistics, results, logos or prices. Never name individuals. No industry is presented as "our market" or a client list; kinds of business appear only as clearly labelled use-case examples.
 - Stock photos only as credited atmosphere (docs/media.md); no AI-generated people; never stock people as staff or testimonials. Never use the designer's reflected "we" logo concept or the "from me to we." tagline (not approved).
 - Forms collect contact details and a short task description only; never fields for financial, health or identity information.
 
 ## Design
-Direction (BRIEF §5, v0.12 "Squared", live since 9 Oct 2026 from branch `redesign-wow`): Me² = me, squared. Near-black and ivory, hairlines, Instrument Serif headlines with italic emphasis, superscript section numbers, coral only for the ² square motif and caught errors. History: sparse type-only was "atrocious"; the busier intelligentoffice-style version went live; EC then asked for awwwards-level wow, and then "more refined, more class, Philippe Starck… the point of the business must still come across… unique. Me²." Don't add cards, chips, icon wells or gradient text back. Refine within this; mock up one page and get EC's yes before any wider restyle.
+Direction (BRIEF §5, "Squared"; v0.12 live since 9 Oct 2026, v0.13 on branch `hero-says-what-we-do`): Me² = me, squared. Near-black and ivory, hairlines, Instrument Serif headlines with italic emphasis, superscript section numbers, coral only for the ² square motif and caught errors. History: sparse type-only was "atrocious"; the busier intelligentoffice-style version went live; EC then asked for awwwards-level wow, and then "more refined, more class, Philippe Starck… the point of the business must still come across… unique. Me²." Then: the first screen must say what Me² does, use cases instead of a real estate section, and much better craft (apnre.com.au as the bar for quality only, never copied). Don't add cards, chips, icon wells or gradient text back. Refine within this; mock up one page and get EC's yes before any wider restyle.
 Don't give custom styles class names that are Tailwind utilities (ring, shadow, border, container, hidden, fixed, table...). Styles for a class passed into a child component (e.g. EmailLink) must be `:global(...)`.
 
 ## Dependencies

@@ -1,5 +1,7 @@
-# Me² — Build Brief v0.12 ("Squared", live since 9 Oct 2026)
+# Me² — Build Brief v0.13 ("Squared", says what we do)
 Owner: Elliot Crabb (EC) · Decision-maker: Patrick · Date: 9 Oct 2026 · Mode: New build
+
+v0.13 (9 Oct 2026, branch `hero-says-what-we-do`, NOT live): EC: "it doesn't tell me what the business does / is from the first sight… You should know the minute you land on the page." and "we don't want to have Real Estate down as a specific industry that we work with - we would want to have use case examples… The website has to be much much better." (apnre.com.au was named as the bar for craft only: "Don't copy APNRE site… I just wanted you to see how highly you are capable of performing.") The hero now says it plainly ("We run the back office. You run the business.", kicker "Managed back-office services") over a live Command Centre board of sample tasks; the real estate section and photo are replaced by six use-case examples across kinds of business; "AI does the volume. People own the outcome." becomes a full-width statement; the demo uses overdue invoices instead of rent arrears; the marquee is removed; the footer ends with a tonal me² wordmark.
 
 v0.12 (9 Oct 2026, branch `redesign-wow`, published 9 Oct on EC's "publish"): EC: "more refined. More class. More streamlined. Think of Philippe Starck… the underlying point of the business still needs to come across… make it special… unique. Me²." The proof keeps every section and the message, re-expressed as the "Squared" system in §5: near-black and ivory, hairlines, an elegant serif with italic emphasis, and the ² as the organising idea (the hero square of tasks, superscript section numbers, small coral squares as the only accent).
 
@@ -14,7 +16,7 @@ v0.8 (9 Oct 2026): EC rejected the first design proof (minimal ink/paper type wi
 Changes from v0.6 (5 Oct 2026): rebuilt to the premium build standard. Adds a design-proof stop (Phase 1a), a routes file, `llms.txt`, IndexNow, security headers, FAQ schema, the owner `docs/` set and git working rules. Colour tokens now come from the me² logo file EC supplied on 7 Oct (navy `#1B3853`, coral `#E7785C`) instead of the provisional values. All copy in Appendix A is unchanged from v0.6.
 
 ## 0. Read this first
-- You are building a single-page sales site for Me² (pronounced "Me Squared"). Me² sets up AI roles for repetitive back-office work and pairs them with trained human operators who run them and check the output. Buyers are Australian business owners and managers. Real estate agencies are the first market, but the brand is industry-agnostic: real estate appears in one section only, never as the identity.
+- You are building a single-page sales site for Me² (pronounced "Me Squared"). Me² sets up AI roles for repetitive back-office work and pairs them with trained human operators who run them and check the output. Buyers are Australian business owners and managers. The brand is industry-agnostic: no industry is named as the market; kinds of business appear only as use-case examples (§6.6).
 - Primary goal: the visitor clicks **Talk to us**, which in v1 opens an email to `CONTACT_EMAIL`.
 - Work in phases (§10). There are two stops: after Phase 1a (design proof) and after Phase 1b (full site). At each stop, report back and wait.
 - Between stops, if something here is ambiguous, pick the simpler option, log it in `DECISIONS.md`, and keep going. Don't stop to ask.
@@ -51,7 +53,7 @@ Copy in Appendix A writes `{SITE_NAME}`, `{SITE_NAME_PLAIN}`, `{CONTACT_EMAIL}`,
 - Skills: if `frontend-design` is installed, use it for build craft (hierarchy, spacing, responsive behaviour, polish). This brief overrides any skill: never change the tokens in §5, the copy in Appendix A, the section order or the dependency list because a skill suggests it. Log any conflict in `DECISIONS.md`.
 
 ## 2. Audience and message
-- Audience: owners, principals and operations managers of Australian small and mid-size businesses whose teams are stretched by repetitive admin (inbox, reporting, chasing, data entry). First market: real estate agencies, especially property management teams.
+- Audience: owners, principals and operations managers of Australian small and mid-size businesses whose teams are stretched by repetitive admin (inbox, reporting, chasing, data entry). Industry-agnostic: no industry is named as a market. Kinds of business appear only as examples of the work (§6.6).
 - What they need to believe to click:
   - This takes work off my team; it isn't another tool for them to learn and manage.
   - A person checks what the AI produces, so mistakes don't reach my clients.
@@ -104,64 +106,58 @@ Copy in Appendix A writes `{SITE_NAME}`, `{SITE_NAME_PLAIN}`, `{CONTACT_EMAIL}`,
 
 ## 5. Design direction and tokens ("Squared", v0.12)
 - Idea: **Me² = me, squared** — a team's capacity multiplied, with nothing lost in quality. Every visual decision comes from that: squares, superscripts, restraint.
-- Hero signature: a square of 12 × 12 small squares, one per task. AI outlines them quickly (the volume); a hairline "human check" sweeps across and each square it passes turns solid ivory (checked, owned). Coral squares are errors, caught at the line and corrected. When the square is complete, a small coral square settles at its top-right corner: the "²". A legend under it says the same in words. Static final frame for reduced motion; pauses off-screen.
+- Hero signature (v0.13): the Command Centre board. Sample tasks from different kinds of business arrive at the top and move through four stages: in queue, AI drafting (a hairline fills under the row), operator checking (a bright line sweeps across) and checked, done. Some are caught (the row flashes coral, "Error caught") and end "Corrected, done" with a coral square. Squares mark the stage: dashed outline (queued), outline (drafted by AI), half-filled (being checked), solid (checked), coral (caught and corrected); a legend says the same in words, with "Illustration with sample tasks." Faint squared paper behind it. Static mixed-stage board for reduced motion and without JavaScript; pauses off-screen. The headline's italic line ends with the coral ² square.
 - Section labels carry superscript numbers ("The problem¹", "See it in action²"…) with a hairline to the edge. The closing headline ends with a small coral square as an exponent.
 - Colours (tokens in `src/styles/tokens.css`): `ink` #0D1116 · `ink-2` #161B22 · `ivory` #F3EFE7 · `bone` #E7E1D5 · `text` #111418 · `muted` #585D64 · `on-dark` #ECE7DE · `muted-dark` #9DA2A8 · `coral` #E7785C (² motif and caught errors only; text only on ink) · `coral-deep` #A6412A (coral as text on ivory) · `sage` #7FB59A ("checked", always with a word) · `navy` #1B3853 (logo only).
 - Allowed pairs (computed): text on ivory 16.10 · text on bone 14.18 · muted on ivory 5.79 · muted on bone 5.10 · on-dark on ink 15.38 · muted-dark on ink 7.37 · on-dark on ink-2 14.05 · muted-dark on ink-2 6.73 · coral on ink 6.53 · coral on ink-2 5.96 · coral-deep on ivory 5.37 · sage on ink-2 7.40 · ink on ivory 16.51 · ink on on-dark (light buttons) 15.38.
 - Type: headlines in Instrument Serif 400 (OFL, `@fontsource/instrument-serif`, normal + italic), the emphasised part (`**…**` in the copy) set in italic, not bold. Everything else Instrument Sans Variable. Labels: 0.74rem, 600, letter-spacing 0.2em, uppercase.
 - Layout: editorial grid, generous space (160px section padding on desktop), hairline rules instead of cards, pills or chips. Sections alternate ink / ivory / bone so two same colours only touch across a hairline.
 - Buttons: quiet pills. Solid (ivory on ink, ink on ivory) for the main action; hairline outline for secondary; text links with a hairline underline that draws back on hover.
-- Imagery: one photograph, the real estate keys, shown in black and white (colour returns on hover). No other stock.
-- Motion: slow and fine. The hero square; a slowly drifting italic band of the work we take on; the problem headline coming into focus word by word; the demo; 1s scroll-in reveals. All respect reduced motion.
+- Imagery: none since v0.13 (the real estate keys photo was removed with its section). The board, the demo and type carry the page.
+- Motion: slow and fine. The hero board; the problem headline coming into focus word by word; the use-case panels easing in when a tab changes; the demo; the "AI does the volume" statement rising word by word; 1s scroll-in reveals. All respect reduced motion.
 - Logo: the traced vector me² (light version on ink). OG image: ink, the serif headline and the squared mark.
 
 ## 6. Page structure
-Section order below. Backgrounds alternate ink/paper from the sections actually rendered, starting with header + hero on ink, so two same-colour sections never touch whatever the flags. Exceptions: the final CTA is always coral; the footer is always ink with a 1px `line-dark` top border. The section before the final CTA may be either colour.
+Section order (v0.13): header, hero (ink), problem¹ (ivory), what we take on² (bone), see it in action³ (ink), statement (ivory), how we work⁴ (bone), why Me²⁵ (ivory), services⁶ (bone), questions⁷ (ivory), final CTA (ink), footer (ink, hairline top border). Two same-colour sections never touch without a hairline.
 
 ### 6.1 Header
-- Purpose: identity, a way round the page, and a way to act. Copy: A.1
-- Layout: sits over the hero. Skip link, light logo left, in-page nav (How it works, Services, Real estate, Questions) and a "Talk to us" primary button right. Nav hidden under 900px (the page is short; the button stays). Not sticky. Flag: none.
+- Copy: A.1. Fixed over the hero; solid ink with a hairline once scrolled. Light logo left; nav (What we take on, How it works, Services, Questions; hidden under 1000px) and a "Talk to us" outline pill right.
 
 ### 6.2 Hero
-- Purpose: say what Me² does in one breath and get the click. Copy: A.2
-- Layout: left-aligned H1 (two lines, bold line in pale), subhead (on-dark, max 52ch), primary button + white-outline "See how it works" (anchors to `#how`), location line below. Decorative bubbles and ring on the right per §5.
-- Flag: `showLocations` controls the location line. If off: not rendered.
+- Purpose: anyone landing knows what Me² is and does within one glance, and can act. Copy: A.2
+- Layout: kicker with a coral square; the H1 across the full width on two lines (second line italic, ending with the coral ² square); below it, left: the subhead (what we take off your plate and how: AI drafts, an operator checks, it comes back done) and the actions ("Talk to us" + "See what we take on" → `#use-cases`); right: the Command Centre board (§5).
+- Flag: `showLocations` adds the location line under the actions.
 
-### 6.2b Pillars band
-- Purpose: the promise in four glances. Copy: A.2b
-- Layout: white band, four items (two by two on phones) with a big navy word and a small muted line, divided by hairlines. Flag: none. Never numbers or statistics unless substantiated and approved.
+### 6.3 Problem (`id="problem"`)
+- Copy: A.3. Ivory. Large serif headline whose words come into focus on scroll; two paragraphs; a "Work waiting on someone" list.
 
-### 6.3 Problem (dark feature panel)
-- Purpose: name the pain in the buyer's words. Copy: A.3
-- Layout: on white, a rounded ink panel with a glow. Left: a circle with an orbit ring holding a slightly fanned stack of white cards (Inbox, Weekly reports, Overdue reminders, Data entry), each with an icon and a coral "Waiting" dot (decorative, `aria-hidden`). Right: eyebrow, H2, two paragraphs. Stacked on phones (illustration first). Flag: none.
+### 6.4 See it in action (`id="demo"`)
+- Copy: A.demo (in `site.ts`). Ink. One task start to finish: an AI Role drafts an overdue-invoices summary; the operator check finds $1,200 against the ledger's $1,020, corrects it and signs off. Labelled as made-up sample data.
 
-### 6.4 How it works (`id="how"`)
-- Purpose: show AI plus a person, in order. Copy: A.4
-- Layout: mist section, centred head (eyebrow, H2, intro), three white cards with a navy icon well, a "Step n" label, title and body, then a centred "Talk to us" button. Flag: none.
+### 6.5 Statement
+- Copy: `interlude` in `site.ts`. Ivory, full width: "AI does the volume. *People own the outcome.*" rising word by word, ending with the coral ² square; one line beneath.
 
-### 6.5 Offers (`id="offers"`)
-- Purpose: show the two ways to buy. Copy: A.5
-- Layout: white section, centred head (eyebrow, H2, intro), two equal cards side by side (stacked on phones): 16:9 photo on top, then name (H3), body, feature chips, "Best for" line, price line, navy-outline button. "Best for", price and button sit at the bottom so both cards line up. Buttons are mailtos with the card's subject (A.ui).
-- Flag: `showPricing` controls both price lines. If off: not rendered, cards stay equal height, no "$" anywhere on the page.
+### 6.6 What we take on (`id="use-cases"`)
+- Purpose: show the range of work without naming an industry as a market. Copy: `useCases` in `site.ts`.
+- Six examples by kind of business (accounting practices, trades and construction, online retail, professional services, property management, any growing business). Each shows the work, what the AI Role drafts, what the operator checks and what you get, joined by a hairline with the board's squares (outline, half, solid).
+- Wide screens: an index of the six on the left works as tabs (arrow keys, Home/End); the chosen example on the right. Phones and no JavaScript: all six in turn.
+- Always labelled "Examples of the kind of work we take on, not client case studies." Never present them as clients.
+- Flag: `showProof` adds the proof block under the examples.
 
-### 6.6 Starting with real estate (`id="real-estate"`)
-- Purpose: show the first market without making the brand real-estate-only. Copy: A.6
-- Layout: mist section, centred head (eyebrow, H2, body). Left: rounded photo card (keys) with a navy gradient, the title "Property management" and four glass chips. Right: the list intro and six white rows, each with a navy icon well. Then the closing line centred, and the proof block.
-- Flag: `showProof` controls the proof block (ink rounded card). If off: not rendered.
+### 6.7 How we work (`id="how"`), Why Me², Services (`id="offers"`)
+- Copy: A.model, A.compare, A.5. The four parts and eight steps; the "typical VA service vs Me²" table; the two offers side by side, divided by a hairline.
+- Flag: `showPricing` controls both price lines. If off: not rendered, no "$" price wording anywhere.
 
-### 6.7 FAQ (`id="faq"`)
-- Purpose: answer the questions that stop a click. Copy: A.7
-- Layout: white section. Left (sticky on desktop): eyebrow, H2, and a grey card with a short prompt and a "Talk to us" button. Right: native `<details>`/`<summary>` items as white rounded rows; a round "+" that turns to "−" when open. All closed by default; visible keyboard focus.
-- Flag: the "Where is the team based?" item is controlled by `showLocations` (also left out of the FAQ schema).
+### 6.8 FAQ (`id="faq"`)
+- Copy: A.7. Native `<details>` rows; the "Where is the team based?" item is controlled by `showLocations` (also left out of the FAQ schema).
 
-### 6.8 Final CTA
-- Purpose: last, clearest ask. Copy: A.8
-- Layout: soft blue `band` section with two faint circles, centred H2 (bold part navy), body, primary "Talk to us", the email line with the address as a navy link.
-- Flags: `enableBooking` adds a navy-outline "Book a call" button to `BOOKING_URL` (new tab, `rel="noopener"`); off or no URL → only "Talk to us". `enableContactForm` (Phase 2) replaces the body + email line with the form; the mailto stays as a fallback link.
+### 6.8b Final CTA
+- Copy: A.8. Ink; large serif ask ending with the coral ² square; "Talk to us" and the email line.
+- Flags: `enableBooking` adds "Book a call" (needs `BOOKING_URL`); `enableContactForm` (Phase 2) replaces the email line with the form.
 
 ### 6.9 Footer
-- Copy: A.9. Layout: ink. Logo; a "Contact" column with the email; an "On this page" column repeating the nav. Bottom row: copyright, entity line and privacy link where flagged, and "Photos are illustrative stock images." on the right.
-- Flags: `showLegalEntity` controls the entity line; `showPrivacyPage` controls the privacy link. If off: not rendered.
+- Copy: A.9. Ink. Logo; "Contact" with the email; "On this page" repeating the nav; copyright, plus the entity line and privacy link where flagged. Ends with a large tonal me² wordmark (decorative, `aria-hidden`).
+- Flags: `showLegalEntity`, `showPrivacyPage`.
 
 ### 6.10 404 page
 - Copy: A.10. Layout: header, centred H1 + body + button back to `/`, footer. Ink background. `noindex`.
@@ -180,7 +176,7 @@ All flags live in `src/config/flags.ts`. The site must build and look complete w
 | Flag | Default | Controls | Turn on when | Owner |
 |---|---|---|---|---|
 | `showPricing` | false | price lines on both offer cards | billing basis and GST wording confirmed, price copy filled in | Patrick |
-| `showProof` | false | real estate proof block | written permission from the named client and copy approved; any numbers substantiated | EC |
+| `showProof` | false | proof block under the use-case examples | written permission from the named client and copy approved; any numbers substantiated | EC |
 | `showLocations` | false | hero location line, "Where is the team based?" FAQ item | disclosure approved and privacy policy names offshore handling | Patrick |
 | `showLegalEntity` | false | footer entity + registration line | contracting entity confirmed | Patrick + lawyer |
 | `showPrivacyPage` | false | `/privacy/` page and footer link | lawyer-reviewed policy text supplied | Patrick + lawyer |
@@ -254,7 +250,7 @@ N/A — new build; the domain only shows a parking page.
 - One-page sales site for Me²; primary goal: visitor clicks "Talk to us" (mailto to `CONTACT_EMAIL`).
 - Client identity lives only in `src/config/site.config.ts`; copy and section order only in `src/content/site.ts`; titles/descriptions only in `src/data/routes.json`; tokens only in `src/styles/tokens.css`; flags only in `src/config/flags.ts`. Never hardcode; never remove a fallback; the site must look complete with all flags off.
 - Brand rules (§2): visible name `Me²`; banned words; Australian English; sentence case. Grep before committing copy.
-- Never invent names, testimonials, statistics, results, logos or prices. Never name individuals. Real estate appears only in its own section.
+- Never invent names, testimonials, statistics, results, logos or prices. Never name individuals. No industry is presented as "our market" or a client list; kinds of business appear only as clearly labelled use-case examples.
 - Forms collect contact details and a short task description only; never fields for financial, health or identity information.
 - Design: keep the approved identity (§5). Refine within it; mock up one page and get a yes before any wider restyle.
 - Allowed dependencies and out-of-scope list: BRIEF §3, in full.
@@ -267,13 +263,13 @@ N/A — new build; the domain only shows a parking page.
 | # | Decision | Options | Recommended | Owner | Blocks |
 |---|---|---|---|---|---|
 | 1 | Launch domain and CTA inbox | `mesquaredagency.com` or `mesquared.co.uk`; confirm `hello@` receives mail | `mesquaredagency.com`; send a test email to `hello@` before launch | EC | Launch (one-file change if switched) |
-| 2 | Service claims | Keep or cut each of the six example roles and the "a person checks it" line | Keep only what can be delivered within 30 days of signing | EC | Launch |
+| 2 | Service claims | Keep or cut each of the six use-case examples (§6.6), the sample tasks on the hero board, and the "a person checks it" line | Keep only work Me² can deliver within 30 days of signing | EC | Launch |
 | 3 | Billing basis and GST wording | One-off, monthly, setup + monthly; "+ GST" or not | Setup + monthly for AI Roles; monthly with a minimum term for EBUs. GST depends on which entity invoices | Patrick + accountant | `showPricing` |
 | 4 | Contracting entity | Australian, Cambodian, other | Needs Australian and Cambodian legal advice | Patrick + lawyer | `showLegalEntity` |
 | 5 | Disclose Phnom Penh team | Show or don't | Show it; the privacy policy must disclose offshore handling (APP 8) anyway | Patrick | `showLocations` |
 | 6 | Privacy policy | Lawyer-reviewed text covering the APPs incl. APP 8 | Review before any form, booking or tracking goes live | Patrick + lawyer | `showPrivacyPage`, form, booking, tracking |
 | 7 | Named proof (first client) | Named case study, anonymised, none | Anonymised until written permission; numbers substantiated and reviewed under the ACL | EC | `showProof` |
-| 8 | Agent-licensing boundary | — | Lawyer check that the real estate roles read as admin support, not work needing an agent's registration (e.g. SA Land Agents Act 1994) | Patrick + lawyer | A.6 copy at launch |
+| 8 | Licensing boundaries | — | Lawyer check that the property management and law-firm examples read as admin support, not work needing an agent's registration (e.g. SA Land Agents Act 1994) or a legal practitioner | Patrick + lawyer | §6.6 copy at launch |
 | 9 | Brand finals | Vector logo, final palette, tagline ("from me to we." is in the designer's concept, not approved) | Build on the supplied logo now; swap `tokens.css` and the logo file when the designer delivers | Patrick + designer | Nothing |
 | 10 | Trademark and font licence | IP Australia search; Instrument Sans is OFL | Run the search before paid marketing | EC | Nothing |
 | 11 | Booking tool and sending address | Cal.com or Calendly; `website@` | Cal.com; `website@` as a send-only alias | EC | `enableBooking`, form |
@@ -301,23 +297,25 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
 ## Appendix A — Copy
 
 ### A.meta
-- Title: `Me²: AI roles and trained operators for back-office work`
-- Description: `Me² sets up AI roles for repetitive back-office work, with trained operators to run them and check the output. Starting with real estate.`
-- OG title: `AI does the volume. People own the outcome.`
-- OG image text: logo + `AI does the volume. People own the outcome.`
+- Title: `Me²: managed back-office services, checked by people`
+- Description: `Me² takes repetitive admin off your team. AI drafts invoices, reports and replies; trained operators check every detail, and the work comes back done.`
+- OG title: `We run the back office. You run the business.`
+- OG image text: logo + `We run the back office. You run the business.`
 - 404 title: `Page not found | Me²` · 404 description: `This page doesn't exist or has moved. Go back to the Me² home page.`
 - Privacy title: `Privacy | Me²` · Privacy description: `How Me² collects, uses and protects personal information sent through this website, and who to contact with a privacy question.`
 
 ### A.1 Header
 - Logo (links home, aria-label `{SITE_NAME_PLAIN} home`)
-- Nav (aria-label `Sections`): `How it works` → `#how` · `Services` → `#offers` · `Real estate` → `#real-estate` · `Questions` → `#faq`
+- Nav (aria-label `Sections`): `What we take on` → `#use-cases` · `How it works` → `#how` · `Services` → `#offers` · `Questions` → `#faq`
 - Button: `Talk to us`
 
 ### A.2 Hero
-- H1: `AI does the volume. **People own the outcome.**`
-- Subhead: `{SITE_NAME} sets up AI roles for the repetitive work, and trained operators to run them and check what they produce. You get the work done without hiring for it or babysitting another tool.`
+- Kicker: `Managed back-office services`
+- H1: `We run the back office. **You run the business.**`
+- Subhead: `{SITE_NAME} takes the repetitive admin off your team: invoices, inboxes, reports, data entry and follow-ups. AI does the first draft, a trained operator checks every detail, and the work comes back done.`
 - Primary button: `Talk to us`
-- Secondary link: `See how it works`
+- Secondary link: `See what we take on`
+- Board, legend and sample tasks: `hero.board` in `src/content/site.ts` (illustration; kinds of business, never clients)
 - Location line (`showLocations`): `Command Centre teams in Adelaide and Phnom Penh.`
 
 ### A.2b Pillars
@@ -365,22 +363,15 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
 - Card 2 photo alt: `People working at computer screens in an office`
 - Card 2 button: `Ask about Effective Business Units`
 
-### A.6 Starting with real estate
-- Eyebrow: `First market`
-- H2: `Starting with **real estate**`
-- Photo card title: `Property management` · chips: `Inspections` · `Arrears` · `Maintenance` · `Owner reports`
-- Photo alt: `A hand holding a set of house keys beside a front door`
-- Body: `Real estate is our first market. Property management runs on high-volume, repeatable admin, which is exactly the kind of work AI roles and trained operators are built for.`
-- List intro: `Roles we set up for agencies include:`
-- List items:
-  - `Drafting routine inspection reports for review`
-  - `Tracking rent arrears and preparing reminders`
-  - `Sorting and routing the property management inbox`
-  - `Drafting replies to leasing enquiries`
-  - `Logging and following up maintenance requests`
-  - `Preparing owner and landlord reports`
-- Closing line: `Not in real estate? If your team has repeatable back-office work, we'd like to hear about it.`
+### A.6 What we take on (v0.13; replaces "Starting with real estate")
+The words live in `useCases` and `interlude` in `src/content/site.ts`; that file is the copy of record for these sections.
+- Eyebrow: `What we take on` · H2: `Different businesses. **The same back office.**`
+- Intro: `Every business has admin that is repetitive and still has to be right. These are examples of the work an AI Role drafts and an operator checks.`
+- Six examples, each with `The work`, `AI Role drafts`, `Operator checks`, `You get`: accounting practices (supplier bills and receipts), trades and construction (quotes, job sheets and invoices), online retail (the customer inbox), professional services (client intake and onboarding), property management (arrears and inspection reports), any growing business (debtors and weekly reporting).
+- Note: `Examples of the kind of work we take on, not client case studies.`
+- Closing: `Don't see your business here? If the work is repeatable, tell us about it.` + `Talk to us`
 - Proof block (`showProof`): `[[TBC: client case study, approved in writing by the client — EC]]`
+- Statement: `AI does the volume. **People own the outcome.**` · `AI drafts the work. A trained person checks every detail before it reaches you.`
 
 ### A.7 FAQ
 - Eyebrow: `Questions`
@@ -392,8 +383,8 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
   A: `With an AI Role, your team reviews the output. With an Effective Business Unit, a trained {SITE_NAME} operator checks it before it reaches you. Either way, a person signs off.`
 - Q: `What's the difference between the two options?`
   A: `An AI Role is one tool for one job that your team runs. An Effective Business Unit is a managed service: a {SITE_NAME} operator runs several AI roles for you and owns the result.`
-- Q: `Is this only for real estate?`
-  A: `No. Real estate is where we started. The same approach suits any business with repeatable back-office work.`
+- Q: `What kinds of business do you work with?`
+  A: `Any business with back-office work that is repetitive and has to be right: practices, trades, retailers, property managers and more. If the work gets done the same way every week, it's worth a conversation.`
 - Q (`showLocations`): `Where is the team based?`
   A: `Our Command Centre runs across Adelaide and Phnom Penh, Cambodia.`
 - Q: `How do we get started?`
@@ -409,7 +400,6 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
 ### A.9 Footer
 - Logo (no link)
 - Column headings: `Contact` · `On this page` (links repeat the A.1 nav)
-- Imagery note: `Photos are illustrative stock images.`
 - Email link text: `{CONTACT_EMAIL}`
 - Copyright: `© {YEAR} {SITE_NAME}`
 - Entity line (`showLegalEntity`): `[[TBC: legal entity name and registration number — Patrick + lawyer]]`

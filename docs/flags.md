@@ -5,7 +5,7 @@ Anything waiting on a decision, a lawyer, permission or content is already built
 | Switch | What it shows | Turn on when | Who signs off | Also needs |
 | --- | --- | --- | --- | --- |
 | `showPricing` | "From $… AUD" on both service cards | Billing basis and GST wording are settled | Patrick + accountant | Replace the `[[TBC]]` in each card's `price` in `src/content/site.ts` |
-| `showProof` | A client case study under "Starting with real estate" | The client has approved it in writing; any numbers are substantiated | EC | Write the text into `realEstate.proof` in `src/content/site.ts` |
+| `showProof` | A client case study under "What we take on" | The client has approved it in writing; any numbers are substantiated | EC | Write the text into `useCases.proof` in `src/content/site.ts` |
 | `showLocations` | "Command Centre teams in Adelaide and Phnom Penh." under the hero, and the "Where is the team based?" question | Patrick approves, and the privacy policy covers offshore handling | Patrick | — |
 | `showLegalEntity` | The legal entity name and registration number in the footer | The contracting entity is confirmed | Patrick + lawyer | Fill `LEGAL_ENTITY` in `src/config/site.config.ts` |
 | `showPrivacyPage` | The `/privacy/` page and a footer link to it | A lawyer has reviewed the policy | Patrick + lawyer | Paste the text into `privacy.body` in `src/content/site.ts` |

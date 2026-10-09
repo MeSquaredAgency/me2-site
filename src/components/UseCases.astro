@@ -1,0 +1,170 @@
+---
+import Emph from './Emph.astro';
+import EmailLink from './EmailLink.astro';
+import { fixtureText, flags } from '../config';
+import { content } from '../content/site';
+interface Props { n: number }
+const { n } = Astro.props;
+const c = content.useCases;
+const num = (i: number) => String(i + 1).padStart(2, '0');
+---
+<!--
+  Examples of the work, by kind of business. Not an industry list and not clients.
+  Without JavaScript, and on phones, every example is shown in turn. On wide screens the
+  script turns the index into tabs: choose a kind of business, see its example.
+-->
+<section id="use-cases" class="section uses bg-bone" aria-labelledby="uses-title" data-uses>
+  <div class="wrap">
+    <p class="label">{c.eyebrow}<sup>{n}</sup></p>
+    <div class="head">
+      <h2 id="uses-title"><Emph text={c.h2} /></h2>
+      <p class="lede">{c.intro}</p>
+    </div>
+
+    <div class="explorer">
+      <div class="index" role="tablist" aria-label={c.listLabel} aria-orientation="vertical" hidden data-tablist>
+        {c.items.map((it, i) => (
+          <button type="button" role="tab" class="tab" id={`uc-tab-${it.key}`} aria-controls={`uc-${it.key}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>
+            <span class="tab-n" aria-hidden="true">{num(i)}</span>
+            <span class="tab-t">{it.for}</span>
+          </button>
+        ))}
+      </div>
+
+      <div class="panels">
+        {c.items.map((it, i) => (
+          <article class="panel" id={`uc-${it.key}`} aria-labelledby={`uc-for-${it.key}`} data-panel>
+            <p class="for" id={`uc-for-${it.key}`}><span class="for-n" aria-hidden="true">{num(i)}</span>{it.for}</p>
+            <p class="work-label">{c.labels.work}</p>
+            <h3 class="work">{it.work}</h3>
+            <dl class="flow">
+              <div class="step step-ai"><dt><span class="glyph" aria-hidden="true"></span>{c.labels.ai}</dt><dd>{it.ai}</dd></div>
+              <div class="step step-check"><dt><span class="glyph" aria-hidden="true"></span>{c.labels.check}</dt><dd>{it.check}</dd></div>
+              <div class="step step-result"><dt><span class="glyph" aria-hidden="true"></span>{c.labels.result}</dt><dd>{it.result}</dd></div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <div class="foot">
+      <p class="note">{c.note}</p>
+      <p class="closing">{c.closing} <EmailLink subject={content.ui.subjects.general} class="tlink closing-link">{c.closingButton}</EmailLink></p>
+    </div>
+    {flags.showProof && <blockquote class="proof">{fixtureText.proof ?? c.proof}</blockquote>}
+  </div>
+</section>
+
+<script>
+  // Wide screens: the index becomes a set of tabs (arrow keys move between them).
+  const root = document.querySelector<HTMLElement>('[data-uses]');
+  if (root) {
+    const list = root.querySelector<HTMLElement>('[data-tablist]')!;
+    const tabs = [...list.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
+    const wide = matchMedia('(min-width: 1000px)');
+    let current = 0;
+
+    const select = (i: number, focus = false) => {
+      const changed = i !== current;
+      current = i;
+      tabs.forEach((t, j) => { t.setAttribute('aria-selected', String(j === i)); t.tabIndex = j === i ? 0 : -1; });
+      panels.forEach((p, j) => { p.hidden = j !== i; p.classList.toggle('is-entering', changed && j === i); });
+      if (focus) tabs[i].focus();
+    };
+    const mode = () => {
+      const on = wide.matches;
+      root.classList.toggle('is-tabs', on);
+      list.hidden = !on;
+      panels.forEach((p, j) => {
+        if (on) { p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', tabs[j].id); p.tabIndex = 0; }
+        else { p.removeAttribute('role'); p.setAttribute('aria-labelledby', `uc-for-${p.id.slice(3)}`); p.removeAttribute('tabindex'); p.hidden = false; }
+      });
+      if (on) select(current);
+    };
+    tabs.forEach((t, i) => t.addEventListener('click', () => select(i)));
+    list.addEventListener('keydown', (e) => {
+      const keys: Record<string, number> = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 };
+      if (e.key in keys) { e.preventDefault(); select((current + keys[e.key] + tabs.length) % tabs.length, true); }
+      else if (e.key === 'Home') { e.preventDefault(); select(0, true); }
+      else if (e.key === 'End') { e.preventDefault(); select(tabs.length - 1, true); }
+    });
+    wide.addEventListener('change', mode);
+    mode();
+  }
+</script>
+
+<style>
+  .head { margin-top: 56px; display: grid; gap: 28px; align-items: end; }
+  .head h2 { max-width: 12ch; }
+
+  .explorer { margin-top: 88px; }
+  .panels { border-top: 1px solid var(--color-text); }
+  .panel { padding: 40px 0 48px; border-bottom: 1px solid var(--color-line); }
+  .for {
+    display: flex; align-items: baseline; gap: 14px; margin-bottom: 26px;
+    font-size: var(--text-label); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-muted);
+  }
+  .for-n, .tab-n { font-family: var(--font-display); font-style: italic; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--color-coral-deep); }
+  .for-n { font-size: 1.15rem; }
+  .work-label { font-size: var(--text-label); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-muted); }
+  .work {
+    margin-top: 10px; font-family: var(--font-display); font-weight: 400;
+    font-size: clamp(2.1rem, 3.6vw, 3.4rem); line-height: 1.02; letter-spacing: -0.02em;
+  }
+
+  /* Three steps, joined by a hairline: drafted (outline), checked (half), done (solid). */
+  .flow { margin: 36px 0 0; display: grid; gap: 0; position: relative; }
+  .step { position: relative; display: grid; gap: 6px; padding: 18px 0 18px 30px; border-top: 1px solid var(--color-line); }
+  .step::before { content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 1px; background: var(--color-line); }
+  .step:first-child::before { top: 26px; }
+  .step:last-child::before { bottom: calc(100% - 26px); }
+  dt {
+    display: flex; align-items: center; gap: 0;
+    font-size: var(--text-label); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-muted);
+  }
+  .glyph { position: absolute; left: 0; top: 22px; width: 9px; height: 9px; box-sizing: border-box; background: var(--color-bone); }
+  .step-ai .glyph { border: 1px solid var(--color-text); }
+  .step-check .glyph { border: 1px solid var(--color-text); background: linear-gradient(0deg, var(--color-text) 50%, var(--color-bone) 50%); }
+  .step-result .glyph { background: var(--color-text); }
+  dd { margin: 0; font-family: var(--font-display); font-size: clamp(1.3rem, 1.7vw, 1.6rem); line-height: 1.3; max-width: 34ch; }
+  .step-result dd { font-style: italic; }
+
+  .foot { margin-top: 48px; display: grid; gap: 14px; }
+  .note { font-size: var(--text-small); color: var(--color-muted); }
+  .closing { font-size: 1.12rem; max-width: 52ch; }
+  :global(.closing-link) { font-weight: 500; white-space: nowrap; }
+  .proof { margin: 40px 0 0; font-family: var(--font-display); font-size: 1.5rem; }
+
+  /* ---- Tabs, on wide screens ---- */
+  @media (min-width: 1000px) {
+    .head { grid-template-columns: 1.15fr 1fr; }
+    .uses.is-tabs .explorer { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 0 clamp(56px, 7vw, 120px); }
+    .uses.is-tabs .index { display: flex; flex-direction: column; border-top: 1px solid var(--color-text); }
+    .uses.is-tabs .panels { border-top: 1px solid var(--color-text); }
+    .uses.is-tabs .panel { padding: 30px 0 0; border-bottom: 0; }
+    .uses.is-tabs .panel.is-entering { animation: panel-in 600ms var(--ease); }
+    .uses.is-tabs .for { display: none; }
+    .uses.is-tabs .foot { grid-template-columns: 5fr 7fr; gap: 0 clamp(56px, 7vw, 120px); margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--color-line); }
+    .uses.is-tabs .closing { grid-column: 2; grid-row: 1; }
+    .uses.is-tabs .note { grid-column: 1; grid-row: 1; align-self: center; }
+  }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(12px); } }
+  @media (prefers-reduced-motion: reduce) { .uses.is-tabs .panel.is-entering { animation: none; } }
+
+  .tab {
+    all: unset; box-sizing: border-box; cursor: pointer;
+    display: grid; grid-template-columns: 42px 1fr 14px; align-items: baseline;
+    padding: 16px 0; border-bottom: 1px solid var(--color-line);
+    color: var(--color-muted);
+    transition: color 300ms var(--ease);
+  }
+  .tab-n { font-size: 1.1rem; }
+  .tab-t { font-family: var(--font-display); font-size: clamp(1.7rem, 2.3vw, 2.15rem); line-height: 1.15; letter-spacing: -0.012em; }
+  .tab::after { content: ''; width: 10px; height: 10px; align-self: center; background: var(--color-text); transform: scale(0); transition: transform 400ms var(--ease); }
+  .tab[aria-selected='true'] { color: var(--color-text); }
+  .tab[aria-selected='true'] .tab-t { font-style: italic; }
+  .tab[aria-selected='true']::after { transform: scale(1); }
+  .tab:focus-visible { outline: 2px solid var(--color-text); outline-offset: 2px; }
+  @media (hover: hover) and (pointer: fine) { .tab:hover { color: var(--color-text); } }
+</style>

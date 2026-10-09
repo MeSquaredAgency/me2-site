@@ -1,17 +1,17 @@
 # Me² website
 
-One-page sales site for Me² ("Me Squared"), which sets up AI roles for repetitive back-office work and pairs them with trained operators who run them and check the output. It's for Australian business owners and managers; real estate agencies are the first market. The page has one job: get the visitor to click **Talk to us**, which opens an email to the contact address.
+One-page sales site for Me² ("Me Squared"), which sets up AI roles for repetitive back-office work and pairs them with trained operators who run them and check the output. It's for Australian business owners and managers in any industry with repetitive admin. The page has one job: get the visitor to click **Talk to us**, which opens an email to the contact address.
 
 Built with Astro + TypeScript and Tailwind CSS v4, as a static site. **Live at https://mesquaredagency.com** on Cloudflare Workers (static assets) in the Me² account; how to publish is in [DEPLOY.md](DEPLOY.md). No CMS, database or third-party scripts. Full spec: [BRIEF.md](BRIEF.md). Standing rules for future changes: [CLAUDE.md](CLAUDE.md).
 
-**Look ("Squared", BRIEF §5):** Me² = me, squared. The hero is a square of tasks that AI outlines and a human-check line makes solid, finished by the coral ² square. Near-black and ivory, hairlines, Instrument Serif headlines with italic emphasis, superscript section numbers, coral only for the ² and caught errors.
+**Look ("Squared", BRIEF §5):** Me² = me, squared. The hero says what Me² does and shows it on a live Command Centre board: sample tasks drafted by AI, checked by a person, some caught and corrected (the coral ² square). Near-black and ivory, hairlines, Instrument Serif headlines with italic emphasis, superscript section numbers, coral only for the ² and caught errors.
 
 **Content rules:** real claims only (no invented numbers, testimonials or clients). Stock photos are illustrative and credited in [docs/media.md](docs/media.md). Never copy competitors.
 
 ## Pages
 | Path | What it is |
 | --- | --- |
-| `/` | The sales page: hero, four-point band, the problem, how it works, two services, real estate, questions, call to action |
+| `/` | The sales page: hero with the Command Centre board, the problem, what we take on (six use-case examples), the demo, the "AI does the volume" statement, how we work, why Me², two services, questions, call to action |
 | `/404.html` | "Page not found" (noindex) |
 | `/privacy/` | Privacy policy; only built when `showPrivacyPage` is on |
 
@@ -57,9 +57,9 @@ Tick only what has been checked.
 - [x] Published in the Me² Cloudflare account as the `mesquared` Workers project ([DEPLOY.md](DEPLOY.md))
 - [x] Checked on the temporary workers.dev address before connecting the domain (9 Oct 2026)
 - [ ] Test email sent to hello@mesquaredagency.com and answered (the only way in until the form ships)
-- [ ] Six real estate roles and the "a person checks it" promise confirmed deliverable (BRIEF §13 #2)
+- [ ] Six use-case examples, the hero board's sample tasks and the "a person checks it" promise confirmed deliverable (BRIEF §13 #2)
 - [ ] Five handbook statements on the live page confirmed by EC (see DECISIONS.md, 9 Oct 2026)
-- [ ] Lawyer check that the real estate roles read as admin support (BRIEF §13 #8)
+- [ ] Lawyer check that the property management and law-firm examples read as admin support (BRIEF §13 #8)
 - [x] mesquaredagency.com connected with HTTPS; `www` and `http://` redirect to https://mesquaredagency.com in one 301 (checked 9 Oct 2026)
 - [x] Google email DNS records (MX, SPF, DKIM, DMARC, verification) unchanged after the switch (checked 9 Oct 2026)
 - [x] Email links not rewritten by Cloudflare Email Obfuscation (checked on the live page)

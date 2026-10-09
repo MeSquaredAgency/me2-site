@@ -4,208 +4,305 @@ import Emph from './Emph.astro';
 import { fill, flags } from '../config';
 import { content } from '../content/site';
 const c = content.hero;
+const b = c.board;
+
+// The board's timing, shared with the script below so the first paint and the animation agree.
+// A task's stage depends only on its age (seconds since it arrived on the board).
+const TIMING = { queued: 0.9, drafting: 4.2, checking: 7.4, caught: 8.4, every: 2.6, rows: 5 };
+type Stage = keyof typeof b.stages;
+const stageOf = (age: number, fix: boolean): Stage =>
+  age < TIMING.queued ? 'queued'
+  : age < TIMING.drafting ? 'drafting'
+  : age < TIMING.checking ? 'checking'
+  : fix && age < TIMING.caught ? 'caught'
+  : fix ? 'fixed' : 'done';
+// First paint: the five oldest sample tasks, newest at the top, at a spread of stages.
+const first = Array.from({ length: TIMING.rows }, (_, i) => {
+  const t = b.tasks[TIMING.rows - 1 - i];
+  const age = 1.8 + i * TIMING.every;
+  return { ...t, age, stage: stageOf(age, t.fix) };
+});
 ---
 <section class="hero on-dark" aria-labelledby="hero-title">
-  <div class="wrap grid">
-    <div class="copy">
-      <p class="kicker">{c.kicker}</p>
-      <h1 id="hero-title"><Emph text={c.h1} /></h1>
-      <p class="subhead">{fill(c.subhead)}</p>
-      <div class="actions">
-        <EmailLink subject={content.ui.subjects.general} class="btn btn-solid btn-lg">{c.primary}</EmailLink>
-        <a href="#demo" class="tlink see">{c.secondary}</a>
-      </div>
-      {flags.showLocations && <p class="location">{c.location}</p>}
-    </div>
+  <div class="field" aria-hidden="true"></div>
+  <div class="wrap inner">
+    <p class="kicker">{c.kicker}</p>
+    <h1 id="hero-title"><Emph text={c.h1} /></h1>
 
-    <!--
-      The signature: "me, squared". A square made of tasks. AI outlines them (the volume),
-      a human-check line sweeps across and each square it passes becomes solid (checked, owned).
-      Coral squares are errors, caught and corrected at the line. The small coral square at the
-      top right is the "²". Decorative; the legend below says the same in words.
-    -->
-    <figure class="square" data-square aria-hidden="true">
-      <canvas data-square-canvas></canvas>
-    </figure>
-    <ul class="legend" aria-label={c.legendLabel}>
-      <li><span class="key key-draft"></span>{c.legend[0]}</li>
-      <li><span class="key key-check"></span>{c.legend[1]}</li>
-      <li><span class="key key-error"></span>{c.legend[2]}</li>
-    </ul>
+    <div class="row">
+      <div class="copy">
+        <p class="subhead">{fill(c.subhead)}</p>
+        <div class="actions">
+          <EmailLink subject={content.ui.subjects.general} class="btn btn-solid btn-lg">{c.primary}</EmailLink>
+          <a href="#use-cases" class="tlink see">{c.secondary}</a>
+        </div>
+        {flags.showLocations && <p class="location">{c.location}</p>}
+      </div>
+
+      <!--
+        The Command Centre board: sample tasks from different kinds of business arrive at the top,
+        are drafted by AI, checked by an operator and marked done. Some are caught and corrected
+        (the coral square, the ² of the logo). Decorative; the sr-only summary says it in words.
+      -->
+      <figure class="board" data-board data-stages={JSON.stringify(b.stages)} data-tasks={JSON.stringify(b.tasks)} data-timing={JSON.stringify(TIMING)}>
+        <p class="sr-only">{b.srSummary}</p>
+        <div class="board-top" aria-hidden="true">
+          <span class="board-title">{b.title}</span>
+          <span class="live"><i></i>{b.live}</span>
+        </div>
+        <div class="heads" aria-hidden="true"><span>{b.colTask}</span><span>{b.colStage}</span></div>
+        <div class="viewport" aria-hidden="true">
+          <ol class="rows" data-rows>
+            {first.map((r) => (
+              <li class="task" data-stage={r.stage} data-fix={String(r.fix)} data-age={r.age}>
+                <span class="mark"></span>
+                <span class="what"><span class="name">{r.task}</span><span class="for">{r.for}</span></span>
+                <span class="stage">{b.stages[r.stage]}</span>
+                <span class="bar"></span>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <figcaption class="board-foot">
+          <ul class="legend" aria-label={c.legendLabel}>
+            <li><span class="key key-draft"></span>{c.legend[0]}</li>
+            <li><span class="key key-check"></span>{c.legend[1]}</li>
+            <li><span class="key key-error"></span>{c.legend[2]}</li>
+          </ul>
+          <span class="note">{b.note}</span>
+        </figcaption>
+      </figure>
+    </div>
   </div>
 </section>
 
 <script>
-  const fig = document.querySelector<HTMLElement>('[data-square]');
-  const canvas = document.querySelector<HTMLCanvasElement>('[data-square-canvas]');
-  if (fig && canvas) {
-    const ctx = canvas.getContext('2d')!;
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const N = 12;                 // 12 × 12 = 144 tasks
-    const IVORY = '236,231,222', CORAL = '231,120,92';
-    type Cell = { draftAt: number; err: boolean; checkedAt: number };
-    let size = 0, cell = 0, gap = 0, pad = 0, dpr = 1, cells: Cell[] = [];
-    let start = 0, raf = 0, running = false;
-    const CYCLE = 10.5;           // seconds per cycle
-    const SCAN_FROM = 1.4, SCAN_DUR = 5.2, HOLD_TO = 9.2;
+  // Runs the board: a new sample task every few seconds; each row's stage follows its age.
+  // The clock only moves while the board is on screen, so nothing jumps when you come back.
+  const board = document.querySelector<HTMLElement>('[data-board]');
+  if (board && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const list = board.querySelector<HTMLOListElement>('[data-rows]')!;
+    const stages = JSON.parse(board.dataset.stages!) as Record<string, string>;
+    const tasks = JSON.parse(board.dataset.tasks!) as { task: string; for: string; fix: boolean }[];
+    const T = JSON.parse(board.dataset.timing!) as Record<string, number>;
+    type Row = { el: HTMLLIElement; born: number; fix: boolean; stage: string };
 
-    const seedCycle = () => {
-      cells = Array.from({ length: N * N }, (_, i) => {
-        const col = i % N;
-        return { draftAt: col * 0.11 + Math.random() * 0.9, err: Math.random() < 0.07, checkedAt: Infinity };
-      });
+    const stageOf = (age: number, fix: boolean) =>
+      age < T.queued ? 'queued'
+      : age < T.drafting ? 'drafting'
+      : age < T.checking ? 'checking'
+      : fix && age < T.caught ? 'caught'
+      : fix ? 'fixed' : 'done';
+    // Progress through the current stage, 0 to 1 (drives the drafting bar and the check line).
+    const progressOf = (age: number, stage: string) =>
+      stage === 'drafting' ? (age - T.queued) / (T.drafting - T.queued)
+      : stage === 'checking' ? (age - T.drafting) / (T.checking - T.drafting)
+      : 0;
+
+    let clock = 0, last = 0, raf = 0, running = false, nextAt = T.every, next = T.rows;
+    const rows: Row[] = [...list.children].map((el) => ({
+      el: el as HTMLLIElement, born: -Number((el as HTMLElement).dataset.age), fix: (el as HTMLElement).dataset.fix === 'true', stage: (el as HTMLElement).dataset.stage!,
+    }));
+
+    const make = (i: number): Row => {
+      const t = tasks[i % tasks.length];
+      const el = document.createElement('li');
+      el.className = 'task is-new';
+      el.dataset.stage = 'queued';
+      el.innerHTML = '<span class="mark"></span><span class="what"><span class="name"></span><span class="for"></span></span><span class="stage"></span><span class="bar"></span>';
+      el.querySelector('.name')!.textContent = t.task;
+      el.querySelector('.for')!.textContent = t.for;
+      el.querySelector('.stage')!.textContent = stages.queued;
+      return { el, born: clock, fix: t.fix, stage: 'queued' };
     };
 
-    const resize = () => {
-      const w = fig.clientWidth;
-      dpr = Math.min(devicePixelRatio || 1, 2);
-      size = w;
-      canvas.width = Math.round(w * dpr); canvas.height = Math.round(w * dpr);
-      canvas.style.width = w + 'px'; canvas.style.height = w + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      pad = w * 0.12;                         // room for the ² square, top right
-      const grid = w - pad * 1.25;
-      gap = Math.max(3, grid * 0.024);
-      cell = (grid - gap * (N - 1)) / N;
+    const arrive = () => {
+      const row = make(next++);
+      const h = (list.firstElementChild as HTMLElement).offsetHeight;
+      list.prepend(row.el);
+      rows.unshift(row);
+      // Slide everything down by one row, from where it was.
+      list.style.transition = 'none';
+      list.style.transform = `translateY(${-h}px)`;
+      void list.offsetHeight;
+      list.style.transition = '';
+      list.style.transform = '';
+      while (rows.length > T.rows + 1) rows.pop()!.el.remove();
     };
 
-    const gx = (col: number) => pad * 0.25 + col * (cell + gap);
-    const gy = (row: number) => pad + row * (cell + gap);
-    const gridW = () => N * cell + (N - 1) * gap;
-
-    const draw = (t: number) => {
-      ctx.clearRect(0, 0, size, size);
-      const fade = t > HOLD_TO ? Math.max(0, 1 - (t - HOLD_TO) / 1.1) : 1;
-      const scanX = gx(0) + ((t - SCAN_FROM) / SCAN_DUR) * (gridW() + 12);
-      const scanning = t >= SCAN_FROM && t <= SCAN_FROM + SCAN_DUR + 0.2;
-
-      for (let i = 0; i < cells.length; i++) {
-        const c = cells[i];
-        const col = i % N, row = Math.floor(i / N);
-        const x = gx(col), y = gy(row);
-        if (t < c.draftAt) continue;
-        const drafted = Math.min(1, (t - c.draftAt) / 0.35);
-        if (c.checkedAt === Infinity && scanX >= x + cell / 2 && t >= SCAN_FROM) c.checkedAt = t;
-        const since = t - c.checkedAt;
-        ctx.globalAlpha = fade;
-        if (since >= 0) {
-          if (c.err && since < 0.55) {
-            // Caught: a coral flash before it is put right.
-            ctx.fillStyle = `rgba(${CORAL},${0.6 + 0.4 * Math.sin(since * 22)})`;
-            ctx.fillRect(x, y, cell, cell);
-          } else {
-            const k = Math.min(1, (since - (c.err ? 0.55 : 0)) / 0.25);
-            ctx.fillStyle = `rgba(${IVORY},${0.25 + 0.65 * k})`;
-            ctx.fillRect(x, y, cell, cell);
-          }
-        } else {
-          ctx.strokeStyle = c.err ? `rgba(${CORAL},${0.9 * drafted})` : `rgba(${IVORY},${0.42 * drafted})`;
-          ctx.lineWidth = 1;
-          ctx.strokeRect(x + 0.5, y + 0.5, cell - 1, cell - 1);
+    const tick = (now: number) => {
+      const dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
+      last = now; clock += dt;
+      if (clock >= nextAt) { nextAt += T.every; arrive(); }
+      for (const r of rows) {
+        const age = clock - r.born;
+        const s = stageOf(age, r.fix);
+        if (s !== r.stage) {
+          r.stage = s;
+          r.el.dataset.stage = s;
+          r.el.querySelector('.stage')!.textContent = stages[s];
         }
+        r.el.style.setProperty('--p', Math.min(1, Math.max(0, progressOf(age, s))).toFixed(3));
       }
-
-      // The human-check line.
-      if (scanning) {
-        ctx.globalAlpha = 1;
-        const top = gy(0) - 18, bottom = gy(N - 1) + cell + 18;
-        const g = ctx.createLinearGradient(0, top, 0, bottom);
-        g.addColorStop(0, `rgba(${IVORY},0)`); g.addColorStop(0.5, `rgba(${IVORY},0.95)`); g.addColorStop(1, `rgba(${IVORY},0)`);
-        ctx.fillStyle = g;
-        ctx.fillRect(Math.min(scanX, gx(N - 1) + cell + 6), top, 1.2, bottom - top);
-      }
-
-      // The ²: once the square is complete, a small coral square settles at its top right.
-      const done = t - (SCAN_FROM + SCAN_DUR);
-      if (done > 0) {
-        const k = Math.min(1, done / 0.6);
-        const ease = 1 - Math.pow(1 - k, 3);
-        const s = pad * 0.72;
-        const ex = gx(N - 1) + cell + gap * 2.2, ey = gy(0) - s - gap * 2.2;
-        ctx.globalAlpha = fade * ease;
-        ctx.fillStyle = `rgb(${CORAL})`;
-        ctx.fillRect(ex, ey + (1 - ease) * 10, s, s);
-      }
-      ctx.globalAlpha = 1;
+      raf = requestAnimationFrame(tick);
     };
-
-    const finalFrame = () => {
-      seedCycle();
-      cells.forEach((c) => { c.draftAt = 0; c.err = false; c.checkedAt = -10; });
-      draw(SCAN_FROM + SCAN_DUR + 2);
-    };
-
-    const loop = (now: number) => {
-      if (!start) { start = now; seedCycle(); }
-      let t = (now - start) / 1000;
-      if (t > CYCLE) { start = now; seedCycle(); t = 0; }
-      draw(t);
-      raf = requestAnimationFrame(loop);
-    };
-    const play = () => { if (!running && !reduce) { running = true; start = 0; raf = requestAnimationFrame(loop); } };
+    const play = () => { if (!running) { running = true; last = 0; raf = requestAnimationFrame(tick); } };
     const stop = () => { running = false; cancelAnimationFrame(raf); };
 
-    resize();
-    if (reduce) finalFrame();
-    else {
-      finalFrame(); // something to see straight away; the animation takes over once the page is idle
-      setTimeout(() => ('requestIdleCallback' in window ? requestIdleCallback(play, { timeout: 1500 }) : play()), 700);
-      new IntersectionObserver(([e]) => (e.isIntersecting ? play() : stop())).observe(fig);
-      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : play()));
-    }
-    let rt = 0;
-    addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(() => { resize(); if (!running) finalFrame(); }, 150); });
+    // Start once the page has settled, and only while the board can be seen.
+    let visible = true;
+    const start = () => {
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible && !document.hidden ? play() : stop(); }).observe(board);
+      document.addEventListener('visibilitychange', () => (document.hidden || !visible ? stop() : play()));
+    };
+    setTimeout(() => ('requestIdleCallback' in window ? requestIdleCallback(start, { timeout: 1500 }) : start()), 600);
   }
 </script>
 
 <style>
   .hero {
-    position: relative; overflow: hidden;
-    min-height: max(680px, 100svh);
+    position: relative; overflow: hidden; isolation: isolate;
+    min-height: max(700px, 100svh);
     display: flex; align-items: center;
     background:
-      radial-gradient(60% 70% at 85% 40%, rgb(236 231 222 / 0.05), transparent 70%),
+      radial-gradient(55% 60% at 78% 70%, rgb(236 231 222 / 0.06), transparent 70%),
       var(--color-ink);
   }
-  .grid {
-    display: grid; gap: 48px; align-items: center;
-    padding-top: 120px; padding-bottom: 96px;
+  /* Faint squared paper behind the board: the square, as a working surface. */
+  .field {
+    position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background-image:
+      linear-gradient(rgb(236 231 222 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(236 231 222 / 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-position: -1px -1px;
+    -webkit-mask-image: radial-gradient(55% 60% at 75% 72%, #000 10%, transparent 75%);
+    mask-image: radial-gradient(55% 60% at 75% 72%, #000 10%, transparent 75%);
   }
+  .inner { padding-top: 136px; padding-bottom: 88px; }
   .kicker {
     font-size: var(--text-label); font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
-    color: var(--color-muted-dark); margin-bottom: 36px;
+    color: var(--color-muted-dark); margin-bottom: 32px;
     display: flex; align-items: center; gap: 14px;
   }
-  .kicker::before { content: ''; width: 28px; height: 1px; background: var(--color-coral); }
-  h1 { max-width: 11ch; color: var(--color-on-dark); }
+  .kicker::before { content: ''; width: 9px; height: 9px; background: var(--color-coral); }
+
+  h1 {
+    font-size: clamp(3rem, 7.4vw, 7.6rem); line-height: 0.96; letter-spacing: -0.028em;
+    color: var(--color-on-dark); max-width: none;
+  }
   h1 :global(strong) { display: block; color: #fff; }
-  .subhead { margin-top: 34px; max-width: 44ch; font-size: clamp(1.05rem, 1.25vw, 1.2rem); color: var(--color-muted-dark); }
-  .actions { margin-top: 48px; display: flex; flex-wrap: wrap; align-items: center; gap: 22px 34px; }
+  /* The ² of the logo, fixed to the last word so it never wraps on its own. */
+  h1 :global(strong)::after {
+    content: ''; display: inline-block; width: 0.16em; height: 0.16em; margin-left: 0.06em;
+    background: var(--color-coral); vertical-align: 0.62em;
+  }
+
+  .row { margin-top: 56px; display: grid; gap: 56px; align-items: start; }
+  .subhead { max-width: 40ch; font-size: clamp(1.08rem, 1.3vw, 1.22rem); line-height: 1.6; color: var(--color-muted-dark); }
+  .actions { margin-top: 40px; display: flex; flex-wrap: wrap; align-items: center; gap: 22px 34px; }
   .see { font-weight: 500; color: var(--color-on-dark); }
   .location { margin-top: 28px; font-size: var(--text-small); color: var(--color-muted-dark); }
 
-  .square { margin: 0; width: min(100%, 520px); justify-self: center; aspect-ratio: 1; }
-  .square canvas { display: block; }
-  .legend {
-    list-style: none; margin: 0; padding: 0;
-    display: flex; flex-wrap: wrap; gap: 10px 26px; justify-content: center;
-    font-size: var(--text-label); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-muted-dark);
+  /* ---- The Command Centre board ---- */
+  .board {
+    --row: 58px;
+    margin: 0; border-top: 1px solid rgb(236 231 222 / 0.55);
+    background: linear-gradient(180deg, rgb(22 27 34 / 0.85), rgb(13 17 22 / 0.6));
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   }
-  .legend li { display: inline-flex; align-items: center; gap: 10px; }
-  .key { width: 10px; height: 10px; display: inline-block; }
-  .key-draft { border: 1px solid rgb(236 231 222 / 0.6); }
+  .board-top { display: flex; justify-content: space-between; align-items: center; padding: 16px 0 12px; }
+  .board-title { font-family: var(--font-display); font-size: 1.35rem; letter-spacing: -0.005em; color: var(--color-on-dark); }
+  .live {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: var(--text-label); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-muted-dark);
+  }
+  .live i { width: 7px; height: 7px; background: var(--color-on-dark); animation: blink 2.4s var(--ease) infinite; }
+  @keyframes blink { 50% { opacity: 0.25; } }
+  .heads {
+    display: flex; justify-content: space-between; padding: 9px 0;
+    border-block: 1px solid var(--color-line-dark);
+    font-size: var(--text-label); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-muted-dark);
+  }
+  .viewport { height: calc(var(--row) * 5); overflow: hidden; }
+  .rows { list-style: none; margin: 0; padding: 0; transition: transform 900ms var(--ease); }
+  .rows :global(.task) {
+    position: relative; height: var(--row); box-sizing: border-box;
+    display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 0 18px;
+    border-bottom: 1px solid var(--color-line-dark);
+    transition: background-color 500ms var(--ease);
+  }
+  .rows :global(.task.is-new) { animation: arrive 900ms var(--ease) both; }
+  @keyframes arrive { from { opacity: 0; } }
+  .rows :global(.what) { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
+  .rows :global(.name) {
+    font-family: var(--font-display); font-size: 1.22rem; line-height: 1.2; color: var(--color-on-dark);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .rows :global(.for) { font-size: 0.8rem; color: var(--color-muted-dark); white-space: nowrap; }
+  .rows :global(.stage) {
+    font-size: 0.74rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--color-muted-dark); text-align: right; white-space: nowrap;
+  }
+  .rows :global(.mark) { width: 10px; height: 10px; box-sizing: border-box; border: 1px dashed rgb(236 231 222 / 0.45); transition: background-color 400ms var(--ease), border-color 400ms var(--ease); }
+  /* The bar along the bottom of a row: AI drafting fills it; the operator's check sweeps across it. */
+  .rows :global(.bar) {
+    position: absolute; left: 28px; right: 0; bottom: -1px; height: 1px; pointer-events: none;
+    background: linear-gradient(90deg, rgb(236 231 222 / 0.5), rgb(236 231 222 / 0.5)) 0 0 / calc(var(--p, 0) * 100%) 100% no-repeat;
+    opacity: 0; transition: opacity 400ms var(--ease);
+  }
+
+  .rows :global(.task[data-stage='drafting'] .mark) { border: 1px solid rgb(236 231 222 / 0.7); }
+  .rows :global(.task[data-stage='drafting'] .bar) { opacity: 1; }
+  .rows :global(.task[data-stage='checking'] .mark) { border: 1px solid var(--color-on-dark); background: linear-gradient(0deg, var(--color-on-dark) 50%, transparent 50%); }
+  .rows :global(.task[data-stage='checking'] .stage) { color: var(--color-on-dark); }
+  .rows :global(.task[data-stage='checking'] .bar) {
+    opacity: 1;
+    background:
+      linear-gradient(90deg, transparent, rgb(236 231 222 / 0.95)) calc(var(--p, 0) * 100%) 0 / 64px 100% no-repeat,
+      linear-gradient(90deg, rgb(236 231 222 / 0.5), rgb(236 231 222 / 0.5));
+  }
+  .rows :global(.task[data-stage='checking']) { background: rgb(236 231 222 / 0.035); }
+  .rows :global(.task[data-stage='caught']) { background: rgb(231 120 92 / 0.1); }
+  .rows :global(.task[data-stage='caught'] .mark) { border-color: var(--color-coral); background: var(--color-coral); animation: blink 500ms steps(2) infinite; }
+  .rows :global(.task[data-stage='caught'] .stage) { color: var(--color-coral); }
+  .rows :global(.task[data-stage='done'] .mark) { border: 0; background: var(--color-on-dark); }
+  .rows :global(.task[data-stage='fixed'] .mark) { border: 0; background: var(--color-coral); }
+  .rows :global(.task[data-stage='done'] .stage),
+  .rows :global(.task[data-stage='fixed'] .stage) { color: var(--color-on-dark); }
+
+  .board-foot {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px;
+    padding: 16px 0 0;
+  }
+  .legend {
+    list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px;
+    font-size: var(--text-label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-muted-dark);
+  }
+  .legend li { display: inline-flex; align-items: center; gap: 9px; }
+  .key { width: 9px; height: 9px; display: inline-block; box-sizing: border-box; }
+  .key-draft { border: 1px solid rgb(236 231 222 / 0.7); }
   .key-check { background: var(--color-on-dark); }
   .key-error { background: var(--color-coral); }
+  .note { font-size: 0.78rem; color: var(--color-muted-dark); }
 
   @media (min-width: 1000px) {
-    .grid { grid-template-columns: 1.05fr 1fr; grid-template-rows: auto auto; column-gap: 72px; row-gap: 20px; }
-    .copy { grid-row: 1 / span 2; }
-    .square { grid-column: 2; align-self: end; }
-    .legend { grid-column: 2; align-self: start; }
+    .row { grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr); column-gap: clamp(56px, 7vw, 112px); margin-top: 64px; }
+    .copy { padding-top: 22px; }
   }
-  @media (max-width: 999px) {
-    .grid { padding-top: 132px; gap: 40px; }
-    .square { width: min(82vw, 380px); margin-top: 16px; }
-    .legend { margin-top: -18px; }
+  @media (max-height: 820px) and (min-width: 1000px) {
+    .inner { padding-top: 116px; padding-bottom: 56px; }
+    .row { margin-top: 44px; }
+    .board { --row: 52px; }
+  }
+  @media (max-width: 639px) {
+    .inner { padding-top: 112px; padding-bottom: 64px; }
+    .row { margin-top: 32px; gap: 48px; }
+    .board { --row: 62px; }
+    .rows :global(.what) { flex-direction: column; gap: 2px; }
+    .rows :global(.name) { font-size: 1.08rem; }
+    .rows :global(.for) { font-size: 0.74rem; }
+    .rows :global(.stage) { font-size: 0.66rem; letter-spacing: 0.1em; }
+    .rows :global(.task) { gap: 0 14px; }
   }
 </style>

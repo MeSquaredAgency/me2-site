@@ -35,43 +35,57 @@ export const content = {
   header: {
     button: 'Talk to us',
     nav: [
+      { label: 'What we take on', href: '#use-cases' },
       { label: 'How it works', href: '#how' },
       { label: 'Services', href: '#offers' },
-      { label: 'Real estate', href: '#real-estate' },
       { label: 'Questions', href: '#faq' },
     ],
     navLabel: 'Sections',
   },
 
   hero: {
-    h1: 'AI does the volume. **People own the outcome.**',
+    h1: 'We run the back office. **You run the business.**',
     subhead:
-      '{SITE_NAME} sets up AI roles for the repetitive work, and trained operators to run them and check what they produce. You get the work done without hiring for it or babysitting another tool.',
-    kicker: 'Back-office work, handled',
+      '{SITE_NAME} takes the repetitive admin off your team: invoices, inboxes, reports, data entry and follow-ups. AI does the first draft, a trained operator checks every detail, and the work comes back done.',
+    kicker: 'Managed back-office services',
     primary: 'Talk to us',
-    secondary: 'See it in action',
-    /** Label on the checkpoint in the hero animation */
-    gateLabel: 'Human check',
-    /** Hero square: what the three kinds of square mean */
-    legendLabel: 'How to read the square',
+    secondary: 'See what we take on',
+    /** The live board in the hero: sample work moving through the Command Centre. */
+    board: {
+      title: 'Command Centre',
+      live: 'Live',
+      colTask: 'Task',
+      colStage: 'Stage',
+      stages: {
+        queued: 'In queue',
+        drafting: 'AI drafting',
+        checking: 'Operator checking',
+        caught: 'Error caught',
+        done: 'Checked, done',
+        fixed: 'Corrected, done',
+      },
+      /** Illustration only: kinds of work and kinds of business, not clients. */
+      tasks: [
+        { task: 'Supplier bills coded', for: 'Accounting practice', fix: true },
+        { task: 'Overdue invoice reminders', for: 'Trades business', fix: false },
+        { task: 'Customer email replies', for: 'Online store', fix: false },
+        { task: 'New client intake', for: 'Law firm', fix: false },
+        { task: 'Weekly sales report', for: 'Wholesaler', fix: true },
+        { task: 'Rent arrears summary', for: 'Property manager', fix: false },
+        { task: 'Quote follow-ups', for: 'Builder', fix: false },
+        { task: 'Timesheets for payroll', for: 'Cleaning company', fix: false },
+        { task: 'Meeting notes and actions', for: 'Consultancy', fix: true },
+        { task: 'Purchase orders matched', for: 'Distributor', fix: false },
+      ],
+      note: 'Illustration with sample tasks.',
+      srSummary:
+        'Illustration: a board of sample tasks from different kinds of business, such as supplier bills for an accounting practice and customer email replies for an online store. Each task is drafted by AI, checked by an operator and marked done. Now and then the check catches an error, and it is corrected before the task is done.',
+    },
+    /** Key under the board: what the three kinds of square mean */
+    legendLabel: 'How to read the board',
     legend: ['Drafted by AI', 'Checked by a person', 'Caught and corrected'],
-    scrollLabel: 'Scroll to the next section',
     /** showLocations */
     location: 'Command Centre teams in Adelaide and Phnom Penh.',
-  },
-
-  marquee: {
-    label: 'Work we take on',
-    items: [
-      'Inspection reports',
-      'Rent arrears reminders',
-      'Inbox sorting',
-      'Leasing enquiry replies',
-      'Maintenance follow-ups',
-      'Owner and landlord reports',
-      'Data entry',
-      'Weekly reporting',
-    ],
   },
 
   pillars: [
@@ -98,33 +112,33 @@ export const content = {
     eyebrow: 'See it in action',
     h2: 'One task, **start to finish.**',
     intro: 'An AI Role drafts the work. A trained operator checks every name, date and number against the source before anything leaves. This is what that looks like.',
-    srSummary: 'Illustration: an AI Role drafts a weekly arrears summary. An operator checks it against the rent ledger, finds that the draft shows $1,200 owing for Unit 3 when the ledger shows $1,020, corrects it, completes the remaining checks and signs it off for the property manager to approve.',
-    windowTitle: 'Weekly arrears summary · sample agency',
-    roleLabel: 'AI Role · Arrears summary',
+    srSummary: 'Illustration: an AI Role drafts a weekly summary of overdue invoices. An operator checks it against the accounts ledger, finds that the draft shows $1,200 owing on invoice 1042 when the ledger shows $1,020, corrects it, completes the remaining checks and signs it off for you to approve.',
+    windowTitle: 'Overdue invoices · sample business',
+    roleLabel: 'AI Role · Overdue invoices',
     operatorLabel: 'Operator check',
-    draftTitle: 'Weekly arrears summary',
+    draftTitle: 'Overdue invoices this week',
     lines: [
-      { unit: 'Unit 3', days: '16 days overdue', amount: '$1,200', amountFixed: '$1,020' },
-      { unit: 'Unit 9', days: '4 days overdue', amount: '$640', amountFixed: '' },
+      { unit: 'Invoice 1042', days: '16 days overdue', amount: '$1,200', amountFixed: '$1,020' },
+      { unit: 'Invoice 1057', days: '4 days overdue', amount: '$640', amountFixed: '' },
     ],
-    suggestion: 'Suggested next step: send the standard reminder to Unit 3.',
-    ledgerTitle: 'Source: rent ledger',
+    suggestion: 'Suggested next step: send the standard reminder for invoice 1042.',
+    ledgerTitle: 'Source: accounts ledger',
     ledger: [
-      { unit: 'Unit 3', days: '16 days', amount: '$1,020' },
-      { unit: 'Unit 9', days: '4 days', amount: '$640' },
+      { unit: 'Invoice 1042', days: '16 days', amount: '$1,020' },
+      { unit: 'Invoice 1057', days: '4 days', amount: '$640' },
     ],
     checks: [
-      'Tenancies match the records',
+      'Invoices match the records',
       'Days overdue match the ledger',
       'Amounts match the ledger',
-      'Agency template and tone',
+      'Your template and tone',
     ],
     failIndex: 2,
-    failNote: 'Unit 3: draft said $1,200, ledger says $1,020. Corrected.',
-    signoff: 'Checked and signed off. Ready for the property manager to approve.',
+    failNote: 'Invoice 1042: draft said $1,200, ledger says $1,020. Corrected.',
+    signoff: 'Checked and signed off. Ready for you to approve.',
     status: {
       drafting: 'AI Role drafting…',
-      checking: 'Operator checking against the rent ledger…',
+      checking: 'Operator checking against the ledger…',
       done: 'Checked and signed off',
     },
     note: 'Illustration with made-up sample data.',
@@ -141,7 +155,6 @@ export const content = {
       { title: 'Written processes', body: 'Every repeat task has a written, approved way of doing it. If it happens more than twice a month, it gets one.' },
       { title: 'Quality checks', body: 'Every task is checked before it goes out. A sample is checked again by someone else, and work involving money or legal notices gets a second person.' },
     ],
-    rule: 'AI drafts. **People decide.**',
     stepsTitle: 'The eight steps behind every task',
     steps: [
       { title: 'Understand the task', body: 'What is being asked, by whom and by when.' },
@@ -220,21 +233,72 @@ export const content = {
     ],
   },
 
-  realEstate: {
-    eyebrow: 'First market',
-    h2: 'Starting with **real estate**',
-    imageAlt: 'A hand holding a set of house keys beside a front door',
-    body: 'Real estate is our first market. Property management runs on high-volume, repeatable admin, which is exactly the kind of work AI roles and trained operators are built for.',
-    listIntro: 'Roles we set up for agencies include:',
-    list: [
-      'Drafting routine inspection reports for review',
-      'Tracking rent arrears and preparing reminders',
-      'Sorting and routing the property management inbox',
-      'Drafting replies to leasing enquiries',
-      'Logging and following up maintenance requests',
-      'Preparing owner and landlord reports',
+  interlude: {
+    h2: 'AI does the volume. **People own the outcome.**',
+    body: 'AI drafts the work. A trained person checks every detail before it reaches you.',
+  },
+
+  useCases: {
+    eyebrow: 'What we take on',
+    h2: 'Different businesses. **The same back office.**',
+    intro:
+      'Every business has admin that is repetitive and still has to be right. These are examples of the work an AI Role drafts and an operator checks.',
+    listLabel: 'Examples by kind of business',
+    labels: { work: 'The work', ai: 'AI Role drafts', check: 'Operator checks', result: 'You get' },
+    /** Examples of the kind of work, not clients or case studies. */
+    items: [
+      {
+        key: 'accounting',
+        for: 'Accounting practices',
+        work: 'Supplier bills and receipts',
+        ai: 'Reads each bill, codes it and prepares it for entry.',
+        check: 'Amounts, GST and supplier details against the original.',
+        result: 'Bills entered and ready for you to approve.',
+      },
+      {
+        key: 'trades',
+        for: 'Trades and construction',
+        work: 'Quotes, job sheets and invoices',
+        ai: 'Turns job notes into quotes and invoices, and drafts follow-ups for quotes with no reply.',
+        check: 'Prices against your rate card and the job notes.',
+        result: 'Quotes and invoices ready to send, in your templates.',
+      },
+      {
+        key: 'retail',
+        for: 'Online retail',
+        work: 'The customer inbox',
+        ai: 'Sorts every email and drafts replies about orders, returns and delivery.',
+        check: 'Order details, refund amounts and tone.',
+        result: 'Replies ready to send, with anything unusual flagged to you.',
+      },
+      {
+        key: 'professional',
+        for: 'Professional services',
+        work: 'Client intake and onboarding',
+        ai: 'Pulls the details from each enquiry into your intake forms and drafts the welcome pack.',
+        check: 'Names, dates and contact details against the enquiry.',
+        result: 'New client files ready for your team to review.',
+      },
+      {
+        key: 'property',
+        for: 'Property management',
+        work: 'Arrears and inspection reports',
+        ai: 'Works out who is behind on rent, drafts the reminders and writes up inspection notes.',
+        check: 'Every amount and date against the ledger and the notes.',
+        result: 'Reminders and reports ready for the property manager to approve.',
+      },
+      {
+        key: 'any',
+        for: 'Any growing business',
+        work: 'Debtors and weekly reporting',
+        ai: 'Builds the weekly numbers and drafts reminders for overdue invoices.',
+        check: 'Every figure against your accounting system.',
+        result: 'A report you can rely on, and reminders ready to send.',
+      },
     ],
-    closing: "Not in real estate? If your team has repeatable back-office work, we'd like to hear about it.",
+    note: 'Examples of the kind of work we take on, not client case studies.',
+    closing: "Don't see your business here? If the work is repeatable, tell us about it.",
+    closingButton: 'Talk to us',
     /** showProof */
     proof: '[[TBC: client case study, approved in writing by the client — EC]]',
   },
@@ -258,8 +322,8 @@ export const content = {
         a: 'An AI Role is one tool for one job that your team runs. An Effective Business Unit is a managed service: a {SITE_NAME} operator runs several AI roles for you and owns the result.',
       },
       {
-        q: 'Is this only for real estate?',
-        a: 'No. Real estate is where we started. The same approach suits any business with repeatable back-office work.',
+        q: 'What kinds of business do you work with?',
+        a: "Any business with back-office work that is repetitive and has to be right: practices, trades, retailers, property managers and more. If the work gets done the same way every week, it's worth a conversation.",
       },
       {
         q: 'Where is the team based?',
@@ -285,7 +349,6 @@ export const content = {
   footer: {
     contactHeading: 'Contact',
     navHeading: 'On this page',
-    imagery: 'Photos are illustrative stock images.',
     copyright: '© {YEAR} {SITE_NAME}',
     /** showPrivacyPage */
     privacy: 'Privacy',

@@ -167,22 +167,22 @@ const realBase = 'http://localhost:4321';
   const expected = [];
   const push = (t) => expected.push(fill(t));
   content.header.nav.forEach((n) => push(n.label)); push(content.header.button); push(content.ui.skipLink);
-  const h = content.hero; [h.kicker, h.h1, h.subhead, h.primary, h.secondary, ...h.legend].forEach(push);
-  content.marquee.items.forEach(push);
+  const h = content.hero; [h.kicker, h.h1, h.subhead, h.primary, h.secondary, ...h.legend, h.board.title, h.board.note, h.board.srSummary].forEach(push);
   const pr = content.problem; [pr.eyebrow, pr.h2, ...pr.paragraphs, ...pr.pile, pr.pileStatus, pr.pileLabel].forEach(push);
   const dm = content.demo; [dm.eyebrow, dm.h2, dm.intro, dm.srSummary, dm.draftTitle, dm.suggestion, dm.failNote, dm.signoff, dm.note, dm.replay, ...dm.checks].forEach(push);
-  const md = content.model; [md.eyebrow, md.h2, md.intro, md.rule, md.stepsTitle, ...md.parts.flatMap((p) => [p.title, p.body]), ...md.steps.flatMap((s) => [s.title, s.body])].forEach(push);
+  const il = content.interlude; [il.h2, il.body].forEach(push);
+  const md = content.model; [md.eyebrow, md.h2, md.intro, md.stepsTitle, ...md.parts.flatMap((p) => [p.title, p.body]), ...md.steps.flatMap((s) => [s.title, s.body])].forEach(push);
   const cp = content.compare; [cp.eyebrow, cp.h2, cp.intro, cp.colThem, cp.colUs, ...cp.rows.flatMap((r) => [r.topic, r.them, r.us])].forEach(push);
   const o = content.offers; [o.eyebrow, o.h2, o.intro, ...o.cards.flatMap((c) => [c.name, c.body, c.bestFor, c.button])].forEach(push);
-  const re = content.realEstate; [re.eyebrow, re.h2, re.body, re.listIntro, ...re.list, re.closing].forEach(push);
+  const uc = content.useCases; [uc.eyebrow, uc.h2, uc.intro, uc.note, uc.closing, ...Object.values(uc.labels), ...uc.items.flatMap((i) => [i.for, i.work, i.ai, i.check, i.result])].forEach(push);
   const fq = content.faq; [fq.eyebrow, fq.h2, fq.aside, fq.asideButton, ...fq.items.filter((i) => !i.flag).flatMap((i) => [i.q, i.a])].forEach(push);
   const fc = content.finalCta; [fc.h2, fc.body, fc.button, fc.emailLine].forEach(push);
-  const ft = content.footer; [ft.contactHeading, ft.navHeading, ft.imagery, ft.copyright].forEach(push);
+  const ft = content.footer; [ft.contactHeading, ft.navHeading, ft.copyright].forEach(push);
   const missing = expected.filter((t) => !text.includes(norm(t)));
   check(REAL, 'every section renders its Appendix A copy word for word', missing.length === 0, missing.length ? `missing: ${missing.slice(0, 4).join(' | ')}` : `${expected.length} strings`);
 
   // Flagged copy must NOT show with flags off.
-  const flagged = [h.location, o.cards[0].price, re.proof, fq.items.find((i) => i.flag).q, fc.booking, siteConfig.LEGAL_ENTITY, content.footer.privacy];
+  const flagged = [h.location, o.cards[0].price, uc.proof, fq.items.find((i) => i.flag).q, fc.booking, siteConfig.LEGAL_ENTITY, content.footer.privacy];
   const leaked = flagged.filter((t) => visible.includes(norm(fill(t))) && t !== content.footer.privacy);
   check(REAL, 'flagged content hidden while flags are off', leaked.length === 0, leaked.join(' | '));
   // The demo's sample amounts use "$", so look for price wording instead.
