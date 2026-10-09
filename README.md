@@ -4,7 +4,7 @@ One-page sales site for Me² ("Me Squared"), which sets up AI roles for repetiti
 
 Built with Astro + TypeScript and Tailwind CSS v4, as a static site. **Live at https://mesquaredagency.com** on Cloudflare Workers (static assets) in the Me² account; how to publish is in [DEPLOY.md](DEPLOY.md). No CMS, database or third-party scripts. Full spec: [BRIEF.md](BRIEF.md). Standing rules for future changes: [CLAUDE.md](CLAUDE.md).
 
-**Look:** an established business-services style (EC's reference was intelligentoffice.com): a navy hero headed "AI does the volume. People own the outcome." with floating icons, light-and-bold headings, white cards on soft grey, steel-blue buttons. The me² logo's navy and coral run through it.
+**Look ("Squared", BRIEF §5):** Me² = me, squared. The hero is a square of tasks that AI outlines and a human-check line makes solid, finished by the coral ² square. Near-black and ivory, hairlines, Instrument Serif headlines with italic emphasis, superscript section numbers, coral only for the ² and caught errors.
 
 **Content rules:** real claims only (no invented numbers, testimonials or clients). Stock photos are illustrative and credited in [docs/media.md](docs/media.md). Never copy competitors.
 
@@ -58,6 +58,7 @@ Tick only what has been checked.
 - [x] Checked on the temporary workers.dev address before connecting the domain (9 Oct 2026)
 - [ ] Test email sent to hello@mesquaredagency.com and answered (the only way in until the form ships)
 - [ ] Six real estate roles and the "a person checks it" promise confirmed deliverable (BRIEF §13 #2)
+- [ ] Five handbook statements on the live page confirmed by EC (see DECISIONS.md, 9 Oct 2026)
 - [ ] Lawyer check that the real estate roles read as admin support (BRIEF §13 #8)
 - [x] mesquaredagency.com connected with HTTPS; `www` and `http://` redirect to https://mesquaredagency.com in one 301 (checked 9 Oct 2026)
 - [x] Google email DNS records (MX, SPF, DKIM, DMARC, verification) unchanged after the switch (checked 9 Oct 2026)

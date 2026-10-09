@@ -39,3 +39,4 @@ Judgement calls made during the build, newest last.
 | 9 Oct 2026 | Fonts: Instrument Serif (headlines, OFL) added via `@fontsource/instrument-serif`; Outfit removed | Instrument Serif pairs with the existing Instrument Sans and gives the editorial, classic feel asked for |
 | 9 Oct 2026 | Offer photos and chip lists removed; the real estate photo shown in black and white | Streamlined: fewer elements, one image, colour reserved for the ² |
 | 9 Oct 2026 | Removed unused components (Pillars, Problem, HowItWorks, Icon) | Replaced by the new sections |
+| 9 Oct 2026 | "Squared" design published to mesquaredagency.com from branch `redesign-wow` (Worker version eedb4ba3) on EC's "publish" | EC approved the preview. EC did not separately confirm the five handbook statements listed above; they are live as written and should still be confirmed |
