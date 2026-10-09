@@ -46,7 +46,7 @@ export const content = {
   hero: {
     h1: 'We run the back office. **You run the business.**',
     subhead:
-      '{SITE_NAME} takes the repetitive admin off your team: invoices, inboxes, reports, data entry and follow-ups. AI does the first draft, a trained operator checks every detail, and the work comes back done.',
+      '{SITE_NAME} takes the repetitive admin off your team: invoices, inboxes, reports, data entry and follow‑ups. AI does the first draft, a trained operator checks every detail, and the work comes back done.',
     kicker: 'Managed back-office services',
     primary: 'Talk to us',
     secondary: 'See what we take on',

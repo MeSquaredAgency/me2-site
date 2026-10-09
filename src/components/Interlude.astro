@@ -32,16 +32,16 @@ const words = [
 <style>
   .interlude { padding-block: clamp(120px, 15vw, 220px); border-bottom: 1px solid var(--color-line); }
   .say {
-    font-size: clamp(3.1rem, 9.6vw, 10.5rem); line-height: 0.95; letter-spacing: -0.035em;
-    text-wrap: initial;
+    font-size: clamp(3.1rem, 8.4vw, 7.8rem); line-height: 0.95; letter-spacing: -0.035em;
+    text-wrap: balance;
   }
   /* Each word is a little window its text rises through; padding leaves room for italic overhang. */
   .wd { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 0.08em 0.1em 0; margin: 0 -0.08em -0.1em 0; }
   .wd > span { display: inline-block; }
   .em { font-style: italic; }
   .wd.last > span::after {
-    content: ''; display: inline-block; width: 0.15em; height: 0.15em; margin-left: 0.05em;
-    background: var(--color-coral); vertical-align: 0.62em;
+    content: ''; display: inline-block; width: 0.13em; height: 0.13em; margin-left: 0;
+    background: var(--color-coral); vertical-align: 0.55em;
   }
   .body { margin-top: 56px; max-width: 34ch; font-size: clamp(1.15rem, 1.6vw, 1.45rem); color: var(--color-muted); }
 
