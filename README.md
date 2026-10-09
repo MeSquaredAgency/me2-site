@@ -47,7 +47,7 @@ Then open http://localhost:4321.
 - **Photos and logo:** [docs/media.md](docs/media.md). Files still to come: [docs/supplied-assets.md](docs/supplied-assets.md).
 - **Adding a page:** add its path, title and description to `src/data/routes.json`, create `src/pages/<name>.astro` using `Base`, `Header` and `Footer`, and link to it from the footer. The sitemap picks it up automatically.
 
-Every change goes on a branch with a pull request. Check the branch with `git branch --show-current` before committing. Once `main` is connected to Cloudflare, merging to it deploys the live site.
+Every change goes on a branch with a pull request. Check the branch with `git branch --show-current` before committing. Code: https://github.com/MeSquaredAgency/me2-site (private). Cloudflare publishes `main` to the live site and gives every other branch a preview link ([DEPLOY.md](DEPLOY.md)).
 
 ## Launch checklist
 Tick only what has been checked.
