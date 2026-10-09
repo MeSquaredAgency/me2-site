@@ -14,7 +14,7 @@ One-page sales site for Me² (mesquaredagency.com). Primary goal: the visitor cl
 - Visible name is always `Me²`. "Me Squared" only in alternateName, aria-labels and mailto subjects. Never ME2, Me2, MeSquared.
 - Australian English, sentence case, plain-spoken. Banned words: revolutionary, game-changing, supercharge, seamless, cutting-edge, unlock, guarantee, guaranteed. Grep changed copy before committing.
 - Never invent names, testimonials, statistics, results, logos or prices. Never name individuals. Real estate appears only in its own section.
-- No stock photos, AI-generated people or property imagery. Never use the designer's reflected "we" logo concept or the "from me to we." tagline (not approved).
+- Stock photos only as credited atmosphere (docs/media.md); no AI-generated people; never stock people as staff or testimonials. Never use the designer's reflected "we" logo concept or the "from me to we." tagline (not approved).
 - Forms collect contact details and a short task description only; never fields for financial, health or identity information.
 
 ## Design

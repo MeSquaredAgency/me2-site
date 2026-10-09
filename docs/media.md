@@ -8,14 +8,13 @@ All from Unsplash under the [Unsplash License](https://unsplash.com/license): fr
 
 | File (`src/assets/photos/`) | Where it shows | Photographer | Source |
 | --- | --- | --- | --- |
-| `hero-office.jpg` | Hero background, under a heavy navy tint | Mario Gogh | https://unsplash.com/photos/VBLHICVh-lI |
 | `offer-ai-roles.jpg` | AI Roles card | Mikey Harris | https://unsplash.com/photos/kw0z6RyvC0s |
 | `offer-ebu.jpg` | Effective Business Units card | Compagnons | https://unsplash.com/photos/Fa9b57hffnM |
 | `real-estate-keys.jpg` | "Starting with real estate" photo card | Maria Ziegler | https://unsplash.com/photos/jJnZg7vBfMs |
 
-The originals were downloaded at 2400px wide and saved with their metadata stripped. Astro makes resized AVIF/WebP copies at build time, so the page only loads the size each screen needs. The hero photo loads first; the others load as you scroll.
+The originals were downloaded at 2400px wide and saved with their metadata stripped. Astro makes resized AVIF/WebP copies at build time, so the page only loads the size each screen needs. They load as you scroll. The hero has no photo (EC preferred the plain navy version on 9 Oct).
 
-**Swapping a photo:** save the new photo over the file with the same name (landscape, at least 2000px wide), rebuild, and update this table. Keep the hero photo dark and uncluttered so the white headline stays readable.
+**Swapping a photo:** save the new photo over the file with the same name (landscape, at least 2000px wide), rebuild, and update this table.
 
 ## Logo
 | File | What it is |

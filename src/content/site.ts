@@ -44,7 +44,7 @@ export const content = {
   },
 
   hero: {
-    h1: 'The back-office work that buries your team, **handled.**',
+    h1: 'AI does the volume. **People own the outcome.**',
     subhead:
       '{SITE_NAME} sets up AI roles for the repetitive work, and trained operators to run them and check what they produce. You get the work done without hiring for it or babysitting another tool.',
     primary: 'Talk to us',
@@ -74,7 +74,7 @@ export const content = {
 
   how: {
     eyebrow: 'How it works',
-    h2: 'AI does the volume. **People own the outcome.**',
+    h2: 'The back-office work that buries your team, **handled.**',
     stepLabel: 'Step',
     cta: 'Talk to us',
     intro: "We don't hand you software and walk away. We take on the work.",

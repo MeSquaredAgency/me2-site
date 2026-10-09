@@ -25,3 +25,4 @@ Judgement calls made during the build, newest last.
 | 9 Oct 2026 | Hero bubbles keep their gentle float with `will-change: transform` | Without it the float cost about 10 mobile Lighthouse points; with it mobile scores 91–98 |
 | 9 Oct 2026 | Lighthouse runs through its Node API against Edge launched by Playwright; mobile takes the median of 3 runs | The CLI couldn't attach to Edge; single mobile runs swung 82–94 with PC load |
 | 9 Oct 2026 | Dev dependencies added: `@axe-core/playwright`, `lighthouse`, `linkinator` (all allowed by BRIEF §3) | `npm run verify` |
+| 9 Oct 2026 | Hero headline is now "AI does the volume. People own the outcome.", left-aligned with the bubbles on the right and no photo, like the link-preview image; the old H1 heads How it works. `hero-office.jpg` removed | EC: "I prefer your AI does the volume, people own the outcome hero". Swapping the two approved lines needed no new copy |

@@ -4,7 +4,7 @@ One-page sales site for Me² ("Me Squared"), which sets up AI roles for repetiti
 
 Built with Astro + TypeScript and Tailwind CSS v4, as a static site for Cloudflare Pages. No CMS, database or third-party scripts. Full spec: [BRIEF.md](BRIEF.md). Standing rules for future changes: [CLAUDE.md](CLAUDE.md).
 
-**Look:** an established business-services style (EC's reference was intelligentoffice.com): navy hero with a tinted photo and floating icons, light-and-bold headings, white cards on soft grey, steel-blue buttons. The me² logo's navy and coral run through it.
+**Look:** an established business-services style (EC's reference was intelligentoffice.com): a navy hero headed "AI does the volume. People own the outcome." with floating icons, light-and-bold headings, white cards on soft grey, steel-blue buttons. The me² logo's navy and coral run through it.
 
 **Content rules:** real claims only (no invented numbers, testimonials or clients). Stock photos are illustrative and credited in [docs/media.md](docs/media.md). Never copy competitors.
 

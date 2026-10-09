@@ -1,5 +1,7 @@
-# Me² — Build Brief v0.9
+# Me² — Build Brief v0.10
 Owner: Elliot Crabb (EC) · Decision-maker: Patrick · Date: 9 Oct 2026 · Mode: New build
+
+v0.10 (9 Oct 2026): EC preferred the "AI does the volume. People own the outcome." hero from the link-preview image. The hero is now that headline, left-aligned, with the icon bubbles grouped on the right and no photo; "The back-office work that buries your team, handled." moves to head How it works.
 
 v0.9 (9 Oct 2026): EC approved the v0.8 direction ("yeah sure"), approved licensed stock photos, and asked that the logo not be forgotten. Adds four Unsplash photos (§5 Imagery), a vector logo traced from the supplied PNG and used in the header, footer, favicon, OG image and `/logo.png`, and copy for the remaining sections (Appendix A: offers, real estate, FAQ, footer).
 
@@ -114,8 +116,8 @@ Copy in Appendix A writes `{SITE_NAME}`, `{SITE_NAME_PLAIN}`, `{CONTACT_EMAIL}`,
 - Buttons: radius 10px, min height 48px (44px in the header), Outfit 600. Primary = steel with white text. Secondary on dark = 1.5px white outline; on light = 1.5px navy outline. No icons in labels.
 - Type: headings in Outfit Variable (OFL, `@fontsource-variable/outfit`), weight 300 with the emphasised part at 600; body in Instrument Sans Variable 400/600. Both self-hosted, latin subset, preloaded. Scale: H1 `clamp(2.5rem, 5.6vw, 4.5rem)`/1.08; H2 `clamp(1.9rem, 3.4vw, 2.75rem)`/1.15; H3 1.3rem 600; body 17px/1.65; eyebrow 0.78rem 600, letter-spacing 0.24em, uppercase.
 - Headings in Appendix A mark their bold part with `**…**`; render it as `<strong>`. Hyphenated words never break across lines.
-- Hero: full-height navy with two soft radial glows, centred copy, and decorative floating circles holding line icons (inbox, report, money, chat, chart, person-check), plus faint orbit rings. Three circles on phones, none behind text. Gentle float animation, off for reduced motion.
-- Imagery: no Me² photography exists yet. Four licensed Unsplash photos (EC approved 9 Oct) set the mood: a dim office behind the hero (tinted navy to 80–88% so white text passes contrast over its busiest part), a laptop by a window (AI Roles card), people at screens seen from behind (Effective Business Units card) and keys at a front door (real estate photo card). They are atmosphere only, credited in `docs/media.md`, never captioned as Me²'s team, office or clients, and the footer says "Photos are illustrative stock images." Drawn illustrations (icon bubbles, the "work piling up" card stack) carry the rest. No stock or AI-generated people as staff or testimonials. Real Me² photos replace stock as soon as they exist.
+- Hero: full-height navy with two soft radial glows (no photo), matching the link-preview image. Left-aligned H1 in two lines: "AI does the volume." light white, "People own the outcome." bold pale blue on its own line. The right 46% holds decorative floating circles with line icons (report, person-check, inbox, money, chat) and a faint orbit ring, clear of the nav and text. Phones: three small faint circles along the top-right, above the headline. Gentle float, off for reduced motion.
+- Imagery: no Me² photography exists yet. Three licensed Unsplash photos (EC approved 9 Oct) set the mood: a laptop by a window (AI Roles card), people at screens seen from behind (Effective Business Units card) and keys at a front door (real estate photo card). They are atmosphere only, credited in `docs/media.md`, never captioned as Me²'s team, office or clients, and the footer says "Photos are illustrative stock images." Drawn illustrations (icon bubbles, the "work piling up" card stack) carry the rest. No stock or AI-generated people as staff or testimonials. Real Me² photos replace stock as soon as they exist.
 - Icons: drawn for this site (`src/components/Icon.astro`), 24px grid, 1.6 stroke. No icon library.
 - Logo: vector SVGs traced from the supplied me² PNG (`src/assets/brand/me2-logo.svg`, navy "me"; `me2-logo-light.svg`, white "me"; coral "2" in both), inlined in the header (40px, 32px on phones) and footer (44px). `npm run brand` makes `/logo.png` (1200px), the favicons and the OG image from them. A designer master SVG replaces the traced ones when supplied. Never the reflected "we" concept or the "from me to we." tagline (not approved; §13 #9).
 - Spacing: section padding 110px desktop / 72px phone; content max width 1140px; side padding 20px phone / 40px desktop. Radius 14px small, 24px cards and panels. Soft, low card shadow.
@@ -131,7 +133,7 @@ Section order below. Backgrounds alternate ink/paper from the sections actually 
 
 ### 6.2 Hero
 - Purpose: say what Me² does in one breath and get the click. Copy: A.2
-- Layout: centred H1 (max 17ch, emphasised word in pale), subhead (on-dark, max 58ch), primary button + white-outline "See how it works" (anchors to `#how`), location line below. Decorative bubbles and rings per §5.
+- Layout: left-aligned H1 (two lines, bold line in pale), subhead (on-dark, max 52ch), primary button + white-outline "See how it works" (anchors to `#how`), location line below. Decorative bubbles and ring on the right per §5.
 - Flag: `showLocations` controls the location line. If off: not rendered.
 
 ### 6.2b Pillars band
@@ -321,7 +323,7 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
 - Button: `Talk to us`
 
 ### A.2 Hero
-- H1: `The back-office work that buries your team, **handled.**`
+- H1: `AI does the volume. **People own the outcome.**`
 - Subhead: `{SITE_NAME} sets up AI roles for the repetitive work, and trained operators to run them and check what they produce. You get the work done without hiring for it or babysitting another tool.`
 - Primary button: `Talk to us`
 - Secondary link: `See how it works`
@@ -342,7 +344,7 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
 
 ### A.4 How it works
 - Eyebrow: `How it works`
-- H2: `AI does the volume. **People own the outcome.**`
+- H2: `The back-office work that buries your team, **handled.**`
 - Step labels: `Step 1`, `Step 2`, `Step 3`
 - Button after the steps: `Talk to us`
 - Intro: `We don't hand you software and walk away. We take on the work.`
