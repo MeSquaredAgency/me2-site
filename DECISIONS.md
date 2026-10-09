@@ -47,3 +47,4 @@ Judgement calls made during the build, newest last.
 | 9 Oct 2026 | Footer note "Photos are illustrative stock images." removed | No stock photos remain on the page |
 | 9 Oct 2026 | Design kept within "Squared" and drawn from Me² itself (the Command Centre, the ² square); apnre.com.au used only as a bar for craft | EC: "Don't copy APNRE site as this is an entirely different business with a different client base and it's own individuality." |
 | 9 Oct 2026 | Italic serif font now preloaded | The hero's italic line is above the fold; without the preload it caused a 0.12 layout shift on mobile |
+| 9 Oct 2026 | v0.13 published to mesquaredagency.com from branch `hero-says-what-we-do` (Worker version a32d4082, commit 443c525) on EC's "Just push it live - it isn't advertised or known about yet" | The six use-case examples, the board's sample tasks and the five handbook statements are live but still to be confirmed by EC (BRIEF §13 #2) |
