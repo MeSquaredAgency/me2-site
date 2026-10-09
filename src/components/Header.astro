@@ -6,7 +6,7 @@ import { content } from '../content/site';
 const c = content.header;
 ---
 <a class="skip-link" href="#main">{content.ui.skipLink}</a>
-<header class="site-header on-dark">
+<header class="site-header on-dark" data-header>
   <div class="wrap bar">
     <a href="/" class="home" aria-label={fill(content.ui.logoHomeLabel)}>
       <Logo tone="light" height={40} class="header-logo" />
@@ -19,9 +19,28 @@ const c = content.header;
     <EmailLink subject={content.ui.subjects.general} class="btn btn-primary header-cta">{c.button}</EmailLink>
   </div>
 </header>
+<script>
+  // Frosted header once the page has scrolled past the top.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  if (header) {
+    const set = () => header.classList.toggle('is-scrolled', scrollY > 24);
+    addEventListener('scroll', set, { passive: true });
+    set();
+  }
+</script>
 <style>
-  .site-header { position: absolute; inset: 0 0 auto; z-index: 10; }
-  .bar { display: flex; align-items: center; gap: 24px; padding-block: 20px; }
+  .site-header {
+    position: fixed; inset: 0 0 auto; z-index: 20;
+    transition: background-color 250ms ease, backdrop-filter 250ms ease, box-shadow 250ms ease;
+  }
+  .site-header.is-scrolled {
+    background: rgb(10 21 32 / 0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    box-shadow: 0 1px 0 rgb(185 211 224 / 0.12);
+  }
+  .site-header.is-scrolled .bar { padding-block: 12px; }
+  .bar { display: flex; align-items: center; gap: 24px; padding-block: 20px; transition: padding 250ms ease; }
   .home { display: inline-flex; padding: 4px 0; margin-right: auto; }
   .nav ul { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; }
   .nav a {

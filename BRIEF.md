@@ -1,5 +1,7 @@
-# Me² — Build Brief v0.10
+# Me² — Build Brief v0.11 (redesign proof)
 Owner: Elliot Crabb (EC) · Decision-maker: Patrick · Date: 9 Oct 2026 · Mode: New build
+
+v0.11 (9 Oct 2026, branch `redesign-wow`, NOT live): EC: "It needs bulking out massively… look to awwwards.com business/corporate… show how capable we are. It needs to wow every visitor." Proof adds a live canvas hero (task particles pass a "human check" gate; coral errors are caught), a scrolling work band, a scroll-lit "Admin grows faster than headcount" statement, an interactive demo (an AI Role drafts an arrears summary; the operator check catches $1,200 vs the ledger's $1,020, corrects it and signs off; labelled as made-up sample data), the four-part operating model and eight-step workflow, and a "typical VA service vs Me²" comparison. New copy is drawn from the Me² Company Handbook (Draft v0.1, 3 Oct 2026); statements EC must confirm before launch are listed in DECISIONS.md. Next (after approval): redesign services, real estate, FAQ and CTA in the same style and add pages (How we work, Services, Real estate, Security & data, Contact).
 
 v0.10 (9 Oct 2026): EC preferred the "AI does the volume. People own the outcome." hero from the link-preview image. The hero is now that headline, left-aligned, with the icon bubbles grouped on the right and no photo; "The back-office work that buries your team, handled." moves to head How it works.
 

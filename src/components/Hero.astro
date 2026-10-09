@@ -1,122 +1,231 @@
 ---
 import EmailLink from './EmailLink.astro';
 import Emph from './Emph.astro';
-import Icon, { type IconName } from './Icon.astro';
 import { fill, flags } from '../config';
 import { content } from '../content/site';
 const c = content.hero;
-
-/**
- * Decorative floating bubbles, grouped on the right like the link-preview image:
- * the kinds of back-office work Me² takes on. Positions are % of the bubble field.
- */
-type Bubble = { icon?: IconName; size: number; x: string; y: string; delay: number; phone?: [size: number, x: string, y: string] };
-const bubbles: Bubble[] = [
-  { icon: 'report', size: 168, x: '46%', y: '24%', delay: 0, phone: [64, '86%', '34%'] },
-  { icon: 'personCheck', size: 112, x: '18%', y: '66%', delay: 1.4, phone: [44, '70%', '18%'] },
-  { icon: 'inbox', size: 74, x: '82%', y: '72%', delay: 0.7, phone: [36, '94%', '82%'] },
-  { icon: 'coins', size: 62, x: '90%', y: '44%', delay: 2.2 },
-  { icon: 'chat', size: 56, x: '58%', y: '90%', delay: 1.1 },
-  { size: 16, x: '12%', y: '22%', delay: 0.4 },
-  { size: 12, x: '72%', y: '48%', delay: 1.8 },
-  { size: 10, x: '36%', y: '96%', delay: 2.6 },
-];
 ---
-<section class="hero on-dark" aria-labelledby="hero-title">
-  <div class="field" aria-hidden="true">
-    <span class="halo"></span>
-    {bubbles.map((b) => (
-      <span
-        class:list={['bubble', { dot: !b.icon, 'show-phone': !!b.phone }]}
-        style={`--ds:${b.size}px;--dx:${b.x};--dy:${b.y};animation-delay:-${b.delay}s` +
-          (b.phone ? `;--ps:${b.phone[0]}px;--px:${b.phone[1]};--py:${b.phone[2]}` : '')}
-      >
-        {b.icon && <Icon name={b.icon} size={24} />}
-      </span>
-    ))}
+<section class="hero on-dark" aria-labelledby="hero-title" data-hero>
+  <!--
+    The live picture of the promise: task particles stream in (the volume), pass a glowing
+    human checkpoint, and leave in ordered lanes. Coral particles are errors the check catches.
+    Decorative only; a static frame is drawn for reduced motion.
+  -->
+  <canvas class="flow" aria-hidden="true" data-flow></canvas>
+  <div class="veil" aria-hidden="true"></div>
+  <div class="gate-label" aria-hidden="true">
+    <span class="gate-dot"></span>{c.gateLabel}
   </div>
   <div class="wrap inner">
+    <p class="kicker"><span class="pulse" aria-hidden="true"></span>{c.kicker}</p>
     <h1 id="hero-title"><Emph text={c.h1} /></h1>
     <p class="subhead">{fill(c.subhead)}</p>
     <div class="actions">
-      <EmailLink subject={content.ui.subjects.general} class="btn btn-primary">{c.primary}</EmailLink>
-      <a href="#how" class="btn btn-outline-light">{c.secondary}</a>
+      <EmailLink subject={content.ui.subjects.general} class="btn btn-primary btn-lg">{c.primary}</EmailLink>
+      <a href="#demo" class="btn btn-outline-light btn-lg">{c.secondary}</a>
     </div>
     {flags.showLocations && <p class="location">{c.location}</p>}
   </div>
+  <a href="#problem" class="scroll-cue" aria-label={c.scrollLabel}>
+    <span aria-hidden="true"></span>
+  </a>
 </section>
+
+<script>
+  // Flow-field hero. Plain canvas 2D, no libraries. Pauses off-screen and when the tab is hidden.
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-flow]');
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (canvas && hero) {
+    const ctx = canvas.getContext('2d')!;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    type P = { x: number; y: number; vy: number; seed: number; lane: number; err: boolean; held: number; done: boolean; size: number };
+    let W = 0, H = 0, dpr = 1, gateX = 0, lanes: number[] = [], ps: P[] = [], running = false, raf = 0, t = 0;
+
+    const rand = (a: number, b: number) => a + Math.random() * (b - a);
+    const spawn = (p?: P, anywhere = false): P => {
+      const q = p ?? ({} as P);
+      q.x = anywhere ? rand(-W * 0.1, W) : rand(-80, -10);
+      q.y = rand(H * 0.08, H * 0.92);
+      q.vy = 0;
+      q.seed = rand(0, 1000);
+      q.lane = lanes[Math.floor(Math.random() * lanes.length)];
+      q.err = Math.random() < 0.06;
+      q.held = 0;
+      q.done = q.x > gateX;
+      q.size = rand(0.8, 1.9);
+      if (q.done) q.y = q.lane;
+      return q;
+    };
+
+    const resize = () => {
+      const r = hero.getBoundingClientRect();
+      W = r.width; H = r.height;
+      // Phones draw at a lower resolution: the trails look the same and it costs far less.
+      dpr = Math.min(devicePixelRatio || 1, W < 900 ? 1.25 : 2);
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const phone = W < 900;
+      gateX = W * (phone ? 0.8 : 0.66);
+      hero.style.setProperty('--gate-x', gateX + 'px');
+      const n = phone ? 7 : 11;
+      const top = H * 0.2, bottom = H * 0.8;
+      lanes = Array.from({ length: n }, (_, i) => top + ((bottom - top) * i) / (n - 1));
+      const count = Math.round(Math.min(1100, (W * H) / (phone ? 1400 : 1150)));
+      ps = Array.from({ length: count }, () => spawn(undefined, true));
+    };
+
+    const draw = () => {
+      t += 1;
+      // Soft trail: fade the previous frame instead of clearing it.
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0,0,0,0.22)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
+
+      // The checkpoint: a soft vertical beam.
+      const g = ctx.createLinearGradient(gateX - 40, 0, gateX + 40, 0);
+      g.addColorStop(0, 'rgba(185,211,224,0)');
+      g.addColorStop(0.5, 'rgba(185,211,224,0.05)');
+      g.addColorStop(1, 'rgba(185,211,224,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(gateX - 40, 0, 80, H);
+
+      for (const p of ps) {
+        if (!p.done) {
+          // Before the check: drifting, tangled, the "volume".
+          const speed = 1.1 + (p.x / gateX) * 1.4;
+          p.vy += Math.sin(p.seed + p.x * 0.012 + t * 0.01) * 0.06;
+          p.vy *= 0.94;
+          p.y += p.vy;
+          // Funnel gently towards the band of lanes as particles approach the gate.
+          const pull = Math.max(0, (p.x - gateX * 0.55) / (gateX * 0.45));
+          p.y += (p.lane - p.y) * 0.012 * pull;
+          p.x += speed;
+          if (p.x >= gateX) {
+            if (p.err && p.held < 38) { p.held++; p.x = gateX; } // caught and checked
+            else { p.done = true; p.err = false; }
+          }
+          const a = 0.22 + 0.4 * (p.x / gateX);
+          ctx.fillStyle = p.err ? `rgba(231,120,92,${0.55 + 0.45 * (p.held > 0 ? Math.abs(Math.sin(p.held * 0.3)) : 0.5)})` : `rgba(185,211,224,${a})`;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.err ? p.size + 0.8 : p.size, 0, Math.PI * 2); ctx.fill();
+        } else {
+          // After the check: straight, even, done.
+          p.y += (p.lane - p.y) * 0.18;
+          p.x += 3.2;
+          ctx.fillStyle = 'rgba(214,232,242,0.85)';
+          ctx.fillRect(p.x, p.y - 0.6, 3.2, 1.2);
+          if (p.x > W + 20) spawn(p);
+        }
+      }
+
+      // Gate line on top.
+      ctx.globalCompositeOperation = 'source-over';
+      const line = ctx.createLinearGradient(0, H * 0.1, 0, H * 0.9);
+      line.addColorStop(0, 'rgba(185,211,224,0)');
+      line.addColorStop(0.5, 'rgba(214,232,242,0.75)');
+      line.addColorStop(1, 'rgba(185,211,224,0)');
+      ctx.fillStyle = line;
+      ctx.fillRect(gateX - 0.75, H * 0.1, 1.5, H * 0.8);
+    };
+
+    const loop = () => { draw(); raf = requestAnimationFrame(loop); };
+    const start = () => { if (!running && !reduce) { running = true; raf = requestAnimationFrame(loop); } };
+    const stop = () => { running = false; cancelAnimationFrame(raf); };
+
+    resize();
+    if (reduce) {
+      // A still frame that shows the idea without motion.
+      for (let i = 0; i < 140; i++) draw();
+    } else {
+      // Start after the page has painted, so the animation never slows first load.
+      const kick = () => { start(); };
+      setTimeout(() => ('requestIdleCallback' in window ? requestIdleCallback(kick, { timeout: 1500 }) : kick()), innerWidth < 900 ? 1800 : 600);
+      new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop())).observe(hero);
+      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+    }
+    let rt = 0;
+    addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(() => { resize(); if (reduce) for (let i = 0; i < 140; i++) draw(); }, 150); });
+  }
+</script>
+
 <style>
   .hero {
     position: relative;
     overflow: hidden;
     isolation: isolate;
     background:
-      radial-gradient(55% 75% at 88% 8%, rgb(36 82 122 / 0.6), transparent 70%),
-      radial-gradient(50% 60% at 0% 100%, rgb(27 56 83 / 0.8), transparent 70%),
-      var(--color-ink);
-    min-height: min(820px, 100svh);
+      radial-gradient(50% 60% at 78% 45%, rgb(36 82 122 / 0.45), transparent 70%),
+      radial-gradient(60% 70% at 0% 100%, rgb(27 56 83 / 0.7), transparent 70%),
+      var(--color-abyss);
+    min-height: max(640px, 100svh);
     display: flex;
     align-items: center;
+    --gate-x: 66%;
   }
-  .inner {
-    position: relative;
-    padding-top: 150px;
-    padding-bottom: 120px;
+  .flow { position: absolute; inset: 0; z-index: -2; }
+  /* Keeps the headline side calm and readable over the moving field. */
+  .veil {
+    position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(90deg, rgb(10 21 32 / 0.92) 0%, rgb(10 21 32 / 0.7) 38%, rgb(10 21 32 / 0) 62%);
   }
-  /* Two lines: "AI does the volume." light, "People own the outcome." bold in pale blue. */
-  h1 { max-width: 13ch; color: #fff; font-size: clamp(2.6rem, 6.4vw, 5.25rem); line-height: 1.04; }
-  h1 :global(strong) { display: block; color: var(--color-pale); }
+  .gate-label {
+    position: absolute; top: 15%; left: var(--gate-x);
+    transform: translateX(-50%);
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; border-radius: 999px;
+    background: rgb(185 211 224 / 0.1); border: 1px solid rgb(185 211 224 / 0.25);
+    color: var(--color-pale);
+    font-family: var(--font-display); font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase; white-space: nowrap;
+    backdrop-filter: blur(6px);
+  }
+  .gate-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-coral); box-shadow: 0 0 10px var(--color-coral); }
+
+  .inner { position: relative; padding-top: 140px; padding-bottom: 120px; }
+  .kicker {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-display); font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--color-pale);
+    margin-bottom: 28px;
+  }
+  .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--color-coral); position: relative; }
+  .pulse::after {
+    content: ''; position: absolute; inset: -6px; border-radius: 50%;
+    border: 1px solid var(--color-coral); opacity: 0; animation: ping 2.4s ease-out infinite;
+  }
+  @keyframes ping { 0% { transform: scale(0.4); opacity: 0.9; } 100% { transform: scale(1.6); opacity: 0; } }
+
+  h1 {
+    max-width: 15ch; color: #fff;
+    font-size: clamp(2.8rem, 7.2vw, 6.4rem); line-height: 0.98; letter-spacing: -0.035em;
+  }
+  h1 :global(strong) {
+    display: block;
+    background: linear-gradient(92deg, #d6e8f2 0%, var(--color-pale) 45%, #f0b3a2 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
   .subhead {
-    margin-top: 28px;
-    max-width: 52ch;
-    color: var(--color-on-dark);
-    font-size: clamp(1.0625rem, 1.3vw, 1.1875rem);
+    margin-top: 30px; max-width: 50ch;
+    color: var(--color-on-dark); font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
   }
-  .actions { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 14px; }
+  .actions { margin-top: 42px; display: flex; flex-wrap: wrap; gap: 14px; }
   .location { margin-top: 28px; color: var(--color-on-dark); font-size: var(--text-small); }
 
-  /* The bubble field sits on the right half; text never sits over a bubble on desktop. */
-  .field {
-    position: absolute; z-index: -1; pointer-events: none;
-    top: 0; bottom: 0; right: 0; width: 46%;
+  .scroll-cue {
+    position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%);
+    width: 28px; height: 44px; border-radius: 999px; border: 1.5px solid rgb(185 211 224 / 0.45);
+    display: grid; justify-items: center; padding-top: 8px; box-sizing: border-box;
   }
-  .halo {
-    position: absolute;
-    width: 560px; height: 560px; right: -200px; top: 70px;
-    border-radius: 50%;
-    border: 1px solid rgb(185 211 224 / 0.14);
-  }
-  .bubble {
-    /* Desktop size/position from the inline --ds/--dx/--dy; phones swap in --ps/--px/--py. */
-    --s: var(--ds); --x: var(--dx); --y: var(--dy);
-    position: absolute;
-    left: var(--x);
-    top: var(--y);
-    width: var(--s);
-    height: var(--s);
-    margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    color: var(--color-pale);
-    background: radial-gradient(circle at 30% 25%, #26445f, #172a3c 70%);
-    box-shadow: 0 0 0 1px rgb(185 211 224 / 0.14), 0 18px 40px -18px rgb(0 0 0 / 0.6);
-    animation: float 9s ease-in-out infinite;
-    will-change: transform; /* own layer: the float never repaints the page */
-  }
-  .bubble :global(svg) { width: 36%; height: 36%; }
-  .bubble.dot { background: #2b4964; box-shadow: none; }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  @media (prefers-reduced-motion: reduce) { .bubble { animation: none; } }
+  .scroll-cue span { width: 3px; height: 8px; border-radius: 2px; background: var(--color-pale); animation: cue 1.8s ease-in-out infinite; }
+  @keyframes cue { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(12px); opacity: 0; } 100% { opacity: 0; } }
 
-  /* Phones and tablets: three small, faint bubbles along the top-right edge, clear of the text. */
+  @media (prefers-reduced-motion: reduce) {
+    .pulse::after, .scroll-cue span { animation: none; }
+  }
   @media (max-width: 899px) {
-    .field { width: 100%; height: 150px; bottom: auto; top: 64px; }
-    .halo, .bubble:not(.show-phone) { display: none; }
-    .bubble { opacity: 0.55; --s: var(--ps); --x: var(--px); --y: var(--py); }
-    .inner { padding-top: 200px; padding-bottom: 88px; }
+    .veil { background: linear-gradient(180deg, rgb(10 21 32 / 0.55) 0%, rgb(10 21 32 / 0.85) 45%, rgb(10 21 32 / 0.9) 100%); }
+    .gate-label { top: 92px; }
+    .inner { padding-top: 160px; padding-bottom: 110px; }
   }
 </style>

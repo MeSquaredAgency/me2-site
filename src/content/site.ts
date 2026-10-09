@@ -47,10 +47,28 @@ export const content = {
     h1: 'AI does the volume. **People own the outcome.**',
     subhead:
       '{SITE_NAME} sets up AI roles for the repetitive work, and trained operators to run them and check what they produce. You get the work done without hiring for it or babysitting another tool.',
+    kicker: 'Back-office work, handled',
     primary: 'Talk to us',
-    secondary: 'See how it works',
+    secondary: 'See it in action',
+    /** Label on the checkpoint in the hero animation */
+    gateLabel: 'Human check',
+    scrollLabel: 'Scroll to the next section',
     /** showLocations */
     location: 'Command Centre teams in Adelaide and Phnom Penh.',
+  },
+
+  marquee: {
+    label: 'Work we take on',
+    items: [
+      'Inspection reports',
+      'Rent arrears reminders',
+      'Inbox sorting',
+      'Leasing enquiry replies',
+      'Maintenance follow-ups',
+      'Owner and landlord reports',
+      'Data entry',
+      'Weekly reporting',
+    ],
   },
 
   pillars: [
@@ -66,9 +84,88 @@ export const content = {
     /** Illustration only: the kinds of work that pile up (from the audience description). */
     pile: ['Inbox', 'Weekly reports', 'Overdue reminders', 'Data entry'],
     pileStatus: 'Waiting',
+    pileLabel: 'Work waiting on someone',
     paragraphs: [
       'Every new client brings more inbox, more reports and more chasing. Hiring to keep up is slow and expensive, and the work still lands on your best people.',
       "AI tools on their own don't fix it. Someone still has to set them up, check what they produce and fix what they get wrong. That someone is usually you.",
+    ],
+  },
+
+  demo: {
+    eyebrow: 'See it in action',
+    h2: 'One task, **start to finish.**',
+    intro: 'An AI Role drafts the work. A trained operator checks every name, date and number against the source before anything leaves. This is what that looks like.',
+    srSummary: 'Illustration: an AI Role drafts a weekly arrears summary. An operator checks it against the rent ledger, finds that the draft shows $1,200 owing for Unit 3 when the ledger shows $1,020, corrects it, completes the remaining checks and signs it off for the property manager to approve.',
+    windowTitle: 'Weekly arrears summary · sample agency',
+    roleLabel: 'AI Role · Arrears summary',
+    operatorLabel: 'Operator check',
+    draftTitle: 'Weekly arrears summary',
+    lines: [
+      { unit: 'Unit 3', days: '16 days overdue', amount: '$1,200', amountFixed: '$1,020' },
+      { unit: 'Unit 9', days: '4 days overdue', amount: '$640', amountFixed: '' },
+    ],
+    suggestion: 'Suggested next step: send the standard reminder to Unit 3.',
+    ledgerTitle: 'Source: rent ledger',
+    ledger: [
+      { unit: 'Unit 3', days: '16 days', amount: '$1,020' },
+      { unit: 'Unit 9', days: '4 days', amount: '$640' },
+    ],
+    checks: [
+      'Tenancies match the records',
+      'Days overdue match the ledger',
+      'Amounts match the ledger',
+      'Agency template and tone',
+    ],
+    failIndex: 2,
+    failNote: 'Unit 3: draft said $1,200, ledger says $1,020. Corrected.',
+    signoff: 'Checked and signed off. Ready for the property manager to approve.',
+    status: {
+      drafting: 'AI Role drafting…',
+      checking: 'Operator checking against the rent ledger…',
+      done: 'Checked and signed off',
+    },
+    note: 'Illustration with made-up sample data.',
+    replay: 'Replay the demo',
+  },
+
+  model: {
+    eyebrow: 'How we work',
+    h2: 'Every task runs on **four parts.**',
+    intro: "AI on its own makes confident mistakes. People on their own are slow and expensive. We use both, with written processes and checking, on every piece of work.",
+    parts: [
+      { title: 'AI', body: 'Drafts reports, sorts inboxes, extracts and summarises. It does the first pass, fast.' },
+      { title: 'Human judgement', body: 'A trained operator asks the question AI can\'t: does this make sense for this client, today?' },
+      { title: 'Written processes', body: 'Every repeat task has a written, approved way of doing it. If it happens more than twice a month, it gets one.' },
+      { title: 'Quality checks', body: 'Every task is checked before it goes out. A sample is checked again by someone else, and work involving money or legal notices gets a second person.' },
+    ],
+    rule: 'AI drafts. People decide.',
+    stepsTitle: 'The eight steps behind every task',
+    steps: [
+      { title: 'Understand the task', body: 'What is being asked, by whom and by when.' },
+      { title: 'Follow the process', body: 'The written process for the task. No process yet? We check before we start.' },
+      { title: 'Use approved AI', body: 'Only business AI tools we have approved, where the process allows.' },
+      { title: 'Review the output', body: 'Read every word. Check every number against the source.' },
+      { title: 'Apply judgement', body: 'Does this make sense for this client, today?' },
+      { title: 'Quality check', body: 'A self-check every time, plus a second check where the work needs one.' },
+      { title: 'Deliver', body: 'Through the channel you agreed, in your templates and tone.' },
+      { title: 'Record and flag', body: 'Log the work and raise anything unusual with you straight away.' },
+    ],
+  },
+
+  compare: {
+    eyebrow: 'Why Me²',
+    h2: 'Not an assistant to manage. **A result we own.**',
+    intro: "Most outsourcing gives you a person and leaves the managing to you. We take on the work itself, and we're responsible for getting it right.",
+    tableLabel: 'How Me² compares with a typical virtual assistant service',
+    colTopic: 'Topic',
+    colThem: 'Typical VA service',
+    colUs: 'Me²',
+    rows: [
+      { topic: 'Who manages the work', them: 'You manage the assistant', us: 'We manage the work and the people doing it' },
+      { topic: 'Where quality comes from', them: 'Whoever you happen to get', us: 'Written processes, AI and quality checks' },
+      { topic: 'When someone leaves', them: 'Their know-how leaves with them', us: 'It stays in our processes and handover notes' },
+      { topic: 'How AI is used', them: 'Informally, if at all', us: 'Built into every suitable task, with clear rules' },
+      { topic: 'What you pay for', them: 'Hours', us: 'A defined role or outcome' },
     ],
   },
 

@@ -84,7 +84,7 @@ async function layoutChecks(build, base) {
         const bad = [];
         for (let i = 1; i < secs.length; i++) {
           const a = getComputedStyle(secs[i - 1]), b = getComputedStyle(secs[i]);
-          if (a.backgroundColor === b.backgroundColor && parseFloat(a.borderBottomWidth) === 0) bad.push(`${secs[i - 1].id || secs[i - 1].className.split(' ')[0]} / ${secs[i].id || secs[i].className.split(' ')[0]}`);
+          if (a.backgroundColor === b.backgroundColor && parseFloat(a.borderBottomWidth) === 0 && parseFloat(b.borderTopWidth) === 0) bad.push(`${secs[i - 1].id || secs[i - 1].className.split(' ')[0]} / ${secs[i].id || secs[i].className.split(' ')[0]}`);
         }
         const tiny = secs.filter((s) => s.getBoundingClientRect().height < 80).map((s) => s.id || s.className);
         return { bad, tiny };
@@ -167,10 +167,12 @@ const realBase = 'http://localhost:4321';
   const expected = [];
   const push = (t) => expected.push(fill(t));
   content.header.nav.forEach((n) => push(n.label)); push(content.header.button); push(content.ui.skipLink);
-  const h = content.hero; [h.h1, h.subhead, h.primary, h.secondary].forEach(push);
-  content.pillars.forEach((p) => { push(p.big); push(p.small); });
+  const h = content.hero; [h.kicker, h.h1, h.subhead, h.primary, h.secondary].forEach(push);
+  content.marquee.items.forEach(push);
   const pr = content.problem; [pr.eyebrow, pr.h2, ...pr.paragraphs, ...pr.pile, pr.pileStatus].forEach(push);
-  const hw = content.how; [hw.eyebrow, hw.h2, hw.intro, hw.cta, ...hw.steps.flatMap((s) => [s.title, s.body])].forEach(push);
+  const dm = content.demo; [dm.eyebrow, dm.h2, dm.intro, dm.srSummary, dm.draftTitle, dm.suggestion, dm.failNote, dm.signoff, dm.note, dm.replay, ...dm.checks].forEach(push);
+  const md = content.model; [md.eyebrow, md.h2, md.intro, md.rule, md.stepsTitle, ...md.parts.flatMap((p) => [p.title, p.body]), ...md.steps.flatMap((s) => [s.title, s.body])].forEach(push);
+  const cp = content.compare; [cp.eyebrow, cp.h2, cp.intro, cp.colThem, cp.colUs, ...cp.rows.flatMap((r) => [r.topic, r.them, r.us])].forEach(push);
   const o = content.offers; [o.eyebrow, o.h2, o.intro, ...o.cards.flatMap((c) => [c.name, c.body, c.bestFor, c.button, ...c.chips])].forEach(push);
   const re = content.realEstate; [re.eyebrow, re.h2, re.body, re.photoTitle, ...re.photoChips, re.listIntro, ...re.list, re.closing].forEach(push);
   const fq = content.faq; [fq.eyebrow, fq.h2, fq.aside, fq.asideButton, ...fq.items.filter((i) => !i.flag).flatMap((i) => [i.q, i.a])].forEach(push);
@@ -183,7 +185,8 @@ const realBase = 'http://localhost:4321';
   const flagged = [h.location, o.cards[0].price, re.proof, fq.items.find((i) => i.flag).q, fc.booking, siteConfig.LEGAL_ENTITY, content.footer.privacy];
   const leaked = flagged.filter((t) => visible.includes(norm(fill(t))) && t !== content.footer.privacy);
   check(REAL, 'flagged content hidden while flags are off', leaked.length === 0, leaked.join(' | '));
-  check(REAL, 'no price text ($) while showPricing is off', !visible.includes('$'));
+  // The demo's sample amounts use "$", so look for price wording instead.
+  check(REAL, 'no price text while showPricing is off', !/\bfrom \$|\bAUD\b/i.test(visible));
 
   // Mailto links.
   const links = await page.$$eval('a[href^="mailto:"]', (as) => as.map((a) => ({ href: a.getAttribute('href'), text: a.textContent.trim() })));
@@ -191,7 +194,7 @@ const realBase = 'http://localhost:4321';
   check(REAL, 'every mailto goes to CONTACT_EMAIL', wrongAddr.length === 0 && links.length > 0, `${links.length} links`);
   const subj = (l) => decodeURIComponent((l.href.split('subject=')[1] ?? '')).trim();
   const talk = links.filter((l) => l.text === content.header.button);
-  check(REAL, `every "${content.header.button}" uses subject "${content.ui.subjects.general}"`, talk.length >= 4 && talk.every((l) => subj(l) === content.ui.subjects.general), `${talk.length} buttons`);
+  check(REAL, `every "${content.header.button}" uses subject "${content.ui.subjects.general}"`, talk.length >= 3 && talk.every((l) => subj(l) === content.ui.subjects.general), `${talk.length} buttons`);
   for (const card of o.cards) {
     const l = links.find((x) => x.text === card.button);
     check(REAL, `"${card.button}" uses subject "${content.ui.subjects[card.key]}"`, l && subj(l) === content.ui.subjects[card.key]);

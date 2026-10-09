@@ -4,6 +4,7 @@
  * BRIEF §5 are allowed; compute the contrast of anything new before using it.
  */
 @theme {
+  --color-abyss: #0a1520;      /* deepest dark: hero, statement, demo window */
   --color-ink: #13212e;        /* hero, dark panels, footer */
   --color-deep: #1a3047;       /* raised surfaces on ink */
   --color-navy: #1b3853;       /* logo navy: bold headings, icons on light */

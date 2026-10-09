@@ -1,0 +1,271 @@
+---
+import Emph from './Emph.astro';
+import Icon from './Icon.astro';
+import { content } from '../content/site';
+const c = content.demo;
+---
+<section id="demo" class="section demo" aria-labelledby="demo-title">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">{c.eyebrow}</span>
+      <h2 id="demo-title"><Emph text={c.h2} /></h2>
+      <p>{c.intro}</p>
+    </div>
+
+    <!-- Plain-language version of the animation for screen readers. -->
+    <p class="sr-only">{c.srSummary}</p>
+
+    <div class="window" data-demo aria-hidden="true">
+      <div class="bar">
+        <span class="lights"><i></i><i></i><i></i></span>
+        <span class="title">{c.windowTitle}</span>
+      </div>
+      <div class="status" data-status>
+        <span class="led"></span><span data-status-text>{c.status.done}</span>
+      </div>
+      <div class="panes">
+        <div class="pane ai">
+          <div class="pane-head"><span class="badge badge-ai"><Icon name="spark" size={14} />{c.roleLabel}</span></div>
+          <p class="doc-title">{c.draftTitle}</p>
+          <ul class="lines">
+            {c.lines.map((l, i) => (
+              <li class="line" data-line={i}>
+                <span class="unit">{l.unit}</span>
+                <span class="days">{l.days}</span>
+                {l.amountFixed ? (
+                  <span class="amount" data-amount>
+                    <s class="wrong">{l.amount}</s><b class="right">{l.amountFixed}</b>
+                  </span>
+                ) : (
+                  <span class="amount">{l.amount}</span>
+                )}
+              </li>
+            ))}
+            <li class="line suggestion" data-line={c.lines.length}>{c.suggestion}</li>
+          </ul>
+          <div class="ledger">
+            <p class="ledger-title"><Icon name="layers" size={14} />{c.ledgerTitle}</p>
+            <table>
+              <tbody>
+                {c.ledger.map((r, i) => (
+                  <tr data-ledger={i}><td>{r.unit}</td><td>{r.days}</td><td>{r.amount}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="pane op">
+          <div class="pane-head"><span class="badge badge-op"><Icon name="personCheck" size={14} />{c.operatorLabel}</span></div>
+          <ol class="checks">
+            {c.checks.map((label, i) => (
+              <li class="check" data-check={i} data-fails={i === c.failIndex ? 'true' : undefined}>
+                <span class="mark"></span>
+                <span class="check-label">{label}</span>
+                {i === c.failIndex && <span class="fix-note">{c.failNote}</span>}
+              </li>
+            ))}
+          </ol>
+          <div class="signoff" data-signoff>
+            <Icon name="check" size={18} />
+            <span>{c.signoff}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="below">
+      <p class="note">{c.note}</p>
+      <button type="button" class="replay" data-replay>{c.replay}</button>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Plays the demo once when it scrolls into view; "Replay" runs it again.
+  // Reduced motion: shows the finished state straight away.
+  type Phase = 'drafting' | 'checking' | 'done';
+  const root = document.querySelector<HTMLElement>('[data-demo]');
+  if (root) {
+    const statusText = root.querySelector<HTMLElement>('[data-status-text]')!;
+    const status = root.querySelector<HTMLElement>('[data-status]')!;
+    const lines = [...root.querySelectorAll<HTMLElement>('[data-line]')];
+    const checks = [...root.querySelectorAll<HTMLElement>('[data-check]')];
+    const amount = root.querySelector<HTMLElement>('[data-amount]');
+    const ledgerRow = root.querySelector<HTMLElement>('[data-ledger="0"]');
+    const signoff = root.querySelector<HTMLElement>('[data-signoff]')!;
+    const labels = JSON.parse(document.querySelector<HTMLScriptElement>('[data-demo-labels]')!.textContent!);
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let timers: number[] = [];
+    const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
+    const phase = (p: Phase) => { status.dataset.phase = p; statusText.textContent = labels[p]; };
+
+    const reset = () => {
+      timers.forEach(clearTimeout); timers = [];
+      root.classList.add('is-playing');
+      lines.forEach((l) => l.classList.remove('shown'));
+      checks.forEach((c) => c.classList.remove('checking', 'pass', 'fail', 'is-fixed'));
+      amount?.classList.remove('flag', 'is-fixed');
+      ledgerRow?.classList.remove('flag');
+      signoff.classList.remove('shown');
+    };
+    const finish = () => {
+      lines.forEach((l) => l.classList.add('shown'));
+      checks.forEach((c) => c.classList.add(c.dataset.fails ? 'is-fixed' : 'pass'));
+      amount?.classList.add('is-fixed');
+      signoff.classList.add('shown');
+      phase('done');
+    };
+    const play = () => {
+      reset();
+      phase('drafting');
+      let t = 400;
+      lines.forEach((l) => { at(t, () => l.classList.add('shown')); t += 650; });
+      t += 300;
+      at(t, () => phase('checking'));
+      checks.forEach((c) => {
+        at(t, () => c.classList.add('checking'));
+        t += 750;
+        if (c.dataset.fails) {
+          at(t, () => { c.classList.remove('checking'); c.classList.add('fail'); amount?.classList.add('flag'); ledgerRow?.classList.add('flag'); });
+          t += 1300;
+          at(t, () => { c.classList.remove('fail'); c.classList.add('is-fixed'); amount?.classList.remove('flag'); amount?.classList.add('is-fixed'); ledgerRow?.classList.remove('flag'); });
+          t += 600;
+        } else {
+          at(t, () => { c.classList.remove('checking'); c.classList.add('pass'); });
+          t += 150;
+        }
+      });
+      at(t + 200, () => { signoff.classList.add('shown'); phase('done'); });
+    };
+
+    document.querySelector('[data-replay]')!.addEventListener('click', () => (reduce ? finish() : play()));
+    if (reduce) finish();
+    else {
+      reset();
+      const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { play(); io.disconnect(); } }, { threshold: 0.45 });
+      io.observe(root);
+    }
+  }
+</script>
+<script type="application/json" data-demo-labels set:html={JSON.stringify(c.status)} />
+
+<style>
+  .demo {
+    background:
+      radial-gradient(50% 40% at 50% 0%, rgb(201 221 230 / 0.55), transparent 70%),
+      var(--color-mist);
+  }
+  .window {
+    margin: 56px auto 0; max-width: 1040px;
+    border-radius: 22px; overflow: hidden;
+    background: var(--color-abyss); color: #fff;
+    box-shadow: 0 40px 80px -30px rgb(10 21 32 / 0.55), 0 0 0 1px rgb(10 21 32 / 0.1);
+  }
+  .bar {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px; border-bottom: 1px solid var(--color-line-dark);
+    background: rgb(255 255 255 / 0.03);
+  }
+  .lights { display: inline-flex; gap: 6px; }
+  .lights i { width: 10px; height: 10px; border-radius: 50%; background: rgb(255 255 255 / 0.18); }
+  .title { font-family: var(--font-display); font-size: 0.85rem; color: var(--color-on-dark); }
+  .below { margin-top: 18px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px 20px; }
+  .replay {
+    font: inherit; font-size: 0.9rem; font-weight: 600; min-height: 40px;
+    color: var(--color-navy); background: #fff;
+    border: 1.5px solid var(--color-navy); border-radius: 999px; padding: 0 18px; cursor: pointer;
+  }
+  @media (hover: hover) and (pointer: fine) { .replay:hover { background: var(--color-navy); color: #fff; } }
+  .status {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 22px; font-size: 0.9rem; color: var(--color-on-dark);
+    border-bottom: 1px solid var(--color-line-dark);
+  }
+  .led { width: 8px; height: 8px; border-radius: 50%; background: #6fcf97; box-shadow: 0 0 10px #6fcf97; }
+  .status[data-phase='drafting'] .led, .status[data-phase='checking'] .led { background: var(--color-pale); box-shadow: 0 0 10px var(--color-pale); animation: blink 0.9s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: 0.3; } }
+
+  .panes { display: grid; }
+  .pane { padding: 24px 22px 28px; }
+  .pane + .pane { border-top: 1px solid var(--color-line-dark); }
+  .pane-head { margin-bottom: 16px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+    font-family: var(--font-display); letter-spacing: 0.04em;
+  }
+  .badge-ai { background: rgb(185 211 224 / 0.12); color: var(--color-pale); }
+  .badge-op { background: rgb(231 120 92 / 0.14); color: #f4b9a9; }
+  .doc-title { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; margin-bottom: 12px; }
+  .lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .line {
+    display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: baseline;
+    padding: 10px 12px; border-radius: 10px; background: rgb(255 255 255 / 0.04);
+    font-size: 0.95rem;
+    transition: opacity 300ms ease, transform 300ms ease;
+  }
+  .line.suggestion { grid-template-columns: 1fr; color: var(--color-on-dark); background: none; padding-inline: 2px; }
+  .unit { font-weight: 600; }
+  .days { color: var(--color-on-dark); font-size: 0.85rem; }
+  .amount { font-variant-numeric: tabular-nums; font-weight: 600; position: relative; }
+  .amount .right { display: none; }
+  .amount .wrong { text-decoration: none; }
+  .amount.flag .wrong { color: #f4b9a9; background: rgb(231 120 92 / 0.2); border-radius: 4px; padding: 0 4px; }
+  .amount.is-fixed .wrong { text-decoration: line-through; color: var(--color-on-dark); margin-right: 8px; font-weight: 400; }
+  .amount.is-fixed .right { display: inline; color: #8fe0b0; }
+
+  .ledger { margin-top: 20px; padding: 14px; border-radius: 12px; border: 1px dashed rgb(185 211 224 / 0.25); }
+  .ledger-title { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--color-pale); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+  .ledger table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .ledger td { padding: 6px 4px; color: var(--color-on-dark); font-variant-numeric: tabular-nums; }
+  .ledger td:last-child { text-align: right; color: #fff; font-weight: 600; }
+  .ledger tr { transition: background 200ms ease; }
+  .ledger tr.flag td { background: rgb(231 120 92 / 0.16); }
+
+  .checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .check {
+    display: grid; grid-template-columns: 26px 1fr; gap: 4px 12px; align-items: center;
+    padding: 12px 14px; border-radius: 12px; background: rgb(255 255 255 / 0.04);
+    border: 1px solid transparent; transition: border-color 200ms ease, background 200ms ease;
+  }
+  .mark { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid rgb(185 211 224 / 0.35); position: relative; }
+  .check.checking .mark { border-color: var(--color-pale); border-top-color: transparent; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .check.pass .mark, .check.is-fixed .mark { background: #2f9e67; border-color: #2f9e67; }
+  .check.pass .mark::after, .check.is-fixed .mark::after {
+    content: ''; position: absolute; left: 7px; top: 3px; width: 5px; height: 10px;
+    border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+  .check.fail { border-color: rgb(231 120 92 / 0.6); background: rgb(231 120 92 / 0.1); }
+  .check.fail .mark { background: var(--color-coral); border-color: var(--color-coral); }
+  .check.fail .mark::after { content: '!'; position: absolute; inset: 0; display: grid; place-items: center; font-weight: 700; font-size: 0.8rem; color: var(--color-abyss); }
+  .fix-note { grid-column: 2; font-size: 0.82rem; color: #f4b9a9; display: none; }
+  .check.fail .fix-note, .check.is-fixed .fix-note { display: block; }
+  .check.is-fixed .fix-note { color: #8fe0b0; }
+  .signoff {
+    margin-top: 18px; display: flex; align-items: center; gap: 12px;
+    padding: 16px; border-radius: 14px;
+    background: rgb(47 158 103 / 0.16); border: 1px solid rgb(47 158 103 / 0.5); color: #c9f2db;
+    font-weight: 600; transition: opacity 400ms ease, transform 400ms ease;
+  }
+  .signoff :global(svg) { flex: none; }
+
+  /* While playing, hide what hasn't happened yet. */
+  .is-playing .line:not(.shown) { opacity: 0; transform: translateY(6px); }
+  .is-playing .signoff:not(.shown) { opacity: 0; transform: translateY(8px); }
+
+  .note { font-size: var(--text-small); color: var(--color-muted); }
+
+  @media (min-width: 900px) {
+    .panes { grid-template-columns: 1.15fr 1fr; }
+    .pane + .pane { border-top: 0; border-left: 1px solid var(--color-line-dark); }
+    .pane { padding: 30px 30px 34px; }
+  }
+  @media (max-width: 520px) {
+    .line { grid-template-columns: 1fr auto; }
+    .days { grid-column: 1; grid-row: 2; }
+    .amount { grid-row: 1 / span 2; grid-column: 2; align-self: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .led, .check.checking .mark { animation: none; }
+  }
+</style>
