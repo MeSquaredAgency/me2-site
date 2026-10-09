@@ -1,43 +1,37 @@
 /*
- * Me² design tokens (BRIEF §5, v0.8 direction). Change a value here and it changes everywhere.
- * Navy and coral come from the supplied me² logo. Only the text/background pairs listed in
- * BRIEF §5 are allowed; compute the contrast of anything new before using it.
+ * Me² design tokens (BRIEF §5, v0.12 "Squared"). Change a value here and it changes everywhere.
+ * Near-black and warm ivory, hairlines, one accent. Coral (from the logo) is used only for the
+ * "²" motif and for errors caught by the human check. Every text/background pair used is listed
+ * with its contrast in BRIEF §5; compute any new pair before using it.
  */
 @theme {
-  --color-abyss: #0a1520;      /* deepest dark: hero, statement, demo window */
-  --color-ink: #13212e;        /* hero, dark panels, footer */
-  --color-deep: #1a3047;       /* raised surfaces on ink */
-  --color-navy: #1b3853;       /* logo navy: bold headings, icons on light */
-  --color-steel: #24527a;      /* primary buttons */
-  --color-steel-hover: #1e4566;
-  --color-pale: #b9d3e0;       /* highlight words and labels on dark */
-  --color-on-dark: #c3cdd6;    /* body text on dark */
-  --color-mist: #f3f5f7;       /* light grey sections */
-  --color-chip: #e8eef2;       /* pills and icon wells on light */
-  --color-band: #c9dde6;       /* soft call-to-action band */
-  --color-text: #16232f;       /* body text on light */
-  --color-muted: #56636f;      /* secondary text on light */
-  --color-coral: #e7785c;      /* logo coral: small accents only, never text on light */
-  --color-line: #e1e7ec;
-  --color-line-dark: rgb(185 211 224 / 0.16);
+  --color-ink: #0d1116;        /* dark sections, footer */
+  --color-ink-2: #161b22;      /* raised surfaces on ink (the demo document) */
+  --color-ivory: #f3efe7;      /* light sections */
+  --color-bone: #e7e1d5;       /* alternate light sections */
+  --color-text: #111418;       /* text on ivory and bone */
+  --color-muted: #585d64;      /* secondary text on ivory and bone */
+  --color-on-dark: #ece7de;    /* text on ink */
+  --color-muted-dark: #9da2a8; /* secondary text on ink */
+  --color-coral: #e7785c;      /* the logo's coral: the ² motif and caught errors; text only on ink */
+  --color-coral-deep: #a6412a; /* coral as text on ivory */
+  --color-sage: #7fb59a;       /* "checked" marks on ink, never alone (always with a word) */
+  --color-navy: #1b3853;       /* the logo's navy (logo only) */
+  --color-line: rgb(17 20 24 / 0.14);
+  --color-line-dark: rgb(236 231 222 / 0.14);
 
-  --font-display: 'Outfit Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 :root {
   --text-body: 1.0625rem;
   --text-small: 0.875rem;
-  --text-h1: clamp(2.5rem, 5.6vw, 4.5rem);
-  --text-h2: clamp(1.9rem, 3.4vw, 2.75rem);
-  --text-h3: 1.3rem;
-  --measure: 62ch;
-  --content-max: 1140px;
-  --gutter: 20px;
-  --section-y: 72px;
-  --radius: 14px;
-  --radius-lg: 24px;
-  --shadow-card: 0 1px 2px rgb(19 33 46 / 0.06), 0 12px 32px -12px rgb(19 33 46 / 0.18);
+  --text-label: 0.74rem;
+  --content-max: 1240px;
+  --gutter: 22px;
+  --section-y: 96px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-@media (min-width: 640px) { :root { --gutter: 40px; } }
-@media (min-width: 900px) { :root { --section-y: 110px; --text-body: 1.0625rem; } }
+@media (min-width: 640px) { :root { --gutter: 44px; } }
+@media (min-width: 1000px) { :root { --section-y: 160px; --gutter: 56px; } }

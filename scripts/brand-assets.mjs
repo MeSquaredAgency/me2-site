@@ -8,7 +8,7 @@ const navy = readFileSync('src/assets/brand/me2-logo.svg', 'utf8');
 const light = readFileSync('src/assets/brand/me2-logo-light.svg', 'utf8');
 const [vx, vy, vw, vh] = navy.match(/viewBox="([^"]+)"/)[1].split(' ').map(Number);
 const inner = (svg) => svg.replace(/^[\s\S]*?<\/title>/, '').replace(/<\/svg>\s*$/, '');
-const INK = '#13212E';
+const INK = '#0D1116';
 
 // 1. Fixed public URL for email signatures, partners and schema: 1200px wide, on white.
 const logoW = 1000;

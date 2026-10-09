@@ -1,81 +1,89 @@
 ---
 import { content } from '../content/site';
+interface Props { n: number }
+const { n } = Astro.props;
 const c = content.problem;
-// The headline is split into words so each one can light up as it scrolls into view.
+// The headline is split into words so each can come into focus as it scrolls up the screen.
 const words = c.h2.replaceAll('**', '').split(' ');
 ---
-<section id="problem" class="statement on-dark" aria-labelledby="problem-title" data-statement>
+<section id="problem" class="section statement bg-ivory" aria-labelledby="problem-title" data-statement>
   <div class="wrap">
-    <span class="eyebrow">{c.eyebrow}</span>
+    <p class="label">{c.eyebrow}<sup>{n}</sup></p>
     <h2 id="problem-title" class="big">
-      {words.map((w, i) => <span class="w" style={`--i:${i}`}>{w}{i < words.length - 1 ? ' ' : ''}</span>)}
+      {words.map((w, i) => <span class="w">{w}{i < words.length - 1 ? ' ' : ''}</span>)}
     </h2>
     <div class="cols">
-      {c.paragraphs.map((p, i) => <p class="para" style={`--d:${i}`}>{p}</p>)}
+      <div class="paras">
+        {c.paragraphs.map((p) => <p class="reveal">{p}</p>)}
+      </div>
+      <div class="queue reveal" style="--d:1">
+        <p class="queue-title">{c.pileLabel}</p>
+        <ul>
+          {c.pile.map((label) => (
+            <li><span>{label}</span><span class="status"><i></i>{c.pileStatus}</span></li>
+          ))}
+        </ul>
+      </div>
     </div>
-    <ul class="pile" aria-label={c.pileLabel}>
-      {c.pile.map((label, i) => (
-        <li style={`--n:${i}`}>
-          <span class="dot" aria-hidden="true"></span>
-          <span class="label">{label}</span>
-          <span class="status">{c.pileStatus}</span>
-        </li>
-      ))}
-    </ul>
   </div>
 </section>
 
 <script>
-  // Light each word as the headline moves up the screen. Static (all lit) for reduced motion.
+  // Each word comes into focus as the headline moves up the screen. All in focus for reduced motion.
+  // Starts only after the visitor's first scroll (so nothing loads dimmed), and only while the
+  // headline is still below the fold. A word that has come into focus stays in focus.
   const section = document.querySelector<HTMLElement>('[data-statement]');
   if (section && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const words = [...section.querySelectorAll<HTMLElement>('.w')];
-    section.classList.add('is-scrubbing');
-    let ticking = false;
+    const best = words.map(() => 0);
+    let ticking = false, armed = false;
     const update = () => {
       ticking = false;
       const r = section.getBoundingClientRect();
-      const vh = innerHeight;
-      // 0 when the section top reaches 85% of the viewport, 1 when it reaches 25%.
-      const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (vh * 0.6)));
+      const p = Math.min(1, Math.max(0, (innerHeight * 0.9 - r.top) / (innerHeight * 0.55)));
       const lit = p * words.length;
-      words.forEach((w, i) => w.style.setProperty('--lit', String(Math.min(1, Math.max(0, lit - i)))));
-      section.style.setProperty('--progress', String(p));
+      words.forEach((w, i) => {
+        best[i] = Math.max(best[i], Math.min(1, Math.max(0, lit - i)));
+        w.style.setProperty('--lit', String(best[i]));
+      });
+      if (best.every((b) => b === 1)) removeEventListener('scroll', onScroll);
     };
-    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-    update();
+    const onScroll = () => {
+      if (!armed) {
+        armed = true;
+        // Already on screen when the visitor starts scrolling: leave it fully in focus.
+        if (section.getBoundingClientRect().top < innerHeight * 0.9) { removeEventListener('scroll', onScroll); return; }
+      }
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    };
+    addEventListener('scroll', onScroll, { passive: true });
   }
 </script>
 
 <style>
-  .statement {
-    position: relative;
-    background:
-      radial-gradient(40% 50% at 100% 0%, rgb(36 82 122 / 0.35), transparent 70%),
-      var(--color-abyss);
-    padding-block: clamp(96px, 14vw, 180px);
-  }
   .big {
-    margin-top: 10px; max-width: 16ch;
-    font-size: clamp(2.6rem, 7.4vw, 7rem); line-height: 1; letter-spacing: -0.035em; font-weight: 600;
-    color: #fff;
+    margin-top: 56px; max-width: 13ch;
+    font-size: clamp(3.2rem, 9.4vw, 9.5rem); line-height: 0.94; letter-spacing: -0.025em;
   }
-  .w { --lit: 1; color: rgb(255 255 255 / calc(0.14 + 0.86 * var(--lit))); transition: color 120ms linear; }
-  .cols { margin-top: 56px; display: grid; gap: 22px; max-width: 64rem; }
-  .para { color: var(--color-on-dark); font-size: clamp(1.0625rem, 1.4vw, 1.3rem); max-width: 46ch; }
-  .pile {
-    list-style: none; margin: 64px 0 0; padding: 0;
-    display: flex; flex-wrap: wrap; gap: 12px;
+  .w { --lit: 1; color: rgb(17 20 24 / calc(0.12 + 0.88 * var(--lit))); }
+  .cols { margin-top: 88px; display: grid; gap: 56px; }
+  .paras { display: grid; gap: 24px; max-width: 40ch; font-size: clamp(1.1rem, 1.4vw, 1.3rem); color: var(--color-muted); }
+  .queue-title {
+    font-size: var(--text-label); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--color-muted); padding-bottom: 14px; border-bottom: 1px solid var(--color-text);
   }
-  .pile li {
-    display: inline-flex; align-items: center; gap: 12px;
-    padding: 12px 18px; border-radius: 14px;
-    background: rgb(255 255 255 / 0.04); border: 1px solid var(--color-line-dark);
-    color: #fff; font-family: var(--font-display); font-weight: 500;
+  .queue ul { list-style: none; margin: 0; padding: 0; }
+  .queue li {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 20px;
+    padding: 18px 0; border-bottom: 1px solid var(--color-line);
+    font-family: var(--font-display); font-size: clamp(1.4rem, 2vw, 1.75rem); line-height: 1.2;
   }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-coral); box-shadow: 0 0 12px rgb(231 120 92 / 0.8); }
-  .status { color: var(--color-on-dark); font-size: 0.85rem; font-weight: 400; }
-  @media (min-width: 900px) {
-    .cols { grid-template-columns: 1fr 1fr; gap: 48px; }
+  .status {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-sans); font-size: var(--text-small); color: var(--color-muted);
+  }
+  .status i { width: 8px; height: 8px; border: 1px solid var(--color-coral-deep); display: inline-block; }
+  @media (min-width: 1000px) {
+    .cols { grid-template-columns: 1fr 1fr; gap: 120px; align-items: start; }
   }
 </style>

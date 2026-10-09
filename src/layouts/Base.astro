@@ -1,7 +1,8 @@
 ---
 import '../styles/global.css';
 import fontUrl from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url';
-import displayFontUrl from '@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2?url';
+import serifUrl from '@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2?url';
+import serifItalicUrl from '@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2?url';
 import routes from '../data/routes.json';
 import { config, isFixture, siteUrl } from '../config';
 
@@ -30,16 +31,17 @@ const noindex = route.noindex || isFixture;
     <meta name="description" content={route.description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
-    <link rel="preload" href={displayFontUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={serifUrl} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
     <style is:inline set:html={[
-      ['Outfit Variable', displayFontUrl, '100 900'],
-      ['Instrument Sans Variable', fontUrl, '400 700'],
-    ].map(([family, url, weight]) => `@font-face{font-family:'${family}';font-style:normal;font-display:swap;font-weight:${weight};src:url(${url}) format('woff2-variations');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}`).join('')} />
+      ['Instrument Serif', serifUrl, '400', 'normal', 'woff2'],
+      ['Instrument Serif', serifItalicUrl, '400', 'italic', 'woff2'],
+      ['Instrument Sans Variable', fontUrl, '400 700', 'normal', 'woff2-variations'],
+    ].map(([family, url, weight, style, format]) => `@font-face{font-family:'${family}';font-style:${style};font-display:swap;font-weight:${weight};src:url(${url}) format('${format}');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}`).join('')} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#13212e" />
+    <meta name="theme-color" content="#0d1116" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={config.SITE_NAME} />
     <meta property="og:title" content={ogTitle} />

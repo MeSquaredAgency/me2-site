@@ -18,11 +18,11 @@ One-page sales site for Me² (mesquaredagency.com). Primary goal: the visitor cl
 - Forms collect contact details and a short task description only; never fields for financial, health or identity information.
 
 ## Design
-Direction (BRIEF §5, v0.8): an established business-services look inspired by intelligentoffice.com: navy hero with icon bubbles, centred heads with letter-spaced labels, light/bold mixed headings, rounded dark panels, white icon cards on grey. EC rejected a minimal type-only version as "atrocious"; don't drift back to sparse. Refine within this; mock up one page and get EC's yes before any wider restyle.
-Don't give custom styles class names that are Tailwind utilities (ring, shadow, border, container, hidden...).
+Direction (BRIEF §5, v0.12 "Squared", on branch `redesign-wow` until EC approves): Me² = me, squared. Near-black and ivory, hairlines, Instrument Serif headlines with italic emphasis, superscript section numbers, coral only for the ² square motif and caught errors. History: sparse type-only was "atrocious"; the busier intelligentoffice-style version went live; EC then asked for awwwards-level wow, and then "more refined, more class, Philippe Starck… the point of the business must still come across… unique. Me²." Don't add cards, chips, icon wells or gradient text back. Refine within this; mock up one page and get EC's yes before any wider restyle.
+Don't give custom styles class names that are Tailwind utilities (ring, shadow, border, container, hidden, fixed, table...). Styles for a class passed into a child component (e.g. EmailLink) must be `:global(...)`.
 
 ## Dependencies
-Allowed: astro, typescript, @astrojs/check, tailwindcss, @tailwindcss/vite, @fontsource-variable/instrument-sans, @fontsource-variable/outfit, sharp; dev: @playwright/test, @axe-core/playwright, lighthouse, linkinator, wrangler; Phase 2: resend. Anything else needs a line in DECISIONS.md.
+Allowed: astro, typescript, @astrojs/check, tailwindcss, @tailwindcss/vite, @fontsource-variable/instrument-sans, @fontsource/instrument-serif, sharp; dev: @playwright/test, @axe-core/playwright, lighthouse, linkinator, wrangler; Phase 2: resend. Anything else needs a line in DECISIONS.md.
 Out of scope: CMS, auth, database, client-side routing, UI frameworks, animation/icon libraries, carousels, chat widgets, cookie banners, newsletter signup, Google Fonts CDN, third-party scripts.
 
 ## Git and deploys

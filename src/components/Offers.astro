@@ -1,70 +1,48 @@
 ---
-import { Image } from 'astro:assets';
-import aiRolesPhoto from '../assets/photos/offer-ai-roles.jpg';
-import ebuPhoto from '../assets/photos/offer-ebu.jpg';
 import Emph from './Emph.astro';
 import EmailLink from './EmailLink.astro';
 import { fixtureText, flags } from '../config';
 import { content } from '../content/site';
+interface Props { n: number }
+const { n } = Astro.props;
 const c = content.offers;
-const photos = { aiRoles: aiRolesPhoto, ebu: ebuPhoto } as const;
 ---
-<section id="offers" class="section bg-white" aria-labelledby="offers-title">
+<section id="offers" class="section offers bg-ivory" aria-labelledby="offers-title">
   <div class="wrap">
-    <div class="section-head">
-      <span class="eyebrow">{c.eyebrow}</span>
+    <p class="label">{c.eyebrow}<sup>{n}</sup></p>
+    <div class="head">
       <h2 id="offers-title"><Emph text={c.h2} /></h2>
-      <p>{c.intro}</p>
+      <p class="lede">{c.intro}</p>
     </div>
     <div class="cards">
-      {c.cards.map((card) => (
-        <article class="card" aria-labelledby={`offer-${card.key}`}>
-          <Image
-            src={photos[card.key]}
-            alt={card.imageAlt}
-            widths={[480, 720, 1080]}
-            sizes="(min-width: 900px) 540px, 100vw"
-            class="photo"
-          />
-          <div class="body">
-            <h3 id={`offer-${card.key}`}>{card.name}</h3>
-            <p>{card.body}</p>
-            <ul class="chips">
-              {card.chips.map((chip) => <li class="chip">{chip}</li>)}
-            </ul>
-            <p class="best">{card.bestFor}</p>
-            {flags.showPricing && <p class="price">{fixtureText.price ?? card.price}</p>}
-            <div class="action">
-              <EmailLink subject={content.ui.subjects[card.key]} class="btn btn-outline">{card.button}</EmailLink>
-            </div>
-          </div>
+      {c.cards.map((card, i) => (
+        <article class="card reveal" style={`--d:${i}`} aria-labelledby={`offer-${card.key}`}>
+          <p class="tier" aria-hidden="true">{i === 0 ? 'I' : 'II'}</p>
+          <h3 id={`offer-${card.key}`}>{card.name}</h3>
+          <p class="body">{card.body}</p>
+          <p class="best">{card.bestFor}</p>
+          {flags.showPricing && <p class="price">{fixtureText.price ?? card.price}</p>}
+          <EmailLink subject={content.ui.subjects[card.key]} class="btn btn-line">{card.button}</EmailLink>
         </article>
       ))}
     </div>
   </div>
 </section>
+
 <style>
-  .cards { margin-top: 56px; display: grid; gap: 24px; }
-  .card {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    background: #fff;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: var(--shadow-card);
-    border: 1px solid var(--color-line);
-  }
-  .card :global(.photo) { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
-  .body { display: flex; flex-direction: column; gap: 14px; padding: 30px 28px 32px; }
-  h3 { color: var(--color-text); font-size: 1.5rem; }
-  .body > p { color: var(--color-muted); }
-  .chips { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-  /* Push the "Best for" line, price and button to the bottom so both cards line up. */
-  .body > .best { margin-top: auto; padding-top: 8px; color: var(--color-text); font-weight: 600; font-size: 0.98rem; }
-  .body > .price { color: var(--color-navy); font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; }
-  .action { padding-top: 6px; }
+  .head { margin-top: 56px; display: grid; gap: 28px; align-items: end; }
+  .head h2 { max-width: 10ch; }
+  .cards { margin-top: 96px; display: grid; border-top: 1px solid var(--color-text); }
+  .card { display: flex; flex-direction: column; gap: 22px; align-items: flex-start; padding: 48px 0 56px; border-bottom: 1px solid var(--color-line); }
+  .tier { font-family: var(--font-display); font-style: italic; font-size: 1.4rem; color: var(--color-coral-deep); }
+  h3 { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.4rem, 4.2vw, 3.6rem); line-height: 1; letter-spacing: -0.015em; }
+  .body { font-size: 1.12rem; color: var(--color-muted); max-width: 38ch; }
+  .best { margin-top: auto; padding-top: 12px; font-weight: 500; max-width: 38ch; }
+  .price { font-family: var(--font-display); font-size: 1.5rem; }
   @media (min-width: 900px) {
-    .cards { grid-template-columns: 1fr 1fr; margin-top: 64px; }
-    .body { padding: 34px 36px 38px; }
+    .head { grid-template-columns: 1.2fr 1fr; }
+    .cards { grid-template-columns: 1fr 1fr; }
+    .card { padding: 56px 64px 64px 0; border-bottom: 0; }
+    .card + .card { padding-left: 64px; border-left: 1px solid var(--color-line); }
   }
 </style>

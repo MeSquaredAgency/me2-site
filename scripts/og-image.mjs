@@ -1,5 +1,5 @@
 // Renders public/og-image.png (1200×630), the picture shown when the site is shared,
-// in the hero's style using the site's own fonts, logo and OG title from routes.json.
+// in the site's style (ink, serif headline, the squared mark) using the site's own fonts, logo and OG title.
 // Run with `npm run og` (uses the installed Microsoft Edge through Playwright).
 import { chromium } from '@playwright/test';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -16,23 +16,25 @@ const { siteConfig } = await import('../src/config/site.config.ts');
 const domain = siteConfig.SITE_DOMAIN;
 const font = (p) => pathToFileURL(resolve('node_modules', p)).href;
 
+// The squared mark: a 10 x 10 square of ivory tasks with the coral "²" at its corner.
+const N = 10, cell = 30, gap = 6, gx = 1200 - 84 - (N * cell + (N - 1) * gap) - 40, gy = 150;
+const cells = Array.from({ length: N * N }, (_, i) => `<i style="left:${gx + (i % N) * (cell + gap)}px;top:${gy + Math.floor(i / N) * (cell + gap)}px"></i>`).join('');
+const sq = `<b style="left:${gx + N * (cell + gap) + 6}px;top:${gy - 34 - 6}px"></b>`;
 const html = `<!doctype html><html><head><meta charset="utf-8"><style>
-@font-face{font-family:Outfit;src:url(${font('@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2')}) format('woff2');font-weight:100 900}
-@font-face{font-family:Instrument;src:url(${font('@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2')}) format('woff2');font-weight:400 700}
+@font-face{font-family:ISerif;src:url(${font('@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2')}) format('woff2');font-style:normal}
+@font-face{font-family:ISerif;src:url(${font('@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2')}) format('woff2');font-style:italic}
+@font-face{font-family:ISans;src:url(${font('@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2')}) format('woff2');font-weight:400 700}
 html,body{margin:0;width:1200px;height:630px;overflow:hidden}
-body{background:radial-gradient(60% 80% at 88% 8%,rgba(36,82,122,.6),transparent 70%),radial-gradient(50% 60% at 0% 100%,rgba(27,56,83,.8),transparent 70%),#13212E;color:#fff;font-family:Instrument,sans-serif;position:relative}
-.logo svg{height:84px;width:auto;display:block}
-.wrap{position:absolute;left:84px;top:78px;right:84px}
-h1{font-family:Outfit;font-weight:300;font-size:74px;line-height:1.06;letter-spacing:-.02em;margin:64px 0 0;max-width:15ch}
-h1 strong{font-weight:600;color:#B9D3E0}
-.url{position:absolute;left:84px;bottom:64px;font-size:26px;color:#C3CDD6;font-family:Outfit;font-weight:500}
-.b{position:absolute;border-radius:50%;background:radial-gradient(circle at 30% 25%,#26445f,#172a3c 70%);box-shadow:0 0 0 1px rgba(185,211,224,.14)}
-.r{position:absolute;border-radius:50%;border:1px solid rgba(185,211,224,.14)}
+body{background:#0d1116;color:#ece7de;font-family:ISans,sans-serif;position:relative}
+.logo svg{height:54px;width:auto;display:block}
+.wrap{position:absolute;left:84px;top:72px;width:560px}
+h1{font-family:ISerif;font-weight:400;font-size:78px;line-height:.98;letter-spacing:-.015em;margin:70px 0 0}
+h1 strong{font-weight:400;font-style:italic;color:#fff;display:block}
+.url{position:absolute;left:84px;bottom:60px;font-size:20px;letter-spacing:.2em;text-transform:uppercase;color:#9da2a8}
+i{position:absolute;width:${cell}px;height:${cell}px;background:#ece7de}
+b{position:absolute;width:34px;height:34px;background:#e7785c}
 </style></head><body>
-<div class="r" style="width:520px;height:520px;right:-180px;top:-120px"></div>
-<div class="b" style="width:150px;height:150px;right:120px;top:120px"></div>
-<div class="b" style="width:96px;height:96px;right:300px;top:380px"></div>
-<div class="b" style="width:60px;height:60px;right:90px;top:430px"></div>
+${cells}${sq}
 <div class="wrap"><div class="logo">${logo}</div><h1>${titleHtml}</h1></div>
 <div class="url">${domain}</div>
 </body></html>`;

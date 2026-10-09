@@ -13,21 +13,20 @@ import Faq from '../components/Faq.astro';
 import FinalCta from '../components/FinalCta.astro';
 import Footer from '../components/Footer.astro';
 import { homeSchema } from '../lib/schema';
-// Redesign proof (round 3): new hero, marquee, statement, live demo, operating model and comparison.
-// Offers, real estate, FAQ and CTA are the existing sections, to be redesigned after approval.
+// Section labels carry a superscript index (the "²" idea): pass each section its number.
 ---
 <Base path="/" schema={homeSchema()}>
   <Header />
   <main id="main">
     <Hero />
     <Marquee />
-    <Statement />
-    <Demo />
-    <OperatingModel />
-    <Compare />
-    <Offers />
-    <RealEstate />
-    <Faq />
+    <Statement n={1} />
+    <Demo n={2} />
+    <OperatingModel n={3} />
+    <Compare n={4} />
+    <Offers n={5} />
+    <RealEstate n={6} />
+    <Faq n={7} />
     <FinalCta />
   </main>
   <Footer />

@@ -2,7 +2,7 @@
 import { content } from '../content/site';
 const items = content.marquee.items;
 ---
-<!-- The work Me² takes on, scrolling past. The list is also in the page once as plain text for screen readers. -->
+<!-- The work Me² takes on, drifting past. Listed once as plain text for screen readers. -->
 <section class="marquee" aria-label={content.marquee.label}>
   <ul class="sr-only">
     {items.map((item) => <li>{item}</li>)}
@@ -11,7 +11,7 @@ const items = content.marquee.items;
     {[0, 1].map(() => (
       <div class="row">
         {items.map((item) => (
-          <span class="item"><span class="spark">²</span>{item}</span>
+          <span class="item">{item}<i class="mark"></i></span>
         ))}
       </div>
     ))}
@@ -20,26 +20,23 @@ const items = content.marquee.items;
 <style>
   .marquee {
     position: relative; overflow: hidden;
-    background: var(--color-abyss);
+    background: var(--color-ink);
     border-top: 1px solid var(--color-line-dark);
-    border-bottom: 1px solid var(--color-line-dark);
-    padding-block: 26px;
+    padding-block: 30px;
   }
-  /* Fade the words out at both edges, into the navy (not the page behind). */
   .marquee::before, .marquee::after {
-    content: ''; position: absolute; top: 0; bottom: 0; width: 12%; z-index: 1; pointer-events: none;
+    content: ''; position: absolute; top: 0; bottom: 0; width: 14%; z-index: 1; pointer-events: none;
   }
-  .marquee::before { left: 0; background: linear-gradient(90deg, var(--color-abyss), transparent); }
-  .marquee::after { right: 0; background: linear-gradient(270deg, var(--color-abyss), transparent); }
-  .track { display: flex; width: max-content; animation: slide 48s linear infinite; }
-  .row { display: flex; gap: 56px; padding-right: 56px; }
+  .marquee::before { left: 0; background: linear-gradient(90deg, var(--color-ink), transparent); }
+  .marquee::after { right: 0; background: linear-gradient(270deg, var(--color-ink), transparent); }
+  .track { display: flex; width: max-content; animation: slide 70s linear infinite; }
+  .row { display: flex; }
   .item {
-    display: inline-flex; align-items: center; gap: 18px; white-space: nowrap;
-    font-family: var(--font-display); font-weight: 300; font-size: clamp(1.4rem, 2.6vw, 2.2rem);
-    color: rgb(214 232 242 / 0.9); letter-spacing: -0.01em;
+    display: inline-flex; align-items: center; gap: 48px; padding-right: 48px; white-space: nowrap;
+    font-family: var(--font-display); font-style: italic; font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+    color: var(--color-on-dark); letter-spacing: -0.005em;
   }
-  .spark { color: var(--color-coral); font-weight: 600; font-size: 0.7em; transform: translateY(-0.35em); }
+  .mark { width: 7px; height: 7px; background: var(--color-coral); display: inline-block; }
   @keyframes slide { to { transform: translateX(-50%); } }
   @media (prefers-reduced-motion: reduce) { .track { animation: none; } }
-  @media (hover: hover) and (pointer: fine) { .marquee:hover .track { animation-play-state: paused; } }
 </style>

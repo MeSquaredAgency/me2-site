@@ -1,5 +1,7 @@
-# Me² — Build Brief v0.11 (redesign proof)
+# Me² — Build Brief v0.12 ("Squared", redesign proof)
 Owner: Elliot Crabb (EC) · Decision-maker: Patrick · Date: 9 Oct 2026 · Mode: New build
+
+v0.12 (9 Oct 2026, branch `redesign-wow`, NOT live): EC: "more refined. More class. More streamlined. Think of Philippe Starck… the underlying point of the business still needs to come across… make it special… unique. Me²." The proof keeps every section and the message, re-expressed as the "Squared" system in §5: near-black and ivory, hairlines, an elegant serif with italic emphasis, and the ² as the organising idea (the hero square of tasks, superscript section numbers, small coral squares as the only accent).
 
 v0.11 (9 Oct 2026, branch `redesign-wow`, NOT live): EC: "It needs bulking out massively… look to awwwards.com business/corporate… show how capable we are. It needs to wow every visitor." Proof adds a live canvas hero (task particles pass a "human check" gate; coral errors are caught), a scrolling work band, a scroll-lit "Admin grows faster than headcount" statement, an interactive demo (an AI Role drafts an arrears summary; the operator check catches $1,200 vs the ledger's $1,020, corrects it and signs off; labelled as made-up sample data), the four-part operating model and eight-step workflow, and a "typical VA service vs Me²" comparison. New copy is drawn from the Me² Company Handbook (Draft v0.1, 3 Oct 2026); statements EC must confirm before launch are listed in DECISIONS.md. Next (after approval): redesign services, real estate, FAQ and CTA in the same style and add pages (How we work, Services, Real estate, Security & data, Contact).
 
@@ -100,31 +102,18 @@ Copy in Appendix A writes `{SITE_NAME}`, `{SITE_NAME_PLAIN}`, `{CONTACT_EMAIL}`,
 └── .verify/fixture/          # git-ignored fixture config (§6b)
 ```
 
-## 5. Design direction and tokens
-- Direction: **an established business-services company.** Deep navy hero with soft light glows and floating icon "bubbles" (the kinds of work Me² takes on), centred section heads with a small letter-spaced label, headings that mix a light and a bold weight, a pillars band, a rounded dark feature panel with a circular illustration and orbit ring, and white cards with icon wells on soft grey sections. Inspired by intelligentoffice.com (EC's reference); never copy its wording, images or layout details one for one.
-- Tokens live in `src/styles/tokens.css`. Navy and coral match the supplied logo.
-  - `ink` `#13212E` hero, dark panels, footer · `deep` `#1A3047` raised surfaces on ink
-  - `navy` `#1B3853` logo navy: bold heading parts, icon wells on light · `steel` `#24527A` primary buttons (hover `#1E4566`)
-  - `pale` `#B9D3E0` emphasised words and labels on dark · `on-dark` `#C3CDD6` body text on dark
-  - `mist` `#F3F5F7` grey sections · `chip` `#E8EEF2` pills and icon wells · `band` `#C9DDE6` soft call-to-action band
-  - `text` `#16232F` body on light · `muted` `#56636F` secondary on light · `line` `#E1E7EC`
-  - `coral` `#E7785C` logo coral: small accents only (status dots, the logo's 2). Never text on light.
-- Allowed text/background pairs (computed, WCAG 2.1). Anything not listed is banned.
-  - white on ink 16.35 · pale on ink 10.47 · on-dark on ink 10.14 · on-dark on deep 8.36 · pale on deep 8.64 · white on deep 13.48
-  - white on steel 8.19 · white on steel-hover 10.01 · white on navy 12.09
-  - text on white 15.96 · text on mist 14.61 · text on chip 13.64 · text on band 11.38
-  - navy on white 12.09 · navy on mist 11.06 · navy on chip 10.33 · navy on band 8.62 · steel on white 8.19
-  - muted on white 6.16 · muted on mist 5.63 · coral on ink 5.63 (non-text accents)
-- Buttons: radius 10px, min height 48px (44px in the header), Outfit 600. Primary = steel with white text. Secondary on dark = 1.5px white outline; on light = 1.5px navy outline. No icons in labels.
-- Type: headings in Outfit Variable (OFL, `@fontsource-variable/outfit`), weight 300 with the emphasised part at 600; body in Instrument Sans Variable 400/600. Both self-hosted, latin subset, preloaded. Scale: H1 `clamp(2.5rem, 5.6vw, 4.5rem)`/1.08; H2 `clamp(1.9rem, 3.4vw, 2.75rem)`/1.15; H3 1.3rem 600; body 17px/1.65; eyebrow 0.78rem 600, letter-spacing 0.24em, uppercase.
-- Headings in Appendix A mark their bold part with `**…**`; render it as `<strong>`. Hyphenated words never break across lines.
-- Hero: full-height navy with two soft radial glows (no photo), matching the link-preview image. Left-aligned H1 in two lines: "AI does the volume." light white, "People own the outcome." bold pale blue on its own line. The right 46% holds decorative floating circles with line icons (report, person-check, inbox, money, chat) and a faint orbit ring, clear of the nav and text. Phones: three small faint circles along the top-right, above the headline. Gentle float, off for reduced motion.
-- Imagery: no Me² photography exists yet. Three licensed Unsplash photos (EC approved 9 Oct) set the mood: a laptop by a window (AI Roles card), people at screens seen from behind (Effective Business Units card) and keys at a front door (real estate photo card). They are atmosphere only, credited in `docs/media.md`, never captioned as Me²'s team, office or clients, and the footer says "Photos are illustrative stock images." Drawn illustrations (icon bubbles, the "work piling up" card stack) carry the rest. No stock or AI-generated people as staff or testimonials. Real Me² photos replace stock as soon as they exist.
-- Icons: drawn for this site (`src/components/Icon.astro`), 24px grid, 1.6 stroke. No icon library.
-- Logo: vector SVGs traced from the supplied me² PNG (`src/assets/brand/me2-logo.svg`, navy "me"; `me2-logo-light.svg`, white "me"; coral "2" in both), inlined in the header (40px, 32px on phones) and footer (44px). `npm run brand` makes `/logo.png` (1200px), the favicons and the OG image from them. A designer master SVG replaces the traced ones when supplied. Never the reflected "we" concept or the "from me to we." tagline (not approved; §13 #9).
-- Spacing: section padding 110px desktop / 72px phone; content max width 1140px; side padding 20px phone / 40px desktop. Radius 14px small, 24px cards and panels. Soft, low card shadow.
-- Motion: hero bubble float and hover states only (hover inside `@media (hover: hover) and (pointer: fine)`). Respect `prefers-reduced-motion`. Visible focus rings (steel on light, pale on dark).
-- OG image: `public/og-image.png` (1200×630) in the hero style: ink with glows, light logo, the OG title in white with the emphasised part in pale.
+## 5. Design direction and tokens ("Squared", v0.12)
+- Idea: **Me² = me, squared** — a team's capacity multiplied, with nothing lost in quality. Every visual decision comes from that: squares, superscripts, restraint.
+- Hero signature: a square of 12 × 12 small squares, one per task. AI outlines them quickly (the volume); a hairline "human check" sweeps across and each square it passes turns solid ivory (checked, owned). Coral squares are errors, caught at the line and corrected. When the square is complete, a small coral square settles at its top-right corner: the "²". A legend under it says the same in words. Static final frame for reduced motion; pauses off-screen.
+- Section labels carry superscript numbers ("The problem¹", "See it in action²"…) with a hairline to the edge. The closing headline ends with a small coral square as an exponent.
+- Colours (tokens in `src/styles/tokens.css`): `ink` #0D1116 · `ink-2` #161B22 · `ivory` #F3EFE7 · `bone` #E7E1D5 · `text` #111418 · `muted` #585D64 · `on-dark` #ECE7DE · `muted-dark` #9DA2A8 · `coral` #E7785C (² motif and caught errors only; text only on ink) · `coral-deep` #A6412A (coral as text on ivory) · `sage` #7FB59A ("checked", always with a word) · `navy` #1B3853 (logo only).
+- Allowed pairs (computed): text on ivory 16.10 · text on bone 14.18 · muted on ivory 5.79 · muted on bone 5.10 · on-dark on ink 15.38 · muted-dark on ink 7.37 · on-dark on ink-2 14.05 · muted-dark on ink-2 6.73 · coral on ink 6.53 · coral on ink-2 5.96 · coral-deep on ivory 5.37 · sage on ink-2 7.40 · ink on ivory 16.51 · ink on on-dark (light buttons) 15.38.
+- Type: headlines in Instrument Serif 400 (OFL, `@fontsource/instrument-serif`, normal + italic), the emphasised part (`**…**` in the copy) set in italic, not bold. Everything else Instrument Sans Variable. Labels: 0.74rem, 600, letter-spacing 0.2em, uppercase.
+- Layout: editorial grid, generous space (160px section padding on desktop), hairline rules instead of cards, pills or chips. Sections alternate ink / ivory / bone so two same colours only touch across a hairline.
+- Buttons: quiet pills. Solid (ivory on ink, ink on ivory) for the main action; hairline outline for secondary; text links with a hairline underline that draws back on hover.
+- Imagery: one photograph, the real estate keys, shown in black and white (colour returns on hover). No other stock.
+- Motion: slow and fine. The hero square; a slowly drifting italic band of the work we take on; the problem headline coming into focus word by word; the demo; 1s scroll-in reveals. All respect reduced motion.
+- Logo: the traced vector me² (light version on ink). OG image: ink, the serif headline and the squared mark.
 
 ## 6. Page structure
 Section order below. Backgrounds alternate ink/paper from the sections actually rendered, starting with header + hero on ink, so two same-colour sections never touch whatever the flags. Exceptions: the final CTA is always coral; the footer is always ink with a 1px `line-dark` top border. The section before the final CTA may be either colour.

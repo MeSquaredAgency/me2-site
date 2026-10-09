@@ -52,6 +52,9 @@ export const content = {
     secondary: 'See it in action',
     /** Label on the checkpoint in the hero animation */
     gateLabel: 'Human check',
+    /** Hero square: what the three kinds of square mean */
+    legendLabel: 'How to read the square',
+    legend: ['Drafted by AI', 'Checked by a person', 'Caught and corrected'],
     scrollLabel: 'Scroll to the next section',
     /** showLocations */
     location: 'Command Centre teams in Adelaide and Phnom Penh.',
@@ -138,7 +141,7 @@ export const content = {
       { title: 'Written processes', body: 'Every repeat task has a written, approved way of doing it. If it happens more than twice a month, it gets one.' },
       { title: 'Quality checks', body: 'Every task is checked before it goes out. A sample is checked again by someone else, and work involving money or legal notices gets a second person.' },
     ],
-    rule: 'AI drafts. People decide.',
+    rule: 'AI drafts. **People decide.**',
     stepsTitle: 'The eight steps behind every task',
     steps: [
       { title: 'Understand the task', body: 'What is being asked, by whom and by when.' },
@@ -201,8 +204,6 @@ export const content = {
         name: 'AI Roles',
         body: 'One AI role for one job, set up around how your team already works. Your team reviews the output and stays in control.',
         bestFor: 'Best for teams that know exactly which task is eating their week.',
-        chips: ['One job', 'Your team reviews', 'Built around your tools'],
-        imageAlt: 'A laptop open on a desk by a window',
         /** showPricing */
         price: 'From $2,000 AUD [[TBC: billing basis and GST wording — Patrick]]',
         button: 'Ask about AI Roles',
@@ -212,8 +213,6 @@ export const content = {
         name: 'Effective Business Units',
         body: 'A trained Command Centre operator runs a set of AI roles for you as a managed service. They check the work, handle the exceptions and report back to you.',
         bestFor: 'Best for businesses that want a whole workload off their plate.',
-        chips: ['Managed service', 'Trained operator', 'Exceptions handled', 'Reports back to you'],
-        imageAlt: 'People working at computer screens in an office',
         /** showPricing */
         price: 'From $3,000 AUD [[TBC: billing basis and GST wording — Patrick]]',
         button: 'Ask about Effective Business Units',
@@ -224,8 +223,6 @@ export const content = {
   realEstate: {
     eyebrow: 'First market',
     h2: 'Starting with **real estate**',
-    photoTitle: 'Property management',
-    photoChips: ['Inspections', 'Arrears', 'Maintenance', 'Owner reports'],
     imageAlt: 'A hand holding a set of house keys beside a front door',
     body: 'Real estate is our first market. Property management runs on high-volume, repeatable admin, which is exactly the kind of work AI roles and trained operators are built for.',
     listIntro: 'Roles we set up for agencies include:',

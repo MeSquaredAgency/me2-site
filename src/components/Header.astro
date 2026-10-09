@@ -6,21 +6,21 @@ import { content } from '../content/site';
 const c = content.header;
 ---
 <a class="skip-link" href="#main">{content.ui.skipLink}</a>
-<header class="site-header on-dark" data-header>
+<header class="site-header" data-header>
   <div class="wrap bar">
     <a href="/" class="home" aria-label={fill(content.ui.logoHomeLabel)}>
-      <Logo tone="light" height={40} class="header-logo" />
+      <Logo tone="light" height={34} />
     </a>
     <nav aria-label={c.navLabel} class="nav">
       <ul>
         {c.nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
       </ul>
     </nav>
-    <EmailLink subject={content.ui.subjects.general} class="btn btn-primary header-cta">{c.button}</EmailLink>
+    <EmailLink subject={content.ui.subjects.general} class="btn cta">{c.button}</EmailLink>
   </div>
 </header>
 <script>
-  // Frosted header once the page has scrolled past the top.
+  // A quiet frosted bar once the page leaves the top.
   const header = document.querySelector<HTMLElement>('[data-header]');
   if (header) {
     const set = () => header.classList.toggle('is-scrolled', scrollY > 24);
@@ -30,31 +30,31 @@ const c = content.header;
 </script>
 <style>
   .site-header {
-    position: fixed; inset: 0 0 auto; z-index: 20;
-    transition: background-color 250ms ease, backdrop-filter 250ms ease, box-shadow 250ms ease;
+    position: fixed; inset: 0 0 auto; z-index: 20; color: var(--color-on-dark);
+    transition: background-color 400ms var(--ease), box-shadow 400ms var(--ease);
   }
   .site-header.is-scrolled {
-    background: rgb(10 21 32 / 0.72);
-    backdrop-filter: blur(14px) saturate(140%);
-    -webkit-backdrop-filter: blur(14px) saturate(140%);
-    box-shadow: 0 1px 0 rgb(185 211 224 / 0.12);
+    background: rgb(13 17 22 / 0.82);
+    backdrop-filter: blur(16px) saturate(130%);
+    -webkit-backdrop-filter: blur(16px) saturate(130%);
+    box-shadow: 0 1px 0 var(--color-line-dark);
   }
-  .site-header.is-scrolled .bar { padding-block: 12px; }
-  .bar { display: flex; align-items: center; gap: 24px; padding-block: 20px; transition: padding 250ms ease; }
-  .home { display: inline-flex; padding: 4px 0; margin-right: auto; }
-  .nav ul { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; }
+  .bar { display: flex; align-items: center; gap: 28px; padding-block: 26px; transition: padding 400ms var(--ease); }
+  .is-scrolled .bar { padding-block: 14px; }
+  .home { display: inline-flex; margin-right: auto; padding: 4px 0; }
+  .nav ul { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
   .nav a {
     display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px;
-    font-family: var(--font-display); font-size: 0.95rem; font-weight: 500;
-    color: rgb(255 255 255 / 0.86); text-decoration: none; border-radius: 8px;
+    font-size: 0.9rem; letter-spacing: 0.01em; color: var(--color-muted-dark); text-decoration: none;
+    transition: color 250ms var(--ease);
   }
-  @media (hover: hover) and (pointer: fine) { .nav a:hover { color: #fff; background: rgb(255 255 255 / 0.08); } }
-  .header-cta { min-height: 44px; padding: 0 20px; font-size: 0.95rem; }
-  @media (max-width: 899px) {
-    .nav { display: none; }
-  }
+  @media (hover: hover) and (pointer: fine) { .nav a:hover { color: var(--color-on-dark); } }
+  .bar :global(.cta) { min-height: 44px; padding: 0 22px; font-size: 0.9rem; border-color: rgb(236 231 222 / 0.35); color: var(--color-on-dark); }
+  @media (hover: hover) and (pointer: fine) { .bar :global(.cta:hover) { border-color: var(--color-on-dark); } }
+  .site-header :global(:focus-visible) { outline-color: var(--color-on-dark); }
+  @media (max-width: 999px) { .nav { display: none; } }
   @media (max-width: 639px) {
-    .bar { padding-block: 14px; }
-    .home :global(.logo-svg) { height: 32px; }
+    .bar { padding-block: 16px; }
+    .home :global(.logo-svg) { height: 28px; }
   }
 </style>
