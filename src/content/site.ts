@@ -46,7 +46,7 @@ export const content = {
   hero: {
     h1: 'We run the back office. **You run the business.**',
     subhead:
-      '{SITE_NAME} takes the repetitive admin off your team: invoices, inboxes, reports, data entry and follow‑ups. AI does the first draft, a trained operator checks every detail, and the work comes back done.',
+      '{SITE_NAME} takes the repetitive admin off your team: invoices, inboxes, reports, data entry and follow-ups. AI does the first draft, a trained operator checks every detail, and the work comes back done.',
     kicker: 'Managed back-office services',
     primary: 'Talk to us',
     secondary: 'See what we take on',
@@ -233,9 +233,30 @@ export const content = {
     ],
   },
 
-  interlude: {
-    h2: 'AI does the volume. **People own the outcome.**',
-    body: 'AI drafts the work. A trained person checks every detail before it reaches you.',
+  /**
+   * The squares story under the hero. Chapter 1 is the `problem` copy above; these are chapters 2 to 4.
+   * Each square on the canvas is a task: piled up, drafted by AI, checked by a person, then the Me² mark.
+   */
+  story: {
+    chapters: [
+      {
+        label: 'Drafted by AI',
+        h2: 'AI does **the volume.**',
+        body: 'Drafts reports, sorts inboxes, extracts and summarises. It does the first pass, fast.',
+      },
+      {
+        label: 'Checked by a person',
+        h2: 'People own **the outcome.**',
+        body: 'A trained operator checks every name, date and number against the source before anything leaves.',
+      },
+      {
+        label: 'Done',
+        h2: 'Your team, **squared.**',
+        body: 'You get the work done without hiring for it or babysitting another tool.',
+      },
+    ],
+    srSummary:
+      'Illustration: small squares, one for each task, pile up unevenly. As the page scrolls they line up as outlines while AI drafts them, turn solid as a person checks each one, with a few caught and corrected, and finally come together as the {SITE_NAME} mark: a large square with a small coral square at its corner.',
   },
 
   useCases: {

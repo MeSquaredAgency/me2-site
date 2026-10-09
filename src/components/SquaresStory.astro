@@ -1,0 +1,264 @@
+---
+import Emph from './Emph.astro';
+import { fill } from '../config';
+import { content } from '../content/site';
+interface Props { n: number }
+const { n } = Astro.props;
+const pr = content.problem;
+const s = content.story;
+---
+<!--
+  The squares story: one canvas stays pinned while four short chapters scroll past.
+  Every square is a task. 1: they pile up. 2: AI drafts them (outlines, in order).
+  3: a person checks each one (solid; a few caught in coral and corrected).
+  4: they come together as the Me² mark, a big square with the small coral ² square at its corner.
+  The canvas is decorative; the chapters are ordinary text, and the summary says it in words.
+-->
+<section id="problem" class="story on-dark render-later" aria-labelledby="problem-title" data-story>
+  <!-- The track covers the whole section; the stage pins inside it, so it can never overhang the next section. -->
+  <div class="track" aria-hidden="true"><div class="pin"><canvas data-story-canvas></canvas></div></div>
+  <p class="sr-only">{fill(s.srSummary)}</p>
+
+  <div class="wrap chapters">
+    <div class="chapter">
+      <div class="text reveal">
+        <p class="label">{pr.eyebrow}<sup>{n}</sup></p>
+        <h2 id="problem-title"><Emph text={pr.h2} /></h2>
+        {pr.paragraphs.map((p) => <p class="body">{p}</p>)}
+      </div>
+      <div class="waiting">
+        <p class="waiting-title">{pr.pileLabel}</p>
+        <ul>
+          {pr.pile.map((label) => <li><span>{label}</span><span class="status"><i></i>{pr.pileStatus}</span></li>)}
+        </ul>
+      </div>
+    </div>
+    {s.chapters.map((c, i) => (
+      <div class="chapter">
+        <div class="text reveal">
+          <p class="kicker"><span class:list={['key', `key-${i}`]}></span>{fill(c.label)}</p>
+          <h2><Emph text={c.h2} /></h2>
+          <p class="body">{c.body}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-story]');
+  const canvas = root?.querySelector<HTMLCanvasElement>('[data-story-canvas]');
+  if (root && canvas) {
+    const ctx = canvas.getContext('2d')!;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const IVORY = '236,231,222', CORAL = '231,120,92';
+    const IVORY_RGB = [236, 231, 222], CORAL_RGB = [231, 120, 92];
+
+    type Sq = {
+      px: number; py: number; pr: number; pa: number;   // pile: position, rotation, outline strength
+      gx: number; gy: number;                           // grid
+      mx: number; my: number; small: boolean;           // the mark (small = part of the coral ² square)
+      d: number; err: boolean;                          // stagger (0–1); caught at the check
+    };
+
+    // A Pythagorean triple, so the grid of n² tasks becomes exactly one big m² square and one small k² square:
+    // 25² = 24² + 7² on wide screens, 13² = 12² + 5² on phones. Me², squared.
+    let n = 25, m = 24, k = 7;
+    let W = 0, H = 0, gs = 0, ms = 0, gridX = 0, gridY = 0, size = 0;
+    let glow = { x: 0, y: 0, r: 0 };
+    let sq: Sq[] = [];
+
+    const layout = () => {
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      const wide = W >= 1000;
+      const dpr = Math.min(devicePixelRatio || 1, wide ? 2 : 1.5);
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      [n, m, k] = wide ? [25, 24, 7] : [13, 12, 5];
+
+      // Where the squares live: the right-hand column on wide screens, the top of the screen on phones.
+      const rx = wide ? W * 0.53 : W * 0.08, rw = wide ? W * 0.4 : W * 0.84;
+      const ry = wide ? H * 0.16 : H * 0.11, rh = wide ? H * 0.7 : H * 0.38;
+      size = Math.min(rw, rh);
+      gridX = rx + (rw - size) / 2; gridY = ry + (rh - size) / 2;
+      const gap = (size / n) * 0.24;
+      gs = (size - gap * (n - 1)) / n;
+
+      // The mark: a big m×m block with the small k×k block up at its top right, as in the logo.
+      ms = (size * 0.97) / (m + k * 1.12);
+      const big = m * ms, small = k * ms;
+      const markW = big + small * 1.12, markH = big + small * 0.55;
+      const bx = gridX + (size - markW) / 2, by = gridY + (size - markH) / 2 + small * 0.55;
+      const sx = bx + big + small * 0.12, sy = by - small * 0.55;
+      glow = { x: sx + small / 2, y: sy + small / 2, r: big * 1.05 };
+
+      let seed = 11;
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      const N = n * n;
+      sq = [];
+      let bigIndex = 0;
+      for (let i = 0; i < N; i++) {
+        const col = i % n, row = Math.floor(i / n);
+        const isSmall = col >= n - k && row < k;
+        let mx: number, my: number;
+        if (isSmall) { mx = sx + (col - (n - k)) * ms; my = sy + row * ms; }
+        else { mx = bx + (bigIndex % m) * ms; my = by + Math.floor(bigIndex / m) * ms; bigIndex++; }
+        // The pile: a lopsided heap along the bottom, wider than the grid, squares overlapping at angles.
+        const u = (rnd() + rnd()) / 2;
+        const px = gridX - size * 0.12 + u * size * 1.24;
+        const mound = 1 - Math.pow((u - 0.47) / 0.53, 2);
+        const py = gridY + size - gs - Math.pow(rnd(), 0.75) * mound * size * 0.62;
+        sq.push({
+          px, py, pr: (rnd() - 0.5) * 1.1, pa: 0.25 + rnd() * 0.45,
+          gx: gridX + col * (gs + gap), gy: gridY + row * (gs + gap),
+          mx, my, small: isSmall, d: rnd(), err: !isSmall && rnd() < 0.045,
+        });
+      }
+    };
+
+    const clamp = (v: number) => Math.max(0, Math.min(1, v));
+    const smooth = (a: number, b: number, v: number) => { const x = clamp((v - a) / (b - a)); return x * x * (3 - 2 * x); };
+    const ease = (v: number) => 1 - Math.pow(1 - clamp(v), 3);
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+    // e: how far the section has come on screen (the pile forming); t: 0–3 through the chapters.
+    const draw = (e: number, t: number) => {
+      ctx.clearRect(0, 0, W, H);
+      const A = smooth(0.15, 0.85, t);         // pile → grid (AI drafts)
+      const B = smooth(0.15, 0.85, t - 1);     // the check sweeps across
+      const C = smooth(0.1, 0.8, t - 2);       // grid → the mark
+      const sweep = gridX - 30 + B * (size + 60);
+
+      if (C > 0) {
+        const g = ctx.createRadialGradient(glow.x, glow.y, 0, glow.x, glow.y, glow.r);
+        g.addColorStop(0, `rgba(${CORAL},${0.32 * C})`);
+        g.addColorStop(0.45, `rgba(${CORAL},${0.1 * C})`);
+        g.addColorStop(1, `rgba(${CORAL},0)`);
+        ctx.fillStyle = g;
+        ctx.fillRect(glow.x - glow.r, glow.y - glow.r, glow.r * 2, glow.r * 2);
+      }
+
+      for (const s of sq) {
+        const fall = 1 - ease((e - s.d * 0.55) / 0.45);           // squares drop onto the pile as it arrives
+        const a = ease((A - s.d * 0.4) / 0.6);
+        const c = ease((C - s.d * 0.35) / 0.65);
+        let x = lerp(s.px, s.gx, a), y = lerp(s.py, s.gy, a) - fall * H * 0.9;
+        let w = gs, rot = s.pr * (1 - a);
+        if (c > 0) { x = lerp(s.gx, s.mx, c); y = lerp(s.gy, s.my, c); w = lerp(gs, ms + 0.75, c); rot = 0; }
+
+        // Checked once the sweep has passed its centre; errors flash coral, then stay marked as corrected.
+        const passed = clamp((sweep - (s.gx + gs / 2)) / (size * 0.06));
+        let fill = '', stroke = '';
+        if (c > 0) {
+          // Opaque, so the squares fuse into one clean block as their gaps close.
+          const from = s.err ? CORAL_RGB : IVORY_RGB, to = s.small ? CORAL_RGB : IVORY_RGB;
+          fill = `rgb(${from.map((v, j) => Math.round(lerp(v, to[j], c))).join(',')})`;
+        } else if (passed > 0 && B > 0) {
+          fill = s.err ? `rgba(${CORAL},${0.5 + 0.5 * passed})` : `rgba(${IVORY},${0.25 + 0.67 * passed})`;
+        } else {
+          stroke = `rgba(${IVORY},${lerp(s.pa, 0.7, a) * (1 - fall * 0.6)})`;
+        }
+
+        if (rot) {
+          ctx.save(); ctx.translate(x + w / 2, y + w / 2); ctx.rotate(rot);
+          if (fill) { ctx.fillStyle = fill; ctx.fillRect(-w / 2, -w / 2, w, w); }
+          else { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.strokeRect(-w / 2 + 0.5, -w / 2 + 0.5, w - 1, w - 1); }
+          ctx.restore();
+        } else if (fill) { ctx.fillStyle = fill; ctx.fillRect(x, y, w, w); }
+        else { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w - 1, w - 1); }
+      }
+
+      // The person's check: a fine line moving across the drafted grid.
+      if (B > 0 && B < 1) {
+        const top = gridY - 24, bottom = gridY + size + 24;
+        const g = ctx.createLinearGradient(0, top, 0, bottom);
+        g.addColorStop(0, `rgba(${IVORY},0)`); g.addColorStop(0.5, `rgba(${IVORY},0.95)`); g.addColorStop(1, `rgba(${IVORY},0)`);
+        ctx.fillStyle = g;
+        ctx.fillRect(sweep, top, 1.2, bottom - top);
+      }
+    };
+
+    // Where are we? Read once per frame, only while the section is on screen.
+    let raf = 0, last = '';
+    const frame = () => {
+      raf = 0;
+      const r = root.getBoundingClientRect();
+      const vh = innerHeight;
+      let e = clamp(1 - r.top / vh);
+      let t = r.top > 0 ? 0 : clamp(-r.top / Math.max(1, r.height - vh)) * 3;
+      if (reduce) { e = 1; t = Math.round(t); }      // no tweening: one still frame per chapter
+      const key = `${e.toFixed(3)}|${t.toFixed(3)}`;
+      if (key !== last) { last = key; draw(e, t); }
+    };
+    const request = () => { if (!raf) raf = requestAnimationFrame(frame); };
+
+    // The section is only laid out near the screen (.render-later), so size the canvas the first time it shows.
+    const start = () => {
+      let rt = 0;
+      addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(() => { if (W) { layout(); last = ''; request(); } }, 150); });
+      new IntersectionObserver(([en]) => {
+        if (en.isIntersecting) {
+          if (!W) layout();
+          addEventListener('scroll', request, { passive: true }); request();
+        } else removeEventListener('scroll', request);
+      }).observe(root);
+    };
+    // Nothing here is needed for the first screen: set up once the page has settled.
+    const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(start, { timeout: 2000 }) : setTimeout(start, 200));
+    document.readyState === 'complete' ? idle() : addEventListener('load', idle, { once: true });
+  }
+</script>
+
+<style>
+  .story { position: relative; border-top: 1px solid var(--color-line-dark); }
+  .story.render-later { contain-intrinsic-size: auto 400svh; }
+  .track { position: absolute; inset: 0; pointer-events: none; }
+  .pin { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+  .pin canvas { display: block; width: 100%; height: 100%; }
+  .chapters { position: relative; z-index: 1; }
+  .chapter { position: relative; min-height: 100svh; display: flex; align-items: center; }
+  .text { max-width: 32rem; padding-block: 120px; }
+  h2 { margin-top: 28px; font-size: clamp(2.7rem, 5.4vw, 5.6rem); line-height: 0.98; letter-spacing: -0.025em; color: var(--color-on-dark); }
+  h2 :global(strong) { color: #fff; }
+  .body { margin-top: 26px; max-width: 34ch; font-size: clamp(1.08rem, 1.3vw, 1.22rem); color: var(--color-muted-dark); }
+  .body + .body { margin-top: 16px; }
+  .kicker {
+    display: flex; align-items: center; gap: 12px;
+    font-size: var(--text-label); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-muted-dark);
+  }
+  /* The same squares as the hero board: outline (drafted), solid (checked), coral (the ²). */
+  .key { width: 10px; height: 10px; box-sizing: border-box; display: inline-block; }
+  .key-0 { border: 1px solid var(--color-on-dark); }
+  .key-1 { background: var(--color-on-dark); }
+  .key-2 { background: var(--color-coral); }
+
+  /* Chapter 1: the work waiting, noted beside the pile. */
+  .waiting { display: none; }
+  .waiting-title {
+    font-size: var(--text-label); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--color-muted-dark); padding-bottom: 12px; border-bottom: 1px solid rgb(236 231 222 / 0.5);
+  }
+  .waiting ul { list-style: none; margin: 0; padding: 0; }
+  .waiting li {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 20px;
+    padding: 12px 0; border-bottom: 1px solid var(--color-line-dark);
+    font-family: var(--font-display); font-size: 1.3rem; line-height: 1.2; color: var(--color-on-dark);
+  }
+  .status { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-sans); font-size: 0.8rem; color: var(--color-muted-dark); }
+  .status i { width: 8px; height: 8px; border: 1px dashed rgb(236 231 222 / 0.6); display: inline-block; }
+
+  @media (min-width: 1000px) {
+    .text { width: 40%; }
+    .waiting { display: block; position: absolute; top: 15svh; right: 0; width: min(34%, 360px); }
+  }
+  /* Phones and tablets: the squares sit in the top of the screen; each chapter's words come up from below on a shade of ink. */
+  @media (max-width: 999px) {
+    .chapter { align-items: flex-end; }
+    /* A translucent shade only as tall as the words, so the squares stay visible as the text passes over them. */
+    .text {
+      max-width: none; margin-inline: calc(-1 * var(--gutter)); padding: 7svh var(--gutter) 9svh;
+      background: linear-gradient(to top, rgb(13 17 22 / 0.88) 82%, rgb(13 17 22 / 0));
+    }
+    h2 { font-size: clamp(2.5rem, 9vw, 3.6rem); }
+  }
+</style>

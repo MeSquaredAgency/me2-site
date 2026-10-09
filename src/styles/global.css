@@ -43,6 +43,11 @@
     box-sizing: border-box;
   }
   .section { padding-block: var(--section-y); }
+  /* Sections below the first screens: the browser skips laying them out until they come near the screen.
+     Most of the load-time work on phones was full-page layout; this keeps it to what's visible. */
+  .render-later { content-visibility: auto; contain-intrinsic-size: auto 1000px; }
+  /* Before jumping to a section, lay everything out so the jump lands exactly (Base.astro adds this). */
+  .render-all .render-later { content-visibility: visible; }
   .bg-ivory { background: var(--color-ivory); color: var(--color-text); }
   .bg-bone { background: var(--color-bone); color: var(--color-text); }
   .on-dark { background: var(--color-ink); color: var(--color-on-dark); }

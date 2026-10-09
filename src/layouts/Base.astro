@@ -4,6 +4,7 @@ import fontUrl from '@fontsource-variable/instrument-sans/files/instrument-sans-
 import serifUrl from '@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2?url';
 import serifItalicUrl from '@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2?url';
 import routes from '../data/routes.json';
+import logoLight from '../assets/brand/me2-logo-light.svg?raw';
 import { config, isFixture, siteUrl } from '../config';
 
 interface Props {
@@ -59,8 +60,20 @@ const noindex = route.noindex || isFixture;
     {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
   </head>
   <body>
+    <!-- The logo's paths, once. Logo.astro points at this group, so the large traced path isn't repeated in every logo. -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><g id="me2-logo-light" set:html={logoLight.replace(/^[\s\S]*?<\/title>/, '').replace(/<\/svg>\s*$/, '')} /></defs></svg>
     <slot />
     <script>
+      // Sections marked .render-later are only laid out near the screen (faster loading). Before any jump
+      // to a section, by link or by an address with #, lay everything out so the jump lands in the right place.
+      const renderAll = () => document.documentElement.classList.add('render-all');
+      if (location.hash) renderAll();
+      document.addEventListener('click', (e) => {
+        const a = (e.target as Element | null)?.closest?.('a[href*="#"]') as HTMLAnchorElement | null;
+        if (a && a.pathname === location.pathname) renderAll();
+      }, { capture: true });
+      addEventListener('hashchange', renderAll);
+
       // Scroll-in reveals for elements marked .reveal (skipped for reduced motion).
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
         document.documentElement.classList.add('js-reveal');

@@ -7,7 +7,8 @@ const c = content.finalCta;
 const mailto = `mailto:${config.CONTACT_EMAIL}?subject=${encodeURIComponent(content.ui.subjects.general)}`;
 const [before, after] = fill(c.emailLine).split(config.CONTACT_EMAIL);
 ---
-<section class="cta on-dark" aria-labelledby="cta-title">
+<section class="cta on-dark render-later" aria-labelledby="cta-title">
+  <div class="glow" aria-hidden="true"></div>
   <div class="wrap inner">
     <h2 id="cta-title" class="reveal"><Emph text={c.h2} /></h2>
     <div class="side reveal" style="--d:1">
@@ -23,7 +24,13 @@ const [before, after] = fill(c.emailLine).split(config.CONTACT_EMAIL);
   </div>
 </section>
 <style>
-  .cta { padding-block: clamp(120px, 16vw, 220px); }
+  .cta { position: relative; overflow: hidden; isolation: isolate; padding-block: clamp(120px, 16vw, 220px); }
+  /* The same warm light as the hero, fainter, behind the ask. */
+  .glow {
+    position: absolute; z-index: -1; pointer-events: none;
+    width: min(110vw, 1300px); aspect-ratio: 1; right: -36vw; bottom: -60%;
+    background: radial-gradient(closest-side, rgb(var(--glow) / 0.15), rgb(var(--glow) / 0.05) 50%, rgb(var(--glow) / 0) 100%);
+  }
   .inner { display: grid; gap: 56px; align-items: end; }
   h2 { font-size: clamp(3rem, 8vw, 8rem); line-height: 0.95; letter-spacing: -0.025em; max-width: 11ch; color: var(--color-on-dark); }
   h2 :global(strong) { color: #fff; }

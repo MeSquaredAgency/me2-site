@@ -24,6 +24,7 @@ const first = Array.from({ length: TIMING.rows }, (_, i) => {
 });
 ---
 <section class="hero on-dark" aria-labelledby="hero-title">
+  <div class="glow" aria-hidden="true"></div>
   <div class="field" aria-hidden="true"></div>
   <div class="wrap inner">
     <div class="lead">
@@ -159,13 +160,14 @@ const first = Array.from({ length: TIMING.rows }, (_, i) => {
     const stop = () => { running = false; clearInterval(timer); board.classList.add('is-paused'); };
     board.classList.add('is-live', 'is-paused');
 
-    // Start once the page has settled, and only while the board can be seen.
+    // Start once the page has loaded and gone quiet, and only while the board can be seen.
     let visible = true;
     const start = () => {
       new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible && !document.hidden ? play() : stop(); }).observe(board);
       document.addEventListener('visibilitychange', () => (document.hidden || !visible ? stop() : play()));
     };
-    setTimeout(() => ('requestIdleCallback' in window ? requestIdleCallback(start, { timeout: 1500 }) : start()), 600);
+    const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(start, { timeout: 2000 }) : setTimeout(start, 200));
+    document.readyState === 'complete' ? idle() : addEventListener('load', idle, { once: true });
   }
 </script>
 
@@ -178,6 +180,20 @@ const first = Array.from({ length: TIMING.rows }, (_, i) => {
       radial-gradient(55% 60% at 78% 70%, rgb(236 231 222 / 0.06), transparent 70%),
       var(--color-ink);
   }
+  /* The ² as a light source: a soft coral glow behind the board, drifting very slowly (transform only). */
+  .glow {
+    position: absolute; z-index: -2; pointer-events: none;
+    width: min(120vw, 1500px); aspect-ratio: 1; right: -32vw; top: -14vh;
+    background: radial-gradient(closest-side, rgb(var(--glow) / 0.2), rgb(var(--glow) / 0.08) 45%, rgb(var(--glow) / 0) 100%);
+    animation: drift 26s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(-6vw, 8vh, 0) scale(1.12); }
+  }
+  @media (prefers-reduced-motion: reduce) { .glow { animation: none; } }
+  @media (max-width: 999px) { .glow { width: 160vw; right: -70vw; top: auto; bottom: -40vh; } }
   /* Faint squared paper behind the board: the square, as a working surface. */
   .field {
     position: absolute; inset: 0; z-index: -1; pointer-events: none;

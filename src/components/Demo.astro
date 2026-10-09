@@ -5,7 +5,7 @@ interface Props { n: number }
 const { n } = Astro.props;
 const c = content.demo;
 ---
-<section id="demo" class="section demo on-dark" aria-labelledby="demo-title">
+<section id="demo" class="section demo on-dark render-later" aria-labelledby="demo-title">
   <div class="wrap">
     <p class="label">{c.eyebrow}<sup>{n}</sup></p>
     <div class="head">

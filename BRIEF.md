@@ -1,5 +1,7 @@
-# Me² — Build Brief v0.13 ("Squared", says what we do; live since 9 Oct 2026)
+# Me² — Build Brief v0.14 ("Squared": the squares story and the coral glow)
 Owner: Elliot Crabb (EC) · Decision-maker: Patrick · Date: 9 Oct 2026 · Mode: New build
+
+v0.14 (9 Oct 2026, branch `hero-balance`, NOT live): EC sent five sites he likes (cognichip.ai, weevolveit.com, creativeans.com, hitit.com, inflect.co.uk) and asked what could inspire Me². From the plan EC chose two ideas, made in Me²'s own terms rather than copied: (1) a "living squares" story, one pinned canvas carrying four chapters as you scroll (Cognichip's idea of one object that changes as the story moves on): tasks pile up, AI drafts them, a person checks them, they become the Me² mark; it replaces the problem section and the "AI does the volume" statement; (2) a warm coral glow, the ² as a light source, behind the hero board, the story's last chapter and the final call to action. Also: the hero rebalanced into two columns after EC's "you think that looks good?"; sections below the first screens skip layout until near the screen (faster phones).
 
 v0.13 (9 Oct 2026, branch `hero-says-what-we-do`, published 9 Oct on EC's "Just push it live" as Worker version a32d4082): EC: "it doesn't tell me what the business does / is from the first sight… You should know the minute you land on the page." and "we don't want to have Real Estate down as a specific industry that we work with - we would want to have use case examples… The website has to be much much better." (apnre.com.au was named as the bar for craft only: "Don't copy APNRE site… I just wanted you to see how highly you are capable of performing.") The hero now says it plainly ("We run the back office. You run the business.", kicker "Managed back-office services") over a live Command Centre board of sample tasks; the real estate section and photo are replaced by six use-case examples across kinds of business; "AI does the volume. People own the outcome." becomes a full-width statement; the demo uses overdue invoices instead of rent arrears; the marquee is removed; the footer ends with a tonal me² wordmark.
 
@@ -104,21 +106,23 @@ Copy in Appendix A writes `{SITE_NAME}`, `{SITE_NAME_PLAIN}`, `{CONTACT_EMAIL}`,
 └── .verify/fixture/          # git-ignored fixture config (§6b)
 ```
 
-## 5. Design direction and tokens ("Squared", v0.12)
+## 5. Design direction and tokens ("Squared", v0.14)
 - Idea: **Me² = me, squared** — a team's capacity multiplied, with nothing lost in quality. Every visual decision comes from that: squares, superscripts, restraint.
-- Hero signature (v0.13): the Command Centre board. Sample tasks from different kinds of business arrive at the top and move through four stages: in queue, AI drafting (a hairline fills under the row), operator checking (a bright line sweeps across) and checked, done. Some are caught (the row flashes coral, "Error caught") and end "Corrected, done" with a coral square. Squares mark the stage: dashed outline (queued), outline (drafted by AI), half-filled (being checked), solid (checked), coral (caught and corrected); a legend says the same in words, with "Illustration with sample tasks." Faint squared paper behind it. Static mixed-stage board for reduced motion and without JavaScript; pauses off-screen. The statement and final CTA headlines end with the coral ² square, set tight to the full stop.
+- Hero signature (v0.13): the Command Centre board. Sample tasks from different kinds of business arrive at the top and move through four stages: in queue, AI drafting (a hairline fills under the row), operator checking (a bright line sweeps across) and checked, done. Some are caught (the row flashes coral, "Error caught") and end "Corrected, done" with a coral square. Squares mark the stage: dashed outline (queued), outline (drafted by AI), half-filled (being checked), solid (checked), coral (caught and corrected); a legend says the same in words, with "Illustration with sample tasks." Faint squared paper behind it. Static mixed-stage board for reduced motion and without JavaScript; pauses off-screen. The final CTA headline ends with the coral ² square, set tight to the full stop.
+- The squares story (v0.14), straight after the hero: one canvas pinned for four screens while four chapters scroll past. Every square is a task. (1) "Admin grows faster than headcount": squares tumble onto an uneven pile, with the "Work waiting on someone" list beside it. (2) "AI does the volume": the pile snaps into a grid of outlines. (3) "People own the outcome": a fine check line sweeps across; squares turn solid; a few flash coral and stay marked as corrected. (4) "Your team, squared": the grid closes into the Me² mark, a big solid square with the small coral ² square at its top right, glowing. The counts are Pythagorean triples (25² = 24² + 7² on wide screens, 13² = 12² + 5² on phones), so the grid becomes exactly one big square and one small one. Wide screens: words left, squares right; phones: squares in the top of the screen, words rising from below on a translucent shade. Reduced motion: one still frame per chapter, no tweening. The canvas is decorative (sr-only summary) and never takes clicks.
 - Section labels carry superscript numbers ("The problem¹", "See it in action²"…) with a hairline to the edge. The closing headline ends with a small coral square as an exponent.
-- Colours (tokens in `src/styles/tokens.css`): `ink` #0D1116 · `ink-2` #161B22 · `ivory` #F3EFE7 · `bone` #E7E1D5 · `text` #111418 · `muted` #585D64 · `on-dark` #ECE7DE · `muted-dark` #9DA2A8 · `coral` #E7785C (² motif and caught errors only; text only on ink) · `coral-deep` #A6412A (coral as text on ivory) · `sage` #7FB59A ("checked", always with a word) · `navy` #1B3853 (logo only).
+- Colours (tokens in `src/styles/tokens.css`): `ink` #0D1116 · `ink-2` #161B22 · `ivory` #F3EFE7 · `bone` #E7E1D5 · `text` #111418 · `muted` #585D64 · `on-dark` #ECE7DE · `muted-dark` #9DA2A8 · `coral` #E7785C (² motif, caught errors, and since v0.14 a soft glow of light on ink via `--glow`; text only on ink, never on ivory) · `coral-deep` #A6412A (coral as text on ivory) · `sage` #7FB59A ("checked", always with a word) · `navy` #1B3853 (logo only).
 - Allowed pairs (computed): text on ivory 16.10 · text on bone 14.18 · muted on ivory 5.79 · muted on bone 5.10 · on-dark on ink 15.38 · muted-dark on ink 7.37 · on-dark on ink-2 14.05 · muted-dark on ink-2 6.73 · coral on ink 6.53 · coral on ink-2 5.96 · coral-deep on ivory 5.37 · sage on ink-2 7.40 · ink on ivory 16.51 · ink on on-dark (light buttons) 15.38.
 - Type: headlines in Instrument Serif 400 (OFL, `@fontsource/instrument-serif`, normal + italic), the emphasised part (`**…**` in the copy) set in italic, not bold. Everything else Instrument Sans Variable. Labels: 0.74rem, 600, letter-spacing 0.2em, uppercase.
 - Layout: editorial grid, generous space (160px section padding on desktop), hairline rules instead of cards, pills or chips. Sections alternate ink / ivory / bone so two same colours only touch across a hairline.
 - Buttons: quiet pills. Solid (ivory on ink, ink on ivory) for the main action; hairline outline for secondary; text links with a hairline underline that draws back on hover.
 - Imagery: none since v0.13 (the real estate keys photo was removed with its section). The board, the demo and type carry the page.
-- Motion: slow and fine. The hero board; the problem headline coming into focus word by word; the use-case panels easing in when a tab changes; the demo; the "AI does the volume" statement rising word by word; 1s scroll-in reveals. All respect reduced motion.
+- Motion: slow and fine. The hero board; the hero glow drifting (transform only, about 26s); the squares story, driven by scroll; the use-case panels easing in when a tab changes; the demo; 1s scroll-in reveals. All respect reduced motion. Animations start only after the page has loaded and gone quiet, and pause off-screen.
+- Performance: sections below the first screens carry `.render-later` (`content-visibility: auto`), so phones only lay out what is near the screen; any in-page jump first lays everything out (Base.astro) so it lands exactly. The use-cases section is excluded (Lighthouse misreads its text colours while it is skipped). The logo's traced paths are inlined once and reused with `<use>`.
 - Logo: the traced vector me² (light version on ink). OG image: ink, the serif headline and the squared mark.
 
 ## 6. Page structure
-Section order (v0.13): header, hero (ink), problem¹ (ivory), what we take on² (bone), see it in action³ (ink), statement (ivory), how we work⁴ (bone), why Me²⁵ (ivory), services⁶ (bone), questions⁷ (ivory), final CTA (ink), footer (ink, hairline top border). Two same-colour sections never touch without a hairline.
+Section order (v0.14): header, hero (ink), the squares story with the problem¹ (ink, hairline top border), what we take on² (bone), see it in action³ (ink), how we work⁴ (bone), why Me²⁵ (ivory), services⁶ (bone), questions⁷ (ivory), final CTA (ink), footer (ink, hairline top border). Two same-colour sections never touch without a hairline.
 
 ### 6.1 Header
 - Copy: A.1. Fixed over the hero; solid ink with a hairline once scrolled. Light logo left; nav (What we take on, How it works, Services, Questions; hidden under 1000px) and a "Talk to us" outline pill right.
@@ -128,14 +132,11 @@ Section order (v0.13): header, hero (ink), problem¹ (ivory), what we take on² 
 - Layout: two columns from 1100px, both above the fold. Left: kicker with a coral square, the H1 ("We run the back office." / italic "You run the business.", no coral square after it), the subhead (what we take off your plate and how: AI drafts, an operator checks, it comes back done) and the actions ("Talk to us" + "See what we take on" → `#use-cases`). Right: the Command Centre board (§5), plain hairlines with no panel behind it. Narrower screens stack them.
 - Flag: `showLocations` adds the location line under the actions.
 
-### 6.3 Problem (`id="problem"`)
-- Copy: A.3. Ivory. Large serif headline whose words come into focus on scroll; two paragraphs; a "Work waiting on someone" list.
+### 6.3 The squares story, with the problem (`id="problem"`)
+- Copy: A.3 (chapter 1) and `story` in `site.ts` (chapters 2 to 4). Ink. See §5 for the canvas. Replaces the v0.13 problem section and the v0.13 statement (§6.5).
 
 ### 6.4 See it in action (`id="demo"`)
 - Copy: A.demo (in `site.ts`). Ink. One task start to finish: an AI Role drafts an overdue-invoices summary; the operator check finds $1,200 against the ledger's $1,020, corrects it and signs off. Labelled as made-up sample data.
-
-### 6.5 Statement
-- Copy: `interlude` in `site.ts`. Ivory, full width: "AI does the volume. *People own the outcome.*" rising word by word, ending with the coral ² square; one line beneath.
 
 ### 6.6 What we take on (`id="use-cases"`)
 - Purpose: show the range of work without naming an industry as a market. Copy: `useCases` in `site.ts`.
@@ -363,6 +364,12 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
 - Card 2 photo alt: `People working at computer screens in an office`
 - Card 2 button: `Ask about Effective Business Units`
 
+### A.5b The squares story, chapters 2 to 4 (v0.14)
+Chapter 1 is A.3. The words live in `story` in `src/content/site.ts`.
+- `Drafted by AI` · H2 `AI does **the volume.**` · `Drafts reports, sorts inboxes, extracts and summarises. It does the first pass, fast.`
+- `Checked by a person` · H2 `People own **the outcome.**` · `A trained operator checks every name, date and number against the source before anything leaves.`
+- `Done` · H2 `Your team, **squared.**` · `You get the work done without hiring for it or babysitting another tool.`
+
 ### A.6 What we take on (v0.13; replaces "Starting with real estate")
 The words live in `useCases` and `interlude` in `src/content/site.ts`; that file is the copy of record for these sections.
 - Eyebrow: `What we take on` · H2: `Different businesses. **The same back office.**`
@@ -371,7 +378,6 @@ The words live in `useCases` and `interlude` in `src/content/site.ts`; that file
 - Note: `Examples of the kind of work we take on, not client case studies.`
 - Closing: `Don't see your business here? If the work is repeatable, tell us about it.` + `Talk to us`
 - Proof block (`showProof`): `[[TBC: client case study, approved in writing by the client — EC]]`
-- Statement: `AI does the volume. **People own the outcome.**` · `AI drafts the work. A trained person checks every detail before it reaches you.`
 
 ### A.7 FAQ
 - Eyebrow: `Questions`

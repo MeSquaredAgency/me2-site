@@ -170,7 +170,7 @@ const realBase = 'http://localhost:4321';
   const h = content.hero; [h.kicker, h.h1, h.subhead, h.primary, h.secondary, ...h.legend, h.board.title, h.board.note, h.board.srSummary].forEach(push);
   const pr = content.problem; [pr.eyebrow, pr.h2, ...pr.paragraphs, ...pr.pile, pr.pileStatus, pr.pileLabel].forEach(push);
   const dm = content.demo; [dm.eyebrow, dm.h2, dm.intro, dm.srSummary, dm.draftTitle, dm.suggestion, dm.failNote, dm.signoff, dm.note, dm.replay, ...dm.checks].forEach(push);
-  const il = content.interlude; [il.h2, il.body].forEach(push);
+  const st = content.story; [st.srSummary, ...st.chapters.flatMap((c) => [c.label, c.h2, c.body])].forEach(push);
   const md = content.model; [md.eyebrow, md.h2, md.intro, md.stepsTitle, ...md.parts.flatMap((p) => [p.title, p.body]), ...md.steps.flatMap((s) => [s.title, s.body])].forEach(push);
   const cp = content.compare; [cp.eyebrow, cp.h2, cp.intro, cp.colThem, cp.colUs, ...cp.rows.flatMap((r) => [r.topic, r.them, r.us])].forEach(push);
   const o = content.offers; [o.eyebrow, o.h2, o.intro, ...o.cards.flatMap((c) => [c.name, c.body, c.bestFor, c.button])].forEach(push);

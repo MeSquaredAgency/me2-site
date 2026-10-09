@@ -9,7 +9,7 @@ const { n } = Astro.props;
 const c = content.faq;
 const items = visibleFaq();
 ---
-<section id="faq" class="section bg-ivory" aria-labelledby="faq-title">
+<section id="faq" class="section bg-ivory render-later" aria-labelledby="faq-title">
   <div class="wrap">
     <p class="label">{c.eyebrow}<sup>{n}</sup></p>
     <div class="layout">

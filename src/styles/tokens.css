@@ -1,7 +1,8 @@
 /*
  * Me² design tokens (BRIEF §5, v0.12 "Squared"). Change a value here and it changes everywhere.
  * Near-black and warm ivory, hairlines, one accent. Coral (from the logo) is used only for the
- * "²" motif and for errors caught by the human check. Every text/background pair used is listed
+ * "²" motif, for errors caught by the human check, and (since v0.14) as a soft glow of light on ink.
+ * Coral is never text on ivory (use coral-deep). Every text/background pair used is listed
  * with its contrast in BRIEF §5; compute any new pair before using it.
  */
 @theme {
@@ -32,6 +33,8 @@
   --gutter: 22px;
   --section-y: 96px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* The logo coral as RGB channels, for the glow: rgb(var(--glow) / 0.2). Light on ink only, never behind body text at full strength. */
+  --glow: 231 120 92;
 }
 @media (min-width: 640px) { :root { --gutter: 44px; } }
 @media (min-width: 1000px) { :root { --section-y: 160px; --gutter: 56px; } }
