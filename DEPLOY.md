@@ -10,37 +10,40 @@
 | Domains | `mesquaredagency.com` (the site) and `www.mesquaredagency.com` (redirects to it). Cloudflare manages their DNS records and HTTPS certificates |
 | Redirects | Every `http://` and `www.` address goes to `https://mesquaredagency.com` in one 301 (done in `worker/index.ts`, because the zone's "Always Use HTTPS" setting is off) |
 | Email | Google Workspace. MX, SPF, DKIM, DMARC and verification records are separate from the site's records; connecting the site didn't touch them |
+| Code | GitHub **MeSquaredAgency/me2-site** (private). Cloudflare builds and publishes from it (Workers Builds, below) |
+| Node | Builds use Node 24 (`.node-version`). The build imports `.ts` config files directly, which needs Node 23.6 or later; Cloudflare's default is older |
 
 **Never publish from the APN Real Estate Cloudflare account.** `account_id` in `wrangler.jsonc` pins every command to the Me² account.
 
-## Publishing a change
-Every change goes on a branch first. Then:
+## Publishing a change (from GitHub)
+The Worker is connected to the repo with **Workers Builds**:
 
-1. Check the build and run every check:
+| Push to | Cloudflare runs | Result |
+| --- | --- | --- |
+| `main` | `npm run build`, then `npx wrangler deploy` | **Live on mesquaredagency.com** within a minute or two |
+| any other branch | `npm run build`, then `npx wrangler versions upload` | A **preview URL** (not live), shown on the commit in GitHub and in the Cloudflare dashboard |
+
+So `main` is always exactly what's live. Every change goes on a branch first. Then:
+
+1. Check the build and run every check locally:
 
    ```bash
    npm run verify
    ```
 
-2. Get a preview link to look at (not live):
+2. Push the branch. Cloudflare builds it and posts a preview link on the commit (GitHub → the commit's checks, or Cloudflare → Workers → mesquared → Deployments). Check it on a phone and a laptop.
 
-   ```bash
-   npx wrangler versions upload
-   ```
+3. **With EC's go-ahead only**, merge the branch into `main` (a pull request, then merge) and push. That publishes it. Then check https://mesquaredagency.com shows the change.
 
-   Wrangler prints a preview URL. Check it on a phone and a laptop.
+**If a build fails** in Cloudflare, the live site stays as it was. The build log is in Cloudflare → Workers → mesquared → Deployments → the failed build.
 
-3. **With EC's go-ahead only**, publish live:
+**Rolling back:** fastest is `npx wrangler rollback` (puts the previous version back live in seconds; `npx wrangler deployments list` shows the history). Then revert the commit on `main` too, or the next push will publish it again.
 
-   ```bash
-   npx wrangler deploy
-   ```
+### Publishing by hand (fallback)
+If GitHub or the build is unavailable: `npm run build` on the right branch, then `npx wrangler versions upload` for a preview, or, **with EC's go-ahead only**, `npx wrangler deploy` (live immediately; uploads whatever is in `dist/`). Push the same commit to `main` afterwards so the repo still matches the live site.
 
-   `deploy` goes live immediately. Then check https://mesquaredagency.com shows the change.
-
-`npx wrangler deploy` uploads whatever is in `dist/`, so always run `npm run build` (or `npm run verify`) on the right branch first.
-
-**Rolling back:** `npx wrangler rollback` puts the previous version back live in seconds. `npx wrangler deployments list` shows the history.
+### How the connection was set up (9 Oct 2026)
+Cloudflare → Workers & Pages → **mesquared** → Settings → **Build** → Connect → GitHub → MeSquaredAgency/me2-site. Production branch `main`; build command `npm run build`; deploy command `npx wrangler deploy`; non-production branch builds **on**, with `npx wrangler versions upload`; root directory `/`. The Cloudflare GitHub app must be allowed to see `me2-site` (GitHub → MeSquaredAgency → Settings → GitHub Apps → Cloudflare Workers and Pages → Repository access).
 
 ## Signing in on another computer
 ```bash

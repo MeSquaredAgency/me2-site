@@ -27,7 +27,8 @@ Out of scope: CMS, auth, database, client-side routing, UI frameworks, animation
 
 ## Git and deploys
 - **Live since 9 Oct 2026** at https://mesquaredagency.com: Cloudflare Workers project `mesquared` in the **Me²** account (`wrangler.jsonc`, `worker/index.ts`). See DEPLOY.md.
-- `npx wrangler deploy` publishes to the live site immediately. Never run it without EC's explicit yes for that change. For a look first, use `npx wrangler versions upload` (preview URL).
+- Code lives on GitHub at **MeSquaredAgency/me2-site** (private). Cloudflare Workers Builds publishes from it: **pushing or merging to `main` puts it live**; pushing any other branch makes a preview URL. Never push or merge to `main` without EC's explicit yes for that change. `main` must always equal what's live.
+- `npx wrangler deploy` (the by-hand fallback) also publishes immediately; same rule. For a look first, push a branch or use `npx wrangler versions upload`.
 - Never publish from the APN Real Estate Cloudflare account; `account_id` in `wrangler.jsonc` pins the Me² account.
 - Don't edit the DNS records for `mesquaredagency.com` / `www` (the Workers custom domains own them) or touch MX/TXT (Google Workspace email).
 - Branch for every change. Run `git branch --show-current` right before every commit and push; other sessions may share this checkout.
