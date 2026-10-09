@@ -1,0 +1,63 @@
+---
+import Logo from './Logo.astro';
+import { config, fill, flags } from '../config';
+import { content } from '../content/site';
+const c = content.footer;
+---
+<footer class="site-footer on-dark">
+  <div class="wrap top">
+    <div class="brand">
+      <Logo tone="light" height={44} />
+    </div>
+    <div class="col">
+      <h2 class="col-title">{c.contactHeading}</h2>
+      <a href={`mailto:${config.CONTACT_EMAIL}`}>{config.CONTACT_EMAIL}</a>
+    </div>
+    <nav class="col" aria-label={c.navHeading}>
+      <h2 class="col-title">{c.navHeading}</h2>
+      <ul>
+        {content.header.nav.map((item) => <li><a href={`/${item.href}`}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+  </div>
+  <div class="wrap bottom">
+    <p>{fill(c.copyright)}</p>
+    {flags.showLegalEntity && <p>{config.LEGAL_ENTITY}</p>}
+    {flags.showPrivacyPage && <a href="/privacy/">{c.privacy}</a>}
+    <p class="imagery">{c.imagery}</p>
+  </div>
+</footer>
+<style>
+  .site-footer { background: var(--color-ink); color: var(--color-on-dark); }
+  .top {
+    display: grid; gap: 36px;
+    padding-top: 64px; padding-bottom: 48px;
+  }
+  .col { display: grid; gap: 12px; align-content: start; }
+  .col-title {
+    font-family: var(--font-display); font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--color-pale);
+  }
+  .col a, .bottom a { color: #fff; text-decoration: none; }
+  .col a { display: inline-flex; min-height: 32px; align-items: center; }
+  @media (hover: hover) and (pointer: fine) {
+    .col a:hover, .bottom a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+  }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .bottom {
+    display: flex; flex-wrap: wrap; gap: 8px 28px; align-items: center;
+    padding-top: 22px; padding-bottom: 30px;
+    position: relative;
+    font-size: var(--text-small);
+  }
+  /* Divider aligned with the content, not the page edge. */
+  .bottom::before {
+    content: ''; position: absolute; top: 0; left: var(--gutter); right: var(--gutter);
+    border-top: 1px solid var(--color-line-dark);
+  }
+  .imagery { margin-left: auto; }
+  @media (max-width: 639px) { .imagery { margin-left: 0; } }
+  @media (min-width: 900px) {
+    .top { grid-template-columns: 2fr 1fr 1fr; }
+  }
+</style>

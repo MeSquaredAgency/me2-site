@@ -9,7 +9,7 @@ const c = content.header;
 <header class="site-header on-dark">
   <div class="wrap bar">
     <a href="/" class="home" aria-label={fill(content.ui.logoHomeLabel)}>
-      <Logo tone="light" height={36} class="header-logo" />
+      <Logo tone="light" height={40} class="header-logo" />
     </a>
     <nav aria-label={c.navLabel} class="nav">
       <ul>
@@ -23,7 +23,6 @@ const c = content.header;
   .site-header { position: absolute; inset: 0 0 auto; z-index: 10; }
   .bar { display: flex; align-items: center; gap: 24px; padding-block: 20px; }
   .home { display: inline-flex; padding: 4px 0; margin-right: auto; }
-  .home :global(.header-logo) { height: 36px; }
   .nav ul { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; }
   .nav a {
     display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px;
@@ -37,6 +36,6 @@ const c = content.header;
   }
   @media (max-width: 639px) {
     .bar { padding-block: 14px; }
-    .home :global(.header-logo) { height: 30px; }
+    .home :global(.logo-svg) { height: 32px; }
   }
 </style>

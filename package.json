@@ -6,11 +6,15 @@
     "node": ">=22"
   },
   "scripts": {
-    "brand": "node scripts/brand-assets.mjs",
+    "brand": "node scripts/brand-assets.mjs && node scripts/og-image.mjs",
     "dev": "astro dev",
-    "build": "astro build && node scripts/postbuild.mjs",
+    "build": "astro check && astro build && node scripts/postbuild.mjs",
     "preview": "astro preview --port 4321",
-    "check": "astro check"
+    "check": "astro check",
+    "og": "node scripts/og-image.mjs",
+    "indexnow": "node scripts/indexnow.mjs",
+    "build:fixture": "node scripts/build-fixture.mjs",
+    "verify": "node scripts/verify.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
@@ -23,7 +27,10 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.64.0",
+    "lighthouse": "^13.5.0",
+    "linkinator": "^8.1.0",
     "wrangler": "^4.149.0"
   }
 }

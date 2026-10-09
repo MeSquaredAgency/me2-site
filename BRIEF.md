@@ -1,5 +1,7 @@
-# Me² — Build Brief v0.8
+# Me² — Build Brief v0.9
 Owner: Elliot Crabb (EC) · Decision-maker: Patrick · Date: 9 Oct 2026 · Mode: New build
+
+v0.9 (9 Oct 2026): EC approved the v0.8 direction ("yeah sure"), approved licensed stock photos, and asked that the logo not be forgotten. Adds four Unsplash photos (§5 Imagery), a vector logo traced from the supplied PNG and used in the header, footer, favicon, OG image and `/logo.png`, and copy for the remaining sections (Appendix A: offers, real estate, FAQ, footer).
 
 v0.8 (9 Oct 2026): EC rejected the first design proof (minimal ink/paper type with a giant coral "2") and asked for inspiration from intelligentoffice.com. §5 and §6.1–6.4 now describe the richer direction; the v0.6 rules against eyebrow labels, emphasised words and decoration are withdrawn. New copy for the nav, pillars band, eyebrows and the problem illustration is in Appendix A.
 
@@ -113,9 +115,9 @@ Copy in Appendix A writes `{SITE_NAME}`, `{SITE_NAME_PLAIN}`, `{CONTACT_EMAIL}`,
 - Type: headings in Outfit Variable (OFL, `@fontsource-variable/outfit`), weight 300 with the emphasised part at 600; body in Instrument Sans Variable 400/600. Both self-hosted, latin subset, preloaded. Scale: H1 `clamp(2.5rem, 5.6vw, 4.5rem)`/1.08; H2 `clamp(1.9rem, 3.4vw, 2.75rem)`/1.15; H3 1.3rem 600; body 17px/1.65; eyebrow 0.78rem 600, letter-spacing 0.24em, uppercase.
 - Headings in Appendix A mark their bold part with `**…**`; render it as `<strong>`. Hyphenated words never break across lines.
 - Hero: full-height navy with two soft radial glows, centred copy, and decorative floating circles holding line icons (inbox, report, money, chat, chart, person-check), plus faint orbit rings. Three circles on phones, none behind text. Gentle float animation, off for reduced motion.
-- Imagery: no photography supplied. Visual richness comes from drawn illustrations (icon bubbles, the "work piling up" card stack) that illustrate the copy and make no claims. Licensed stock photos of workplaces may be added later for atmosphere only, with EC's approval, credited in `docs/media.md`, never captioned as Me²'s team, office or clients. No AI-generated people.
+- Imagery: no Me² photography exists yet. Four licensed Unsplash photos (EC approved 9 Oct) set the mood: a dim office behind the hero (tinted navy to 80–88% so white text passes contrast over its busiest part), a laptop by a window (AI Roles card), people at screens seen from behind (Effective Business Units card) and keys at a front door (real estate photo card). They are atmosphere only, credited in `docs/media.md`, never captioned as Me²'s team, office or clients, and the footer says "Photos are illustrative stock images." Drawn illustrations (icon bubbles, the "work piling up" card stack) carry the rest. No stock or AI-generated people as staff or testimonials. Real Me² photos replace stock as soon as they exist.
 - Icons: drawn for this site (`src/components/Icon.astro`), 24px grid, 1.6 stroke. No icon library.
-- Logo: the supplied me² mark (`src/assets/brand/me2-logo-supplied.png`), light version in the header and footer. Never the reflected "we" concept or the "from me to we." tagline (not approved; §13 #9).
+- Logo: vector SVGs traced from the supplied me² PNG (`src/assets/brand/me2-logo.svg`, navy "me"; `me2-logo-light.svg`, white "me"; coral "2" in both), inlined in the header (40px, 32px on phones) and footer (44px). `npm run brand` makes `/logo.png` (1200px), the favicons and the OG image from them. A designer master SVG replaces the traced ones when supplied. Never the reflected "we" concept or the "from me to we." tagline (not approved; §13 #9).
 - Spacing: section padding 110px desktop / 72px phone; content max width 1140px; side padding 20px phone / 40px desktop. Radius 14px small, 24px cards and panels. Soft, low card shadow.
 - Motion: hero bubble float and hover states only (hover inside `@media (hover: hover) and (pointer: fine)`). Respect `prefers-reduced-motion`. Visible focus rings (steel on light, pale on dark).
 - OG image: `public/og-image.png` (1200×630) in the hero style: ink with glows, light logo, the OG title in white with the emphasised part in pale.
@@ -146,26 +148,26 @@ Section order below. Backgrounds alternate ink/paper from the sections actually 
 
 ### 6.5 Offers (`id="offers"`)
 - Purpose: show the two ways to buy. Copy: A.5
-- Layout: H2 + intro, two equal cards side by side (stacked on phone). On a paper section, cards are ink with paper text; on an ink section, cards are navy. Each card: name (H3), body, "Best for" line, price line, button. Buttons are mailtos with the card's subject (A.ui).
-- Flag: `showPricing` controls both price lines. If off: not rendered, cards stay equal height, and no "$" appears anywhere in the page.
+- Layout: white section, centred head (eyebrow, H2, intro), two equal cards side by side (stacked on phones): 16:9 photo on top, then name (H3), body, feature chips, "Best for" line, price line, navy-outline button. "Best for", price and button sit at the bottom so both cards line up. Buttons are mailtos with the card's subject (A.ui).
+- Flag: `showPricing` controls both price lines. If off: not rendered, cards stay equal height, no "$" anywhere on the page.
 
-### 6.6 Starting with real estate
+### 6.6 Starting with real estate (`id="real-estate"`)
 - Purpose: show the first market without making the brand real-estate-only. Copy: A.6
-- Layout: H2 + body, a two-column list of six example roles (small coral or navy square markers) on desktop, one column on phone, then the closing line. Proof block below.
-- Flag: `showProof` controls the proof block. If off: not rendered.
+- Layout: mist section, centred head (eyebrow, H2, body). Left: rounded photo card (keys) with a navy gradient, the title "Property management" and four glass chips. Right: the list intro and six white rows, each with a navy icon well. Then the closing line centred, and the proof block.
+- Flag: `showProof` controls the proof block (ink rounded card). If off: not rendered.
 
-### 6.7 FAQ
+### 6.7 FAQ (`id="faq"`)
 - Purpose: answer the questions that stop a click. Copy: A.7
-- Layout: H2 left column, native `<details>`/`<summary>` items right column on desktop (stacked on phone), all closed by default, full-width rows with a 1px divider, a "+" that rotates to "×" via CSS. Visible keyboard focus on each summary.
-- Flag: the "Where is the team based?" item is controlled by `showLocations`. If off: not rendered.
+- Layout: white section. Left (sticky on desktop): eyebrow, H2, and a grey card with a short prompt and a "Talk to us" button. Right: native `<details>`/`<summary>` items as white rounded rows; a round "+" that turns to "−" when open. All closed by default; visible keyboard focus.
+- Flag: the "Where is the team based?" item is controlled by `showLocations` (also left out of the FAQ schema).
 
 ### 6.8 Final CTA
 - Purpose: last, clearest ask. Copy: A.8
-- Layout: coral band, centred H2 + body, ink button, visible email address below as an underlined ink link.
-- Flags: `enableBooking` adds "Book a call" linking to `BOOKING_URL` (new tab, `rel="noopener"`); off or `BOOKING_URL` empty → only "Talk to us". `enableContactForm` replaces body + email line with the form (A.ui); the mailto stays as a fallback link beneath it.
+- Layout: soft blue `band` section with two faint circles, centred H2 (bold part navy), body, primary "Talk to us", the email line with the address as a navy link.
+- Flags: `enableBooking` adds a navy-outline "Book a call" button to `BOOKING_URL` (new tab, `rel="noopener"`); off or no URL → only "Talk to us". `enableContactForm` (Phase 2) replaces the body + email line with the form; the mailto stays as a fallback link.
 
 ### 6.9 Footer
-- Copy: A.9. Layout: logo left; email link, then copyright; privacy link and entity line where flagged.
+- Copy: A.9. Layout: ink. Logo; a "Contact" column with the email; an "On this page" column repeating the nav. Bottom row: copyright, entity line and privacy link where flagged, and "Photos are illustrative stock images." on the right.
 - Flags: `showLegalEntity` controls the entity line; `showPrivacyPage` controls the privacy link. If off: not rendered.
 
 ### 6.10 404 page
@@ -352,21 +354,29 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
 - Step 3 body: `Every output gets checked before it counts, by your team or by a trained {SITE_NAME} operator. AI drafts, people decide.`
 
 ### A.5 Offers
-- H2: `Two ways to start`
+- Eyebrow: `Services`
+- H2: `Two ways to **start**`
 - Intro: `Start with one job, or hand over a whole workload.`
 - Card 1 name: `AI Roles`
 - Card 1 body: `One AI role for one job, set up around how your team already works. Your team reviews the output and stays in control.`
 - Card 1 best for: `Best for teams that know exactly which task is eating their week.`
 - Card 1 price (`showPricing`): `From $2,000 AUD [[TBC: billing basis and GST wording — Patrick]]`
+- Card 1 chips: `One job` · `Your team reviews` · `Built around your tools`
+- Card 1 photo alt: `A laptop open on a desk by a window`
 - Card 1 button: `Ask about AI Roles`
 - Card 2 name: `Effective Business Units`
 - Card 2 body: `A trained Command Centre operator runs a set of AI roles for you as a managed service. They check the work, handle the exceptions and report back to you.`
 - Card 2 best for: `Best for businesses that want a whole workload off their plate.`
 - Card 2 price (`showPricing`): `From $3,000 AUD [[TBC: billing basis and GST wording — Patrick]]`
+- Card 2 chips: `Managed service` · `Trained operator` · `Exceptions handled` · `Reports back to you`
+- Card 2 photo alt: `People working at computer screens in an office`
 - Card 2 button: `Ask about Effective Business Units`
 
 ### A.6 Starting with real estate
-- H2: `Starting with real estate`
+- Eyebrow: `First market`
+- H2: `Starting with **real estate**`
+- Photo card title: `Property management` · chips: `Inspections` · `Arrears` · `Maintenance` · `Owner reports`
+- Photo alt: `A hand holding a set of house keys beside a front door`
 - Body: `Real estate is our first market. Property management runs on high-volume, repeatable admin, which is exactly the kind of work AI roles and trained operators are built for.`
 - List intro: `Roles we set up for agencies include:`
 - List items:
@@ -380,7 +390,9 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
 - Proof block (`showProof`): `[[TBC: client case study, approved in writing by the client — EC]]`
 
 ### A.7 FAQ
-- H2: `Common questions`
+- Eyebrow: `Questions`
+- H2: `Common **questions**`
+- Side card: `Something else on your mind? Ask us directly.` · button `Talk to us`
 - Q: `Do we have to change the software we use?`
   A: `We start from the tools and processes you already use and set each AI role up around them. If something would need to change, we'll tell you before we start.`
 - Q: `Who checks the AI's work?`
@@ -395,7 +407,7 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
   A: `Email us about the task that takes up the most time. We'll tell you whether it's a fit, and what an AI Role or Effective Business Unit for it would look like.`
 
 ### A.8 Final CTA
-- H2: `Tell us which task is eating your week.`
+- H2: `Tell us which task is **eating your week.**`
 - Body: `Send a short email about the work you'd like off your plate. We'll tell you straight whether we can help.`
 - Button: `Talk to us`
 - Booking button (`enableBooking`): `Book a call`
@@ -403,6 +415,8 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
 
 ### A.9 Footer
 - Logo (no link)
+- Column headings: `Contact` · `On this page` (links repeat the A.1 nav)
+- Imagery note: `Photos are illustrative stock images.`
 - Email link text: `{CONTACT_EMAIL}`
 - Copyright: `© {YEAR} {SITE_NAME}`
 - Entity line (`showLegalEntity`): `[[TBC: legal entity name and registration number — Patrick + lawyer]]`

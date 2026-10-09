@@ -1,0 +1,70 @@
+---
+import { Image } from 'astro:assets';
+import aiRolesPhoto from '../assets/photos/offer-ai-roles.jpg';
+import ebuPhoto from '../assets/photos/offer-ebu.jpg';
+import Emph from './Emph.astro';
+import EmailLink from './EmailLink.astro';
+import { fixtureText, flags } from '../config';
+import { content } from '../content/site';
+const c = content.offers;
+const photos = { aiRoles: aiRolesPhoto, ebu: ebuPhoto } as const;
+---
+<section id="offers" class="section bg-white" aria-labelledby="offers-title">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">{c.eyebrow}</span>
+      <h2 id="offers-title"><Emph text={c.h2} /></h2>
+      <p>{c.intro}</p>
+    </div>
+    <div class="cards">
+      {c.cards.map((card) => (
+        <article class="card" aria-labelledby={`offer-${card.key}`}>
+          <Image
+            src={photos[card.key]}
+            alt={card.imageAlt}
+            widths={[480, 720, 1080]}
+            sizes="(min-width: 900px) 540px, 100vw"
+            class="photo"
+          />
+          <div class="body">
+            <h3 id={`offer-${card.key}`}>{card.name}</h3>
+            <p>{card.body}</p>
+            <ul class="chips">
+              {card.chips.map((chip) => <li class="chip">{chip}</li>)}
+            </ul>
+            <p class="best">{card.bestFor}</p>
+            {flags.showPricing && <p class="price">{fixtureText.price ?? card.price}</p>}
+            <div class="action">
+              <EmailLink subject={content.ui.subjects[card.key]} class="btn btn-outline">{card.button}</EmailLink>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+<style>
+  .cards { margin-top: 56px; display: grid; gap: 24px; }
+  .card {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    background: #fff;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-line);
+  }
+  .card :global(.photo) { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+  .body { display: flex; flex-direction: column; gap: 14px; padding: 30px 28px 32px; }
+  h3 { color: var(--color-text); font-size: 1.5rem; }
+  .body > p { color: var(--color-muted); }
+  .chips { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  /* Push the "Best for" line, price and button to the bottom so both cards line up. */
+  .body > .best { margin-top: auto; padding-top: 8px; color: var(--color-text); font-weight: 600; font-size: 0.98rem; }
+  .body > .price { color: var(--color-navy); font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; }
+  .action { padding-top: 6px; }
+  @media (min-width: 900px) {
+    .cards { grid-template-columns: 1fr 1fr; margin-top: 64px; }
+    .body { padding: 34px 36px 38px; }
+  }
+</style>

@@ -1,0 +1,77 @@
+---
+import Emph from './Emph.astro';
+import EmailLink from './EmailLink.astro';
+import { fill } from '../config';
+import { content } from '../content/site';
+import { visibleFaq } from '../lib/faq';
+const c = content.faq;
+const items = visibleFaq();
+---
+<section id="faq" class="section bg-white" aria-labelledby="faq-title">
+  <div class="wrap layout">
+    <div class="head">
+      <span class="eyebrow">{c.eyebrow}</span>
+      <h2 id="faq-title"><Emph text={c.h2} /></h2>
+      <div class="aside">
+        <p>{c.aside}</p>
+        <EmailLink subject={content.ui.subjects.general} class="btn btn-primary">{c.asideButton}</EmailLink>
+      </div>
+    </div>
+    <div class="items">
+      {items.map((item) => (
+        <details>
+          <summary>
+            <span class="q">{item.q}</span>
+            <span class="toggle" aria-hidden="true"></span>
+          </summary>
+          <p>{fill(item.a)}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+<style>
+  .layout { display: grid; gap: 40px; }
+  .head h2 { color: var(--color-text); margin-top: 0; }
+  .head h2 :global(strong) { color: var(--color-navy); }
+  .aside {
+    margin-top: 32px; padding: 26px; border-radius: var(--radius-lg);
+    background: var(--color-mist); display: grid; gap: 16px; justify-items: start;
+  }
+  .aside p { color: var(--color-muted); }
+  .items { display: grid; gap: 12px; align-content: start; }
+  details {
+    border: 1px solid var(--color-line); border-radius: var(--radius);
+    background: #fff; transition: box-shadow 160ms ease;
+  }
+  details[open] { box-shadow: var(--shadow-card); border-color: transparent; }
+  summary {
+    list-style: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    padding: 20px 22px; min-height: 44px;
+    font-family: var(--font-display); font-weight: 600; font-size: 1.08rem; color: var(--color-text);
+    border-radius: var(--radius);
+  }
+  summary::-webkit-details-marker { display: none; }
+  .toggle {
+    position: relative; flex: none; width: 32px; height: 32px; border-radius: 50%;
+    background: var(--color-chip);
+  }
+  .toggle::before, .toggle::after {
+    content: ''; position: absolute; left: 50%; top: 50%;
+    width: 12px; height: 1.8px; background: var(--color-navy); border-radius: 2px;
+    transform: translate(-50%, -50%); transition: transform 200ms ease;
+  }
+  .toggle::after { transform: translate(-50%, -50%) rotate(90deg); }
+  details[open] .toggle { background: var(--color-navy); }
+  details[open] .toggle::before, details[open] .toggle::after { background: #fff; }
+  details[open] .toggle::after { transform: translate(-50%, -50%) rotate(0deg); }
+  details p { padding: 0 22px 22px; color: var(--color-muted); max-width: 62ch; }
+  @media (prefers-reduced-motion: reduce) {
+    .toggle::before, .toggle::after, details { transition: none; }
+  }
+  @media (min-width: 900px) {
+    .layout { grid-template-columns: 5fr 7fr; gap: 64px; }
+    .head { position: sticky; top: 32px; align-self: start; }
+  }
+</style>

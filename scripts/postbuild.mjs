@@ -3,17 +3,16 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 
 const fixture = process.env.SITE_FIXTURE === '1';
-const outDir = fixture ? '.verify/fixture/dist' : 'dist';
+const outDir = process.env.OUT_DIR ?? (fixture ? '.verify/fixture/dist' : 'dist');
 
-const cfgSrc = readFileSync('src/config/site.config.ts', 'utf8');
-const flagSrc = readFileSync('src/config/flags.ts', 'utf8');
-const get = (src, key) => src.match(new RegExp(`${key}:\s*'([^']*)'`))?.[1];
-const flagOn = (key) => new RegExp(`${key}:\s*true`).test(flagSrc);
+const { siteConfig } = await import('../src/config/site.config.ts');
+const { flags } = await import('../src/config/flags.ts');
+const flagOn = (key) => flags[key] === true;
 
-const domain = fixture ? 'example.com' : get(cfgSrc, 'SITE_DOMAIN');
-const email = fixture ? 'test@example.com' : get(cfgSrc, 'CONTACT_EMAIL');
-const name = get(cfgSrc, 'SITE_NAME');
-const plain = get(cfgSrc, 'SITE_NAME_PLAIN');
+const domain = fixture ? 'example.com' : siteConfig.SITE_DOMAIN;
+const email = fixture ? 'test@example.com' : siteConfig.CONTACT_EMAIL;
+const name = siteConfig.SITE_NAME;
+const plain = siteConfig.SITE_NAME_PLAIN;
 const base = `https://${domain}`;
 
 const routes = JSON.parse(readFileSync('src/data/routes.json', 'utf8'));
@@ -42,9 +41,14 @@ const llms = `# ${name}
 ## First market
 - Real estate, especially property management: inspection report drafts, rent arrears tracking and reminders, inbox sorting, leasing enquiry replies, maintenance follow-up, owner and landlord reports.
 
+## Key pages
+- [Home](${base}/): what ${name} does, how it works, the two services and common questions
+- [How it works](${base}/#how): AI roles do the first pass, a person checks every output
+- [Services](${base}/#offers): AI Roles and Effective Business Units
+- [Real estate](${base}/#real-estate): the roles ${name} sets up for agencies
+
 ## Contact
-- Email: ${email}
-- Website: ${base}/
+- [Email ${email}](mailto:${email})
 `;
 writeFileSync(`${outDir}/llms.txt`, llms);
 

@@ -95,7 +95,8 @@ export const content = {
   },
 
   offers: {
-    h2: 'Two ways to start',
+    eyebrow: 'Services',
+    h2: 'Two ways to **start**',
     intro: 'Start with one job, or hand over a whole workload.',
     cards: [
       {
@@ -103,6 +104,8 @@ export const content = {
         name: 'AI Roles',
         body: 'One AI role for one job, set up around how your team already works. Your team reviews the output and stays in control.',
         bestFor: 'Best for teams that know exactly which task is eating their week.',
+        chips: ['One job', 'Your team reviews', 'Built around your tools'],
+        imageAlt: 'A laptop open on a desk by a window',
         /** showPricing */
         price: 'From $2,000 AUD [[TBC: billing basis and GST wording — Patrick]]',
         button: 'Ask about AI Roles',
@@ -112,6 +115,8 @@ export const content = {
         name: 'Effective Business Units',
         body: 'A trained Command Centre operator runs a set of AI roles for you as a managed service. They check the work, handle the exceptions and report back to you.',
         bestFor: 'Best for businesses that want a whole workload off their plate.',
+        chips: ['Managed service', 'Trained operator', 'Exceptions handled', 'Reports back to you'],
+        imageAlt: 'People working at computer screens in an office',
         /** showPricing */
         price: 'From $3,000 AUD [[TBC: billing basis and GST wording — Patrick]]',
         button: 'Ask about Effective Business Units',
@@ -120,7 +125,11 @@ export const content = {
   },
 
   realEstate: {
-    h2: 'Starting with real estate',
+    eyebrow: 'First market',
+    h2: 'Starting with **real estate**',
+    photoTitle: 'Property management',
+    photoChips: ['Inspections', 'Arrears', 'Maintenance', 'Owner reports'],
+    imageAlt: 'A hand holding a set of house keys beside a front door',
     body: 'Real estate is our first market. Property management runs on high-volume, repeatable admin, which is exactly the kind of work AI roles and trained operators are built for.',
     listIntro: 'Roles we set up for agencies include:',
     list: [
@@ -137,7 +146,10 @@ export const content = {
   },
 
   faq: {
-    h2: 'Common questions',
+    eyebrow: 'Questions',
+    h2: 'Common **questions**',
+    aside: 'Something else on your mind? Ask us directly.',
+    asideButton: 'Talk to us',
     items: [
       {
         q: 'Do we have to change the software we use?',
@@ -168,7 +180,7 @@ export const content = {
   },
 
   finalCta: {
-    h2: 'Tell us which task is eating your week.',
+    h2: 'Tell us which task is **eating your week.**',
     body: "Send a short email about the work you'd like off your plate. We'll tell you straight whether we can help.",
     button: 'Talk to us',
     /** enableBooking */
@@ -177,6 +189,9 @@ export const content = {
   },
 
   footer: {
+    contactHeading: 'Contact',
+    navHeading: 'On this page',
+    imagery: 'Photos are illustrative stock images.',
     copyright: '© {YEAR} {SITE_NAME}',
     /** showPrivacyPage */
     privacy: 'Privacy',

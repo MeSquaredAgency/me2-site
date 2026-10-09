@@ -1,0 +1,96 @@
+---
+import { Image } from 'astro:assets';
+import keysPhoto from '../assets/photos/real-estate-keys.jpg';
+import Emph from './Emph.astro';
+import Icon, { type IconName } from './Icon.astro';
+import { fixtureText, flags } from '../config';
+import { content } from '../content/site';
+const c = content.realEstate;
+const icons: IconName[] = ['check', 'coins', 'inbox', 'chat', 'wrench', 'chart'];
+---
+<section id="real-estate" class="section bg-mist" aria-labelledby="re-title">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">{c.eyebrow}</span>
+      <h2 id="re-title"><Emph text={c.h2} /></h2>
+      <p>{c.body}</p>
+    </div>
+    <div class="layout">
+      <div class="photo-card">
+        <Image
+          src={keysPhoto}
+          alt={c.imageAlt}
+          widths={[480, 720, 1080]}
+          sizes="(min-width: 900px) 540px, 100vw"
+          class="photo"
+        />
+        <div class="overlay on-dark">
+          <h3>{c.photoTitle}</h3>
+          <ul class="tags">
+            {c.photoChips.map((t) => <li>{t}</li>)}
+          </ul>
+        </div>
+      </div>
+      <div class="roles">
+        <p class="intro">{c.listIntro}</p>
+        <ul>
+          {c.list.map((item, i) => (
+            <li>
+              <span class="well"><Icon name={icons[i]} size={20} /></span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+    <p class="closing">{c.closing}</p>
+    {flags.showProof && <blockquote class="proof">{fixtureText.proof ?? c.proof}</blockquote>}
+  </div>
+</section>
+<style>
+  .layout { margin-top: 56px; display: grid; gap: 24px; align-items: stretch; }
+  .photo-card { position: relative; border-radius: var(--radius-lg); overflow: hidden; min-height: 360px; }
+  .photo-card :global(.photo) {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: 50% 45%;
+  }
+  .overlay {
+    position: absolute; inset: auto 0 0 0;
+    padding: 96px 28px 28px;
+    background: linear-gradient(transparent, rgb(19 33 46 / 0.8) 45%, rgb(19 33 46 / 0.94));
+    display: grid; gap: 14px;
+  }
+  .overlay h3 {
+    font-size: clamp(1.6rem, 2.4vw, 2.1rem); color: #fff;
+    text-shadow: 0 1px 12px rgb(0 0 0 / 0.4);
+  }
+  .tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .tags li {
+    min-height: 32px; display: inline-flex; align-items: center; padding: 0 14px;
+    border-radius: 999px; background: rgb(255 255 255 / 0.16); color: #fff;
+    font-size: 0.85rem; font-weight: 500;
+  }
+  .roles { display: grid; gap: 14px; align-content: start; }
+  .intro { font-family: var(--font-display); font-weight: 600; color: var(--color-text); font-size: 1.1rem; }
+  .roles ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .roles li {
+    display: flex; align-items: center; gap: 16px;
+    background: #fff; border-radius: var(--radius); padding: 14px 18px;
+    border: 1px solid var(--color-line); color: var(--color-text); font-weight: 500;
+  }
+  .well {
+    display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+    background: var(--color-navy); color: #fff; flex: none;
+  }
+  .closing {
+    margin: 48px auto 0; max-width: 46rem; text-align: center; color: var(--color-text);
+    font-family: var(--font-display); font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+  }
+  .proof {
+    margin: 32px auto 0; max-width: 46rem; padding: 28px 32px;
+    background: var(--color-ink); color: #fff; border-radius: var(--radius-lg);
+  }
+  @media (min-width: 900px) {
+    .layout { grid-template-columns: 1fr 1fr; margin-top: 64px; }
+  }
+</style>

@@ -5,7 +5,11 @@ import { flags as realFlags, type Flags } from './flags';
  * The fixture build (BRIEF §6b) overrides config and flags from the git-ignored
  * `.verify/fixture/overrides.ts`, selected with SITE_FIXTURE=1. It is never deployed.
  */
-const fixtureModules = import.meta.glob<{ config?: Partial<SiteConfig>; flags?: Partial<Flags> }>(
+const fixtureModules = import.meta.glob<{
+  config?: Partial<SiteConfig>;
+  flags?: Partial<Flags>;
+  content?: { price?: string; proof?: string; privacy?: string };
+}>(
   '../../.verify/fixture/overrides.ts',
   { eager: true },
 );
@@ -14,8 +18,12 @@ const fixture = isFixture ? Object.values(fixtureModules)[0] : undefined;
 if (isFixture && !fixture) throw new Error('SITE_FIXTURE=1 but .verify/fixture/overrides.ts is missing');
 
 export const config: SiteConfig = { ...realConfig, ...fixture?.config };
+/** Fixture-only stand-ins for copy that is still [[TBC]]; empty in the real build. */
+export const fixtureText = fixture?.content ?? {};
 
-const merged: Flags = { ...realFlags, ...fixture?.flags };
+// FIXTURE_FLAGS (JSON) picks the flags for one fixture variant, e.g. {"showPricing":true}.
+const variantFlags: Partial<Flags> = isFixture && process.env.FIXTURE_FLAGS ? JSON.parse(process.env.FIXTURE_FLAGS) : {};
+const merged: Flags = { ...realFlags, ...fixture?.flags, ...variantFlags };
 // Anything that collects personal information needs the privacy page live first.
 for (const key of ['enableContactForm', 'enableBooking', 'enableTracking'] as const) {
   if (merged[key] && !merged.showPrivacyPage) {

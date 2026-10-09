@@ -1,0 +1,41 @@
+---
+import Emph from './Emph.astro';
+import EmailLink from './EmailLink.astro';
+import { config, fill, flags } from '../config';
+import { content } from '../content/site';
+const c = content.finalCta;
+const mailto = `mailto:${config.CONTACT_EMAIL}?subject=${encodeURIComponent(content.ui.subjects.general)}`;
+const [before, after] = fill(c.emailLine).split(config.CONTACT_EMAIL);
+---
+<section class="cta" aria-labelledby="cta-title">
+  <div class="wrap inner">
+    <h2 id="cta-title"><Emph text={c.h2} /></h2>
+    <p class="body">{c.body}</p>
+    <div class="actions">
+      <EmailLink subject={content.ui.subjects.general} class="btn btn-primary">{c.button}</EmailLink>
+      {flags.enableBooking && config.BOOKING_URL && (
+        <a href={config.BOOKING_URL} target="_blank" rel="noopener" class="btn btn-outline">{c.booking}</a>
+      )}
+    </div>
+    <p class="email">{before}<a href={mailto}>{config.CONTACT_EMAIL}</a>{after}</p>
+  </div>
+  <span class="disc disc-1" aria-hidden="true"></span>
+  <span class="disc disc-2" aria-hidden="true"></span>
+</section>
+<style>
+  .cta {
+    position: relative; overflow: hidden; isolation: isolate;
+    background: var(--color-band); color: var(--color-text);
+    padding-block: clamp(72px, 9vw, 104px);
+  }
+  .inner { text-align: center; display: grid; justify-items: center; gap: 18px; }
+  h2 { max-width: 20ch; color: var(--color-text); }
+  h2 :global(strong) { color: var(--color-navy); }
+  .body { max-width: 52ch; color: var(--color-text); }
+  .actions { margin-top: 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+  .email { font-size: 0.95rem; color: var(--color-text); }
+  .email a { color: var(--color-navy); font-weight: 600; text-underline-offset: 0.2em; }
+  .disc { position: absolute; z-index: -1; border-radius: 50%; border: 1px solid rgb(27 56 83 / 0.14); }
+  .disc-1 { width: 380px; height: 380px; left: -140px; top: -170px; }
+  .disc-2 { width: 260px; height: 260px; right: -90px; bottom: -120px; background: rgb(255 255 255 / 0.25); }
+</style>

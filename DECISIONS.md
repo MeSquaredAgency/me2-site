@@ -18,3 +18,10 @@ Judgement calls made during the build, newest last.
 | 9 Oct 2026 | No stock photos yet; richness comes from drawn icon bubbles and a card-stack illustration | No Me² photos exist, and downloading stock needs EC's OK. Photos can drop in later for atmosphere |
 | 9 Oct 2026 | Pillars band uses words, not numbers | The reference's "50+ locations" style stats would be invented for Me² |
 | 9 Oct 2026 | Renamed the hero's `ring` class to `halo` | `ring` is a Tailwind utility and drew a bright white outline |
+| 9 Oct 2026 | Logo rebuilt as a vector by tracing the supplied PNG (potrace, run once outside the repo; 0.6% area difference from the original), not by retyping it in a similar font | The closest fonts (Lexend, Poppins) differed in weight and the "e" terminal; tracing keeps the designer's letterforms. EC asked not to forget the logo |
+| 9 Oct 2026 | Four Unsplash photos added (hero, both offer cards, real estate) | EC approved stock photos. Chosen without identifiable faces; credited in docs/media.md; footer notes they're illustrative |
+| 9 Oct 2026 | Privacy page is a dynamic route `src/pages/[page].astro` | `getStaticPaths` is ignored on static routes, so the old `privacy.astro` was built even with `showPrivacyPage` off |
+| 9 Oct 2026 | Scripts import `site.config.ts` and `flags.ts` directly (Node 22+ runs TypeScript) instead of reading them with regexes | A regex lost its backslash in a template string and the sitemap said `https://undefined/` |
+| 9 Oct 2026 | Hero bubbles keep their gentle float with `will-change: transform` | Without it the float cost about 10 mobile Lighthouse points; with it mobile scores 91–98 |
+| 9 Oct 2026 | Lighthouse runs through its Node API against Edge launched by Playwright; mobile takes the median of 3 runs | The CLI couldn't attach to Edge; single mobile runs swung 82–94 with PC load |
+| 9 Oct 2026 | Dev dependencies added: `@axe-core/playwright`, `lighthouse`, `linkinator` (all allowed by BRIEF §3) | `npm run verify` |

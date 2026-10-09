@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { fill, fixtureText, flags } from '../config';
+import { content } from '../content/site';
+// The privacy page at /privacy/. A dynamic route so it is only built when
+// showPrivacyPage is on (lawyer-reviewed text supplied).
+export function getStaticPaths() {
+  return flags.showPrivacyPage ? [{ params: { page: 'privacy' } }] : [];
+}
+const c = content.privacy;
+---
+<Base path="/privacy/">
+  <Header />
+  <main id="main">
+    <section class="head on-dark"><div class="wrap"><h1>{c.h1}</h1></div></section>
+    <section class="section bg-white">
+      <div class="wrap body">
+        <p>{fixtureText.privacy ?? c.body}</p>
+        <p>{fill(c.contact)}</p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+<style>
+  .head { background: var(--color-ink); padding: 150px 0 64px; }
+  h1 { color: #fff; }
+  .body { display: grid; gap: 1em; max-width: 68ch; }
+</style>

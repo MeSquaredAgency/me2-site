@@ -1,10 +1,10 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
-import { readFileSync } from 'node:fs';
+import { siteConfig } from './src/config/site.config.ts';
 
 // The domain comes from site.config.ts (the only place it's typed).
-const domain = readFileSync('./src/config/site.config.ts', 'utf8').match(/SITE_DOMAIN:\s*'([^']+)'/)?.[1];
+const domain = siteConfig.SITE_DOMAIN;
 const fixture = process.env.SITE_FIXTURE === '1';
 
 export default defineConfig({

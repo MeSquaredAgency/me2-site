@@ -1,4 +1,6 @@
 ---
+import { Picture } from 'astro:assets';
+import heroPhoto from '../assets/photos/hero-office.jpg';
 import EmailLink from './EmailLink.astro';
 import Emph from './Emph.astro';
 import Icon, { type IconName } from './Icon.astro';
@@ -21,6 +23,18 @@ const bubbles: { icon?: IconName; size: number; x: string; y: string; phone?: bo
 ];
 ---
 <section class="hero on-dark" aria-labelledby="hero-title">
+  <!-- Illustrative stock photo (docs/media.md), heavily tinted so it reads as atmosphere. -->
+  <Picture
+    src={heroPhoto}
+    alt=""
+    formats={['avif', 'webp']}
+    widths={[640, 1024, 1600, 2400]}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+    class="photo"
+  />
+  <div class="tint" aria-hidden="true"></div>
   <div class="bubbles" aria-hidden="true">
     {bubbles.map((b) => (
       <span
@@ -48,10 +62,7 @@ const bubbles: { icon?: IconName; size: number; x: string; y: string; phone?: bo
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    background:
-      radial-gradient(60% 70% at 85% 10%, rgb(36 82 122 / 0.45), transparent 70%),
-      radial-gradient(50% 60% at 5% 95%, rgb(27 56 83 / 0.7), transparent 70%),
-      var(--color-ink);
+    background: var(--color-ink);
     min-height: min(860px, 100svh);
     display: flex;
     align-items: center;
@@ -62,7 +73,7 @@ const bubbles: { icon?: IconName; size: number; x: string; y: string; phone?: bo
     padding-top: 150px;
     padding-bottom: 120px;
   }
-  h1 { max-width: 17ch; margin-inline: auto; color: #fff; }
+  h1 { max-width: 17ch; margin-inline: auto; color: #fff; text-shadow: 0 1px 14px rgb(0 0 0 / 0.35); }
   h1 :global(strong) { color: var(--color-pale); }
   .subhead {
     margin: 26px auto 0;
@@ -73,6 +84,17 @@ const bubbles: { icon?: IconName; size: number; x: string; y: string; phone?: bo
   .actions { margin-top: 40px; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
   .location { margin-top: 28px; color: var(--color-on-dark); font-size: var(--text-small); }
 
+  .hero :global(.photo) {
+    position: absolute; inset: 0; z-index: -3;
+    width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%;
+  }
+  /* Navy tint strong enough that white text passes contrast over the busiest part of the photo. */
+  .tint {
+    position: absolute; inset: 0; z-index: -2;
+    background:
+      radial-gradient(60% 70% at 85% 10%, rgb(36 82 122 / 0.35), transparent 70%),
+      linear-gradient(rgb(19 33 46 / 0.80), rgb(19 33 46 / 0.88));
+  }
   .bubbles { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
   .bubble {
     position: absolute;
@@ -86,6 +108,7 @@ const bubbles: { icon?: IconName; size: number; x: string; y: string; phone?: bo
     background: radial-gradient(circle at 30% 25%, #26445f, #172a3c 70%);
     box-shadow: 0 0 0 1px rgb(185 211 224 / 0.14), 0 18px 40px -18px rgb(0 0 0 / 0.6);
     animation: float 9s ease-in-out infinite;
+    will-change: transform; /* own layer: the float never repaints the page */
   }
   .bubble :global(svg) { width: 38%; height: 38%; }
   .bubble.dot { background: #2b4964; box-shadow: none; }

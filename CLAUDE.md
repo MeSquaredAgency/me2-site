@@ -33,4 +33,6 @@ Out of scope: CMS, auth, database, client-side routing, UI frameworks, animation
 - Wrangler on this PC is signed in to the APN Real Estate Cloudflare account, not tech@mesquaredagency.com: never deploy from it.
 
 ## Verifying a change
-`npm run build`, then `node scripts/screenshots.mjs http://localhost:4321/ screenshots` (after `npm run preview`) and look at 375 and 1280px. Update the matching docs/ file and the README launch checklist in the same change.
+`npm run verify` builds the real site and the test (fixture) builds and runs all 113 checks: copy word for word, flags, links, axe, keyboard, Lighthouse, schema, sitemap, no hardcoded identity. Report in `.verify/report.md`, screenshots in `screenshots/`. Then look at `screenshots/real-375.png` and `real-1280.png` yourself. `npm run verify -- --quick` skips Lighthouse and the link crawl. Update the matching docs/ file and the README launch checklist in the same change.
+- Stock photos are atmosphere only (docs/media.md); never caption them as Me²'s team, office or clients.
+- The logo SVGs in `src/assets/brand/` are the source for `logo.png`, favicons and the OG image: run `npm run brand` after changing them.
