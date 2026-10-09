@@ -61,7 +61,7 @@ Copy in Appendix A writes `{SITE_NAME}`, `{SITE_NAME_PLAIN}`, `{CONTACT_EMAIL}`,
 
 ## 3. Stack and hosting
 - Astro + TypeScript, static output. Tailwind CSS v4 via `@tailwindcss/vite` (not the deprecated `@astrojs/tailwind`). No UI framework: interactive bits use native HTML (`<details>`/`<summary>` for the FAQ) or small inline vanilla JS.
-- Host: Cloudflare Pages. Build command: `npm run build`. Output dir: `dist`. Phase 2 form handler: Pages Function at `functions/api/enquiry.ts`.
+- Host: Cloudflare Workers static assets ("Pages, now part of Workers"), project `mesquared` in the Me² Cloudflare account, live at https://mesquaredagency.com since 9 Oct 2026 (see DEPLOY.md). Build command: `npm run build`. Output dir: `dist`. Phase 2 form handler: Pages Function at `functions/api/enquiry.ts`.
 - Allowed dependencies: `astro`, `typescript`, `@astrojs/check`, `tailwindcss`, `@tailwindcss/vite`, `@fontsource-variable/instrument-sans`, `@fontsource-variable/outfit`, `sharp` (logo and OG image generation at build time). Dev only: `@playwright/test`, `@axe-core/playwright`, `lighthouse`, `linkinator`, `wrangler`. Phase 2 only: `resend`. Any other dependency needs a one-line justification in `DECISIONS.md`.
 - The sitemap is written by a small build step reading the routes file (one page; no `@astrojs/sitemap` needed).
 - Out of scope: CMS, auth, database, client-side routing, Preact/React/Vue, animation libraries, icon libraries, carousels, chat widgets, cookie banners, newsletter signup, Google Fonts CDN links, any third-party script in Phase 1.

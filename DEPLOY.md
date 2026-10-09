@@ -1,69 +1,75 @@
-# Putting the site online (Cloudflare Pages)
+# Publishing the site (Cloudflare)
 
-Nothing has been deployed yet. Wrangler on the build PC is signed in to the APN Real Estate Cloudflare account, which is the wrong account for Me², so the site was built and checked locally only. Do these steps signed in as **tech@mesquaredagency.com** (the business's own account, not a personal or agency one).
+**Live at https://mesquaredagency.com since 9 Oct 2026.**
 
-## 1. One-off setup
-Sign out of the APN Real Estate account first, then sign in as tech@mesquaredagency.com:
+| | |
+| --- | --- |
+| Cloudflare account | **Me²** (ID `813537406785f2957804689d03560623`), signed in as elliot.crabb@mesquaredagency.com |
+| What it runs on | A Cloudflare **Workers** project called `mesquared`, serving the static files in `dist/` ("Pages, now part of Workers") |
+| Config | `wrangler.jsonc` (project, account, domains) and `worker/index.ts` (redirects) |
+| Domains | `mesquaredagency.com` (the site) and `www.mesquaredagency.com` (redirects to it). Cloudflare manages their DNS records and HTTPS certificates |
+| Redirects | Every `http://` and `www.` address goes to `https://mesquaredagency.com` in one 301 (done in `worker/index.ts`, because the zone's "Always Use HTTPS" setting is off) |
+| Email | Google Workspace. MX, SPF, DKIM, DMARC and verification records are separate from the site's records; connecting the site didn't touch them |
 
-```bash
-npx wrangler logout
-```
+**Never publish from the APN Real Estate Cloudflare account.** `account_id` in `wrangler.jsonc` pins every command to the Me² account.
 
+## Publishing a change
+Every change goes on a branch first. Then:
+
+1. Check the build and run every check:
+
+   ```bash
+   npm run verify
+   ```
+
+2. Get a preview link to look at (not live):
+
+   ```bash
+   npx wrangler versions upload
+   ```
+
+   Wrangler prints a preview URL. Check it on a phone and a laptop.
+
+3. **With EC's go-ahead only**, publish live:
+
+   ```bash
+   npx wrangler deploy
+   ```
+
+   `deploy` goes live immediately. Then check https://mesquaredagency.com shows the change.
+
+`npx wrangler deploy` uploads whatever is in `dist/`, so always run `npm run build` (or `npm run verify`) on the right branch first.
+
+**Rolling back:** `npx wrangler rollback` puts the previous version back live in seconds. `npx wrangler deployments list` shows the history.
+
+## Signing in on another computer
 ```bash
 npx wrangler login
 ```
+
+Sign in as elliot.crabb@mesquaredagency.com (or any user in the Me² account), and make sure **Me²** is ticked when Cloudflare asks which accounts to allow. Check with:
 
 ```bash
 npx wrangler whoami
 ```
 
-Check `whoami` shows tech@mesquaredagency.com, then create the Pages project:
+## Cloudflare settings worth knowing
+- **Email Address Obfuscation:** currently not rewriting the site's email links (checked 9 Oct: the live page has 9 normal `mailto:` links and no `/cdn-cgi/l/email-protection` links). If someone turns Scrape Shield on later, turn this off again.
+- **Always Use HTTPS:** off in the zone, but the site redirects itself, so it doesn't matter. Turning it on is harmless.
+- **Web Analytics:** not yet on. Turn it on in the dashboard (Analytics & Logs → Web Analytics → add mesquaredagency.com). The security headers in `public/_headers` allow only the site's own scripts. If Cloudflare injects its beacon automatically, add `https://static.cloudflareinsights.com` to `script-src` and `https://cloudflareinsights.com` to `connect-src` there.
+- The DNS records for `mesquaredagency.com` and `www` are now managed by the Workers project. Don't edit or delete them in the DNS page; change domains in `wrangler.jsonc` instead.
 
-```bash
-npx wrangler pages project create mesquared --production-branch main
-```
+## After launch
+- Submit `https://mesquaredagency.com/sitemap.xml` in Google Search Console (add the domain as a property first).
+- Tell Bing and others the site exists:
 
-## 2. Preview deploy (safe, not the live address)
-```bash
-npm run build
-```
+  ```bash
+  npm run indexnow
+  ```
 
-```bash
-npx wrangler pages deploy dist --project-name mesquared --branch preview
-```
-
-Wrangler prints a `preview.mesquared.pages.dev` address. Check it on a phone and a laptop.
-
-## 3. Production deploy
-Only after EC has approved the preview:
-
-```bash
-npx wrangler pages deploy dist --project-name mesquared --branch main
-```
-
-Later, connect the GitHub repo in the Cloudflare dashboard (Pages → mesquared → Settings → Builds) with build command `npm run build` and output directory `dist`. After that, merging to `main` deploys automatically, so changes go through branches and pull requests.
-
-## 4. The domain
-In the Cloudflare dashboard: Pages → mesquared → Custom domains → add `mesquaredagency.com` and `www.mesquaredagency.com`, then add a redirect rule sending `www` to the bare domain (301).
-
-- Cloudflare Pages can only serve the bare domain when the domain's DNS is on Cloudflare. mesquaredagency.com already answers through Cloudflare, so first check which Cloudflare account the zone is in. If it isn't tech@mesquaredagency.com, move it there.
-- **Email first.** The domain runs Google Workspace email. Before changing nameservers or deleting any records, copy every existing DNS record: MX, SPF (TXT `v=spf1…`), DKIM (`google._domainkey`), DMARC (`_dmarc`) and any verification TXT records. Keep exactly one SPF record. Straight after any DNS change, send an email to hello@ from an outside address and reply to it.
-- Do the switch at a quiet time. The parking page at VentraIP goes away when the domain points to Pages.
-
-## 5. Cloudflare settings to check
-- **Scrape Shield → Email Address Obfuscation: Off.** Otherwise Cloudflare rewrites the email links into `/cdn-cgi/l/email-protection` links that search engines report as broken.
-- **Rocket Loader: Off.**
-- **Web Analytics:** turn it on for the site (no code needed). The security headers allow only the site's own scripts. If the dashboard's automatic setup injects its beacon, add `https://static.cloudflareinsights.com` to `script-src` and `https://cloudflareinsights.com` to `connect-src` in `public/_headers`.
-- SSL/TLS mode: **Full (strict)**. The current 525 error on https://mesquaredagency.com is the old parking setup failing its SSL handshake, and it goes away when the domain points to Pages.
-
-## 6. After going live
-```bash
-npm run indexnow
-```
-
-Then submit `https://mesquaredagency.com/sitemap.xml` in Google Search Console (as a domain property) and check the coverage report about a week later.
+- Send a test email to hello@mesquaredagency.com from an outside address and reply to it. Until the enquiry form exists, that inbox is the only way in.
 
 ## Phase 2 (the enquiry form): what will be needed
-- A Resend account with mesquaredagency.com verified. Add its SPF include to the existing SPF record (one merged record) and its DKIM records, and set DMARC.
+- A Resend account with mesquaredagency.com verified. Add its SPF include to the existing SPF record (one merged record) and its DKIM records.
 - Cloudflare Turnstile site and secret keys.
-- A Cloudflare rate-limiting rule on `/api/enquiry`: 5 requests per minute per IP.
+- A rate-limiting rule on `/api/enquiry`: 5 requests per minute per IP.

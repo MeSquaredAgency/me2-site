@@ -26,11 +26,13 @@ Allowed: astro, typescript, @astrojs/check, tailwindcss, @tailwindcss/vite, @fon
 Out of scope: CMS, auth, database, client-side routing, UI frameworks, animation/icon libraries, carousels, chat widgets, cookie banners, newsletter signup, Google Fonts CDN, third-party scripts.
 
 ## Git and deploys
-- Branch + PR for every change. Run `git branch --show-current` right before every commit and push; other sessions may share this checkout.
-- Never push to `main` once it's connected to Cloudflare Pages (it deploys the live site). EC merges.
+- **Live since 9 Oct 2026** at https://mesquaredagency.com: Cloudflare Workers project `mesquared` in the **Me²** account (`wrangler.jsonc`, `worker/index.ts`). See DEPLOY.md.
+- `npx wrangler deploy` publishes to the live site immediately. Never run it without EC's explicit yes for that change. For a look first, use `npx wrangler versions upload` (preview URL).
+- Never publish from the APN Real Estate Cloudflare account; `account_id` in `wrangler.jsonc` pins the Me² account.
+- Don't edit the DNS records for `mesquaredagency.com` / `www` (the Workers custom domains own them) or touch MX/TXT (Google Workspace email).
+- Branch for every change. Run `git branch --show-current` right before every commit and push; other sessions may share this checkout.
 - Plain-English commit messages: what changed for the visitor, then why.
-- Ask EC before merging, deploying to production, DNS changes, or anything that emails real people.
-- Wrangler on this PC is signed in to the APN Real Estate Cloudflare account, not tech@mesquaredagency.com: never deploy from it.
+- Ask EC before merging, deploying, DNS changes, or anything that emails real people.
 
 ## Verifying a change
 `npm run verify` builds the real site and the test (fixture) builds and runs all 113 checks: copy word for word, flags, links, axe, keyboard, Lighthouse, schema, sitemap, no hardcoded identity. Report in `.verify/report.md`, screenshots in `screenshots/`. Then look at `screenshots/real-375.png` and `real-1280.png` yourself. `npm run verify -- --quick` skips Lighthouse and the link crawl. Update the matching docs/ file and the README launch checklist in the same change.
