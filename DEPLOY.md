@@ -72,6 +72,18 @@ npx wrangler whoami
 - **Web Analytics:** not yet on. Turn it on in the dashboard (Analytics & Logs → Web Analytics → add mesquaredagency.com). The security headers in `public/_headers` allow only the site's own scripts. If Cloudflare injects its beacon automatically, add `https://static.cloudflareinsights.com` to `script-src` and `https://cloudflareinsights.com` to `connect-src` there.
 - The DNS records for `mesquaredagency.com` and `www` are now managed by the Workers project. Don't edit or delete them in the DNS page; change domains in `wrangler.jsonc` instead.
 
+## Enquiry form email
+The enquiry form posts to `/api/enquiry` (in `worker/index.ts`), which emails each enquiry to `hello@mesquaredagency.com` through **Cloudflare Email Sending**, from `website@mesquaredagency.com`, with the visitor's address as Reply-To. The binding in `wrangler.jsonc` can only ever deliver to hello@. Until the steps below are done, the form shows "Your enquiry didn't send. Email us at hello@… instead." (with the address as a link), so nobody is left stuck.
+
+One-time setup, in the Cloudflare dashboard signed in to the **Me²** account (this PC's Wrangler sign-in can't do these):
+
+1. **Compute → Email Service → Email Sending → Onboard Domain → mesquaredagency.com.** Review the records before you accept. Cloudflare's sending records go on the `cf-bounce` subdomain (MX, SPF and DKIM for `cf-bounce.mesquaredagency.com`), so Google Workspace's MX and SPF on the bare domain are untouched. **The domain already has a DMARC record** (`_dmarc`, `p=none`, from the Google setup): if Cloudflare offers to add another DMARC record, don't; keep exactly one.
+2. **Verify hello@ as a destination** if Cloudflare asks (Email Service → Email Routing → Destination addresses → add `hello@mesquaredagency.com`, then click the link in the email it sends). Sending to a verified address of your own is free on every plan; only sending to other people's addresses needs Workers Paid, and the form never does that.
+3. **Test:** send an enquiry from the preview link or the live site. It should arrive in hello@ within a minute, subject "Website enquiry: …". Reply to it to check the reply goes to the sender. Then send and receive an ordinary email at hello@ to confirm Google mail still works.
+4. **Rate limit:** Security → WAF → **Rate limiting rules** → create: URI path equals `/api/enquiry`, 5 requests per 10 minutes per IP, action Block. (The form also drops obvious bots itself: a hidden field and a minimum time to fill.)
+
+**Seeing enquiries come in:** Workers & Pages → `mesquared` → Logs. Each enquiry writes one line: `sent`, `dropped` (a bot), `send-failed` (with Cloudflare's reason) or `not-configured`, plus its topic. No names, emails or messages are logged.
+
 ## After launch
 - Submit `https://mesquaredagency.com/sitemap.xml` in Google Search Console (add the domain as a property first).
 - Tell Bing and others the site exists:

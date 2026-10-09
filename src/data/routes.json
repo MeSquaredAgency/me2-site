@@ -21,5 +21,19 @@
     "ogImage": "/og-image.png",
     "noindex": false,
     "flag": "showPrivacyPage"
+  },
+  {
+    "path": "/thanks/",
+    "title": "Enquiry sent | Me²",
+    "description": "Your enquiry has been sent to Me². We will reply to the email you gave us.",
+    "ogImage": "/og-image.png",
+    "noindex": true
+  },
+  {
+    "path": "/not-sent/",
+    "title": "Enquiry not sent | Me²",
+    "description": "Your enquiry didn't send. Email Me² directly instead.",
+    "ogImage": "/og-image.png",
+    "noindex": true
   }
 ]

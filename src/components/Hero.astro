@@ -1,34 +1,51 @@
 ---
-import EmailLink from './EmailLink.astro';
+import EnquireLink from './EnquireLink.astro';
+import DesignVisual from './DesignVisual.astro';
+import BuildVisual from './BuildVisual.astro';
+import RunBoard from './RunBoard.astro';
 import { fill, flags } from '../config';
 import { content } from '../content/site';
 const c = content.hero;
 ---
 <section class="hero on-dark" aria-labelledby="hero-title">
   <!--
-    The Me² mark in light: a dark glass square with the small coral square (the ²) glowing at its corner,
-    drawn live in WebGL. It turns slowly, leans toward the pointer and tips back as the page scrolls.
-    Decorative; the CSS mark underneath stands in without WebGL, and reduced motion gets one still frame.
+    The Me² mark in light, as a window onto the work: a dark glass square with the small coral square (the ²)
+    glowing at its corner, drawn live in WebGL (src/lib/mark-gl.ts). Its face is a screen: the HTML below is
+    pinned to the glass and shows each line of the headline happening. Without WebGL the screen stands alone
+    as a glass panel with the ² at its corner.
   -->
-  <div class="stage" aria-hidden="true">
-    <div class="mark-fallback"><span class="big"></span><span class="small"></span></div>
-    <canvas class="gl" data-mark></canvas>
+  <div class="stage">
+    <div class="screen" data-stage data-active="still" data-screen>
+      <p class="sr-only">{fill(c.markSummary)}</p>
+      <div class="vis" data-for="design"><DesignVisual /></div>
+      <div class="vis" data-for="build"><BuildVisual /></div>
+      <div class="vis vis-run" data-for="run"><RunBoard /></div>
+      <div class="screen-foot">
+        <span class="screen-label" aria-hidden="true" data-screen-label>{c.lines[0].label}</span>
+        <div class="tabs" role="group" aria-label={c.scenesLabel}>
+          {c.lines.map((l, i) => (
+            <button type="button" class="tab" data-scene={l.scene} aria-pressed={i === 0 ? 'true' : 'false'} aria-label={l.label}>
+              <span class="tab-sq" aria-hidden="true"></span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+    <canvas class="gl" aria-hidden="true" data-mark></canvas>
   </div>
-  <p class="sr-only">{fill(c.markSummary)}</p>
 
   <div class="wrap inner">
     <h1 id="hero-title" class="lines">
       {c.lines.map((l, i) => (
-        <span class="line" style={`--i:${i}`}>
+        <span class="line" data-line={l.scene} style={`--i:${i}`}>
           <span class="mask"><span class="text">{l.text}</span></span>
-          <span class="note" aria-hidden="true"><span class="note-sq"></span>{l.note}</span>
         </span>
       ))}
     </h1>
     <div class="foot">
       <p class="subhead">{fill(c.subhead)}</p>
       <div class="actions">
-        <EmailLink subject={content.ui.subjects.general} class="btn btn-light btn-lg"><span class="dot" aria-hidden="true"></span>{c.primary}</EmailLink>
+        <EnquireLink source="hero" class="btn btn-light btn-lg"><span class="dot" aria-hidden="true"></span>{c.primary}</EnquireLink>
         <a href="#work" class="tlink see">{c.secondary}</a>
       </div>
       {flags.showLocations && <p class="location">{c.location}</p>}
@@ -38,11 +55,61 @@ const c = content.hero;
 
 <script>
   import { startMark } from '../lib/mark-gl';
+
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const screen = document.querySelector<HTMLElement>('[data-screen]');
   const canvas = document.querySelector<HTMLCanvasElement>('[data-mark]');
-  if (canvas) {
-    // Start once the page has loaded and gone quiet, so the headline paints first.
-    const go = () => startMark(canvas);
-    const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(go, { timeout: 1200 }) : setTimeout(go, 120));
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (hero && screen) {
+    // ---- Scenes: each line of the headline in turn, on the screen ----
+    const scenes = ['design', 'build', 'run'];
+    const hold: Record<string, number> = { design: 8000, build: 7200, run: 9600 };
+    const lines = [...hero.querySelectorAll<HTMLElement>('[data-line]')];
+    const tabs = [...screen.querySelectorAll<HTMLButtonElement>('[data-scene]')];
+    const label = screen.querySelector<HTMLElement>('[data-screen-label]')!;
+    const svg = screen.querySelector<SVGSVGElement>('[data-build-svg]');
+    let current = 'design', timer = 0, pausedUntil = 0, onScreen = true;
+
+    const show = (scene: string) => {
+      current = scene;
+      screen.dataset.active = scene;
+      lines.forEach((l) => l.classList.toggle('is-on', l.dataset.line === scene));
+      tabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.scene === scene)));
+      label.textContent = tabs.find((t) => t.dataset.scene === scene)?.getAttribute('aria-label') ?? '';
+      // The Build diagram is SMIL: run it only while it's on show.
+      if (svg) scene === 'build' && !still ? svg.unpauseAnimations() : svg.pauseAnimations();
+    };
+    const next = () => {
+      clearTimeout(timer);
+      if (still) return;
+      timer = window.setTimeout(() => {
+        if (onScreen && !document.hidden && performance.now() > pausedUntil) show(scenes[(scenes.indexOf(current) + 1) % scenes.length]);
+        next();
+      }, hold[current]);
+    };
+    // Pick a scene: the tabs on the screen, or (with a mouse) pointing at a line of the headline.
+    const pick = (scene: string) => { pausedUntil = performance.now() + 12000; show(scene); next(); };
+    tabs.forEach((t) => t.addEventListener('click', () => { start(); pick(t.dataset.scene!); }));
+    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      lines.forEach((l) => l.addEventListener('pointerenter', () => started && current !== l.dataset.line && pick(l.dataset.line!)));
+    }
+    new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }).observe(hero);
+
+    // The first screen paints still (the Design scene, unmoving); the motion and the mark start once the page has
+    // loaded and gone quiet, a little later on phones, where the scenes' SVG animation competes with loading.
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      hero.classList.add('is-cycling');
+      show('design');
+      if (svg && still) svg.setCurrentTime(2.2);
+      next();
+      if (canvas) startMark(canvas, screen);
+    };
+    const later = matchMedia('(max-width: 899px)').matches ? 1800 : 0;
+    const idle = () => setTimeout(() => ('requestIdleCallback' in window ? requestIdleCallback(start, { timeout: 1500 }) : start()), later);
     document.readyState === 'complete' ? idle() : addEventListener('load', idle, { once: true });
   }
 </script>
@@ -50,47 +117,72 @@ const c = content.hero;
 <style>
   .hero {
     position: relative; overflow: hidden; isolation: isolate;
-    min-height: max(680px, 100svh);
+    min-height: max(700px, 100svh);
     display: flex; align-items: flex-end;
-    background: radial-gradient(60% 75% at 80% 40%, #0e1f2f 0%, var(--color-abyss) 70%);
+    background: radial-gradient(55% 75% at 68% 48%, #0e1f2f 0%, var(--color-abyss) 70%);
   }
 
-  /* ---- The mark ---- */
-  .stage { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  /* ---- The mark and its screen ---- */
+  .stage { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
   .gl { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1600ms var(--ease-out); }
   .gl:global(.is-on) { opacity: 1; }
-  /* Without WebGL: the same mark in CSS, still. Hidden once the live one is drawing. */
-  .mark-fallback {
-    position: absolute; left: 77.5%; top: 47%; width: min(21vw, 40vh); aspect-ratio: 1; translate: -50% -50%;
-    transition: opacity 1200ms var(--ease-out);
+
+  /* The screen. Without WebGL it is a glass panel of its own, with the ² at its corner. */
+  .screen {
+    --sw: 560px;
+    /* Positioned with transforms only, so moving onto the glass later isn't a layout shift. */
+    position: absolute; left: 0; top: 0; width: var(--sw); height: var(--sw); box-sizing: border-box;
+    translate: calc(66.5vw - 50%) calc(50svh - 50%); scale: 0.82;
+    transform: perspective(1400px) rotateY(-10deg) rotateX(4deg);
+    pointer-events: auto; overflow: hidden; border-radius: 3%;
+    background: radial-gradient(90% 70% at 85% 10%, #13283c 0%, #0a1621 60%);
+    box-shadow: inset 0 1px 0 rgb(232 237 241 / 0.16), 0 50px 120px rgb(0 0 0 / 0.5);
+    color: var(--color-mist);
   }
-  .gl:global(.is-on) + .mark-fallback, .stage:has(.gl.is-on) .mark-fallback { opacity: 0; }
-  .mark-fallback .big {
-    position: absolute; inset: 0; border-radius: 4%;
-    background: linear-gradient(145deg, #1a3046 0%, #0b1824 45%, #070f17 100%);
-    box-shadow: inset 0 1px 0 rgb(232 237 241 / 0.18), inset 1px 0 0 rgb(232 237 241 / 0.08), 0 40px 120px rgb(0 0 0 / 0.5);
+  .screen::after {
+    content: ''; position: absolute; right: 18px; top: 18px; width: 10px; height: 10px; background: var(--color-coral);
+    box-shadow: 0 0 18px 3px rgb(var(--glow) / 0.6);
   }
-  .mark-fallback .small {
-    position: absolute; width: 26%; aspect-ratio: 1; right: -32%; top: -32%; border-radius: 8%;
-    background: var(--color-coral);
-    box-shadow: 0 0 60px 10px rgb(var(--glow) / 0.55), 0 0 200px 60px rgb(var(--glow) / 0.22);
+  /* With WebGL, the script pins the screen to the face of the glass (transform-origin top-left). */
+  .hero:global(.is-gl) .screen {
+    translate: none; scale: none; transform-origin: 0 0; border-radius: 0;
+    box-shadow: none; will-change: transform;
   }
+  .hero:global(.is-gl) .screen::after { display: none; }
+
+  .vis {
+    position: absolute; inset: 8% 7% 17%; display: grid; place-items: center;
+    opacity: 0; transform: translateY(12px) scale(0.985);
+    transition: opacity 700ms var(--ease-out), transform 900ms var(--ease-out);
+  }
+  .vis-run { inset: 10% 8% 17%; place-items: stretch; align-content: center; }
+  .screen[data-active='still'] [data-for='design'],
+  .screen[data-active='design'] [data-for='design'],
+  .screen[data-active='build'] [data-for='build'],
+  .screen[data-active='run'] [data-for='run'] { opacity: 1; transform: none; }
+  .screen-foot {
+    position: absolute; left: 7%; right: 7%; bottom: 5%;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding-top: 14px; border-top: 1px solid rgb(232 237 241 / 0.12);
+  }
+  .screen-label { font-size: 0.95rem; font-weight: 500; color: var(--color-mist); }
+  .tabs { display: flex; gap: 2px; }
+  .tab { width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 0; padding: 0; cursor: pointer; }
+  .tab-sq { width: 10px; height: 10px; box-sizing: border-box; border: 1px solid rgb(232 237 241 / 0.5); transition: background-color 400ms var(--ease), border-color 400ms var(--ease); }
+  .tab[aria-pressed='true'] .tab-sq { background: var(--color-coral); border-color: var(--color-coral); }
+  .tab:focus-visible { outline: 2px solid var(--color-mist); outline-offset: -6px; }
+  @media (hover: hover) and (pointer: fine) { .tab:hover .tab-sq { border-color: var(--color-mist); } }
 
   /* ---- The words ---- */
-  .inner { position: relative; padding-top: 140px; padding-bottom: clamp(40px, 6vh, 72px); }
-  /* Lines in one column, their notes lined up in a second column at the same height as each line's baseline. */
-  .lines { display: grid; grid-template-columns: auto 1fr; column-gap: clamp(28px, 3.4vw, 64px); row-gap: 0.02em; font-size: clamp(3.1rem, min(10.4vw, 15.5svh), 11rem); max-width: none; }
-  .line { display: contents; }
+  .inner { position: relative; z-index: 1; padding-top: 140px; padding-bottom: clamp(40px, 6vh, 72px); pointer-events: none; }
+  .inner :is(h1, a, p) { pointer-events: auto; }
+  .lines { display: grid; row-gap: 0.02em; font-size: clamp(3.1rem, min(10vw, 15.5svh), 11rem); max-width: none; justify-items: start; }
+  .line { display: block; transition: color 700ms var(--ease-out); }
   .mask { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
   .text { display: block; white-space: nowrap; }
-  .note {
-    display: inline-flex; align-items: center; gap: 12px; align-self: end; padding-bottom: 0.62em;
-    font-size: clamp(0.95rem, 1.05vw, 1.15rem); font-weight: 450; font-stretch: 100%; letter-spacing: -0.005em; line-height: 1.3;
-    color: var(--color-haze); white-space: nowrap;
-  }
-  .note-sq { width: 7px; height: 7px; flex: none; border: 1px solid var(--color-haze); }
-  .line:nth-child(2) .note-sq { background: linear-gradient(0deg, var(--color-haze) 50%, transparent 50%); }
-  .line:nth-child(3) .note-sq { background: var(--color-coral); border-color: var(--color-coral); }
+  /* While the screen cycles, the line on show is bright and the others step back. */
+  .hero:global(.is-cycling) .line { color: var(--color-haze); }
+  .hero:global(.is-cycling) .line:global(.is-on) { color: var(--color-mist); }
 
   .foot {
     margin-top: clamp(36px, 6vh, 72px); padding-top: 28px; border-top: 1px solid var(--color-line-dark);
@@ -98,32 +190,29 @@ const c = content.hero;
   }
   .subhead { max-width: 52ch; font-size: clamp(1.05rem, 1.25vw, 1.25rem); line-height: 1.55; color: var(--color-haze); }
   .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 32px; }
-  .btn-lg { min-height: 58px; padding: 0 30px 0 26px; font-size: 1.05rem; }
   .see { font-weight: 560; color: var(--color-mist); }
   .location { font-size: var(--text-small); color: var(--color-haze); }
 
-  /* One orchestrated entrance: the lines rise out of their masks, then their notes; the mark ignites behind. */
+  /* One orchestrated entrance: the lines rise out of their masks; the mark ignites behind. */
   @media (prefers-reduced-motion: no-preference) {
     .text { animation: rise 1300ms var(--ease-out) both; animation-delay: calc(120ms + var(--i) * 130ms); }
-    .note { animation: fade 1000ms var(--ease-out) both; animation-delay: calc(700ms + var(--i) * 150ms); }
-    .foot { animation: fade 1100ms var(--ease-out) 1000ms both; }
-    .mark-fallback { animation: fade 1600ms var(--ease-out) 300ms both; }
+    .foot { animation: fade 1100ms var(--ease-out) 900ms both; }
+    .screen { animation: fade 1600ms var(--ease-out) 500ms both; }
   }
   @keyframes rise { from { transform: translateY(105%); } }
-  @keyframes fade { from { opacity: 0; transform: translateY(10px); } }
+  @keyframes fade { from { opacity: 0; } }
 
   @media (min-width: 1100px) {
     .foot { grid-template-columns: minmax(0, 1fr) auto; }
   }
   @media (max-width: 1099px) {
-    .lines { grid-template-columns: 1fr; }
-    .note { display: none; }
-    .mark-fallback { left: 72%; top: 28%; width: 38vw; }
+    .screen { --sw: 480px; translate: calc(60vw - 50%) calc(32svh - 50%); scale: 0.6; }
+    .inner { padding-top: 58svh; }
   }
   @media (max-width: 639px) {
-    .hero { align-items: flex-end; }
-    .inner { padding-top: 46svh; }
+    .screen { --sw: 400px; translate: calc(42vw - 50%) calc(30svh - 50%); scale: 0.52; }
+    .screen-label { font-size: 1.1rem; }
+    .inner { padding-top: 47svh; }
     .lines { font-size: clamp(2.9rem, 15vw, 4.6rem); }
-    .mark-fallback { left: 50%; top: 31%; width: 40vw; }
   }
 </style>

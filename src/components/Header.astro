@@ -1,6 +1,6 @@
 ---
 import Logo from './Logo.astro';
-import EmailLink from './EmailLink.astro';
+import EnquireLink from './EnquireLink.astro';
 import { fill } from '../config';
 import { content } from '../content/site';
 const c = content.header;
@@ -13,10 +13,10 @@ const c = content.header;
     </a>
     <nav aria-label={c.navLabel} class="nav">
       <ul>
-        {c.nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        {c.nav.map((item) => <li><a href={`/${item.href}`}>{item.label}</a></li>)}
       </ul>
     </nav>
-    <EmailLink subject={content.ui.subjects.general} class="btn btn-light cta"><span class="dot" aria-hidden="true"></span>{c.button}</EmailLink>
+    <EnquireLink source="header" class="btn btn-light cta"><span class="dot" aria-hidden="true"></span>{c.button}</EnquireLink>
   </div>
 </header>
 <script>

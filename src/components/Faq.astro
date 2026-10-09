@@ -1,5 +1,5 @@
 ---
-import EmailLink from './EmailLink.astro';
+import EnquireLink from './EnquireLink.astro';
 import { fill } from '../config';
 import { content } from '../content/site';
 import { visibleFaq } from '../lib/faq';
@@ -12,7 +12,7 @@ const items = visibleFaq();
       <p class="kicker">{c.kicker}</p>
       <h2 id="faq-title">{c.h2}</h2>
       <p class="aside">{c.aside}</p>
-      <EmailLink subject={content.ui.subjects.general} class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.asideButton}</EmailLink>
+      <EnquireLink source="questions" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.asideButton}</EnquireLink>
     </div>
     <div class="list">
       {items.map((item) => (

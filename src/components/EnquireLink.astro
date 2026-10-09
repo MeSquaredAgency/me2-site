@@ -1,0 +1,23 @@
+---
+/**
+ * Every "Talk to us" and "Ask about…" button. With the form on, it opens the enquiry form in place
+ * (EnquiryForm.astro) and tags the enquiry with `topic`, so leads arrive labelled. Without JavaScript it
+ * jumps to the form at the foot of the page. With the form off, it falls back to a mailto.
+ */
+import EmailLink from './EmailLink.astro';
+import { flags } from '../config';
+import { content } from '../content/site';
+
+interface Props {
+  /** What the enquiry is about, e.g. "AI role: Inbox triage". Defaults to a general enquiry. */
+  topic?: string;
+  /** Which part of the page the click came from (for the enquiry email). */
+  source: string;
+  class?: string;
+  'aria-label'?: string;
+}
+const { topic = content.form.generalTopic, source, class: className, 'aria-label': label } = Astro.props;
+---
+{flags.enableContactForm
+  ? <a href="/#contact" class={className} data-enquire data-topic={topic} data-source={source} aria-label={label}><slot /></a>
+  : <EmailLink subject={`${content.ui.subjects.general}: ${topic}`} class={className}><slot /></EmailLink>}
