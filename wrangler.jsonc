@@ -18,6 +18,10 @@
     { "pattern": "mesquaredagency.com", "custom_domain": true },
     { "pattern": "www.mesquaredagency.com", "custom_domain": true }
   ],
+  // The enquiry form emails through Resend (worker/index.ts), using the RESEND_API_KEY secret set in the
+  // Cloudflare dashboard (never in this file). See DEPLOY.md.
+  // Workers Logs: each enquiry logs one line (sent / dropped / failed, the topic, never the person's details).
+  "observability": { "enabled": true },
   // The live site is only on mesquaredagency.com; previews come from `npx wrangler versions upload`.
   "workers_dev": false,
   "preview_urls": true

@@ -11,4 +11,4 @@ Drop each file or value where shown and the site picks it up on the next build. 
 | Legal entity name and registration number | `LEGAL_ENTITY` in `src/config/site.config.ts`, then `showLegalEntity` | No entity line in the footer |
 | Lawyer-reviewed privacy policy text | `privacy.body` in `src/content/site.ts`, then `showPrivacyPage` | No privacy page; no form, booking or tracking |
 | Billing basis and GST wording for prices | `offers.cards[].price` in `src/content/site.ts`, then `showPricing` | No prices shown |
-| First client case study, with the client's written permission | `realEstate.proof` in `src/content/site.ts`, then `showProof` | No proof block |
+| Portfolio projects (name, URL, what Me² did, year, the client's OK) | `work.items` in `src/content/site.ts` and screenshots in `src/assets/work/`, then `showProof` | No Selected work section |

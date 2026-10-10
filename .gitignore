@@ -8,3 +8,5 @@ dist/
 .wrangler/
 test-results/
 playwright-report/
+.dev.vars
+.dev.vars.*

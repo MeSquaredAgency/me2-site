@@ -30,29 +30,26 @@ const robots = fixture
   : `User-agent: *\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`;
 writeFileSync(`${outDir}/robots.txt`, robots);
 
+const price = (text) => (flagOn('showPricing') ? ` ${text}` : '');
 const llms = `# ${name}
 
-> ${name} (also known as ${plain}) is a managed back-office service for Australian businesses. AI roles draft repetitive admin work, and trained human operators in the ${name} Command Centre check every detail before it goes back to the client.
+> ${name} (also known as ${plain}) is one team for the digital side of an established business. It designs websites and digital products, builds AI systems that take repetitive work off a team, and runs back-office work as a managed service, where AI drafts and trained operators in the ${name} Command Centre check every detail.
 
 ## Services
-- AI Roles: one AI role for one job, set up around how a team already works. The client's team reviews the output.
-- Effective Business Units: a trained Command Centre operator runs a set of AI roles as a managed service, checks the work, handles exceptions and reports back.
+- Design: websites and digital products. Websites and landing pages, interface design for portals and apps, copy and content structure, search and performance foundations.
+- Build: AI systems that do real work. AI roles that draft, sort and summarise; automations between the tools a business already uses; dashboards and internal tools; testing against the client's own data.
+- Run: the back office, checked by people. Invoices, bills and debtors; inbox and customer replies; weekly reports and data entry; client intake and follow-ups. AI does the first draft and a trained operator checks it before it goes back to the client.
 
-## Examples of the work
-Examples, not client case studies. Any business with repetitive back-office work is a fit to discuss.
-- Accounting practices: supplier bills and receipts coded and prepared for entry
-- Trades and construction: quotes, job sheets, invoices and quote follow-ups
-- Online retail: customer inbox sorting and draft replies about orders, returns and delivery
-- Professional services: client intake and onboarding packs
-- Property management: rent arrears reminders and inspection reports
-- Any growing business: debtor reminders and weekly reporting
+## Start here
+- AI Roles: one AI role for one job, set up around how a team already works; the team reviews the output.${price('From $2,000 + GST to set up.')} Roles include inbox triage, debtor follow-up, bill coding, weekly reporting, client intake and quote follow-up.
+- Effective Business Units: a trained Command Centre operator runs a set of AI roles as a managed service, checks the work and reports back.${price('From $3,000 + GST a month.')}
+- Websites and digital products:${flagOn('showPricing') ? ' quoted per project.' : ' designed and built to brief.'}
 
 ## Key pages
-- [Home](${base}/): what ${name} does, how it works, the two services and common questions
-- [How it works](${base}/#how): AI roles do the first pass, a person checks every output
-- [Services](${base}/#offers): AI Roles and Effective Business Units
-- [What we take on](${base}/#use-cases): examples of the work, by kind of business
-
+- [Home](${base}/): what ${name} does, the offer and common questions
+${flagOn('showProof') ? `- [Work](${base}/#work): projects ${name} has designed, built and run\n` : ''}- [Start here](${base}/#services): AI Roles, Effective Business Units and websites, with prices
+- [How we work](${base}/#how): one accountable team; a person checks the AI's work
+${flagOn('showPrivacyPage') ? `- [Privacy](${base}/privacy/): how enquiries are handled\n` : ''}
 ## Contact
 - [Email ${email}](mailto:${email})
 `;

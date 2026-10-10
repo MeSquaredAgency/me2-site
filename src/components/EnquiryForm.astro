@@ -1,0 +1,196 @@
+---
+/**
+ * The enquiry form: name, work email and a short message (BRIEF data rule: contact details and a short
+ * description only). Posts to /api/enquiry (worker/index.ts), which emails the business inbox (FORM_TO_EMAIL).
+ * One form on the page: it lives at the foot of the page, and moves into a dialog when someone presses
+ * "Talk to us" or "Ask about…" anywhere else, carrying what they clicked as the topic.
+ * Without JavaScript: native validation, a normal POST, and a thank-you page.
+ * The dialog itself is EnquiryDialog.astro, kept outside the (lazily laid out) contact section.
+ */
+import { config, fill } from '../config';
+import { content } from '../content/site';
+const f = content.form;
+const privacyBefore = f.privacy.slice(0, f.privacy.indexOf(f.privacyLink));
+---
+<form class="enquiry" method="post" action="/api/enquiry" data-enquiry
+  data-msg={JSON.stringify({ required: f.required, emailError: f.emailError, tooLong: f.tooLong, sending: f.sending, submit: f.submit, success: f.success, failure: fill(f.failure), email: config.CONTACT_EMAIL })}>
+  <input type="hidden" name="topic" value={f.generalTopic} data-topic />
+  <input type="hidden" name="source" value="contact" data-source />
+  <input type="hidden" name="started" value="" data-started />
+  <div class="about" data-about hidden>
+    <span>{f.about}: <strong data-about-text></strong></span>
+    <button type="button" class="about-clear" data-about-clear>{f.clearAbout}</button>
+  </div>
+  <!-- Left empty by people (it's hidden); bots fill it in. -->
+  <p class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></p>
+  <div class="fields">
+    <div class="field">
+      <label for="enq-name">{f.name}</label>
+      <input id="enq-name" name="name" autocomplete="name" required maxlength="100" aria-describedby="enq-name-err" />
+      <p class="err" id="enq-name-err"></p>
+    </div>
+    <div class="field">
+      <label for="enq-email">{f.email}</label>
+      <input id="enq-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="254" aria-describedby="enq-email-err" />
+      <p class="err" id="enq-email-err"></p>
+    </div>
+    <div class="field">
+      <label for="enq-message">{f.message}</label>
+      <textarea id="enq-message" name="message" rows="4" required maxlength="2000" aria-describedby="enq-hint enq-message-err"></textarea>
+      <p class="hint" id="enq-hint">{f.hint}</p>
+      <p class="err" id="enq-message-err"></p>
+    </div>
+    <div class="send">
+      <button type="submit" class="btn btn-light" data-submit><span class="dot" aria-hidden="true"></span><span data-submit-label>{f.submit}</span></button>
+      <p class="privacy">{privacyBefore}<a href="/privacy/">{f.privacyLink}</a>.</p>
+    </div>
+  </div>
+  <p class="status" role="status" aria-live="polite" tabindex="-1" data-status></p>
+</form>
+
+
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-enquiry]');
+  const dialog = document.querySelector<HTMLDialogElement>('[data-enquiry-dialog]');
+  if (form && dialog) {
+    const msg = JSON.parse(form.dataset.msg!) as Record<string, string>;
+    const home = form.parentElement!;
+    const slot = dialog.querySelector<HTMLElement>('[data-dialog-slot]')!;
+    const topic = form.querySelector<HTMLInputElement>('[data-topic]')!;
+    const source = form.querySelector<HTMLInputElement>('[data-source]')!;
+    const started = form.querySelector<HTMLInputElement>('[data-started]')!;
+    const about = form.querySelector<HTMLElement>('[data-about]')!;
+    const aboutText = form.querySelector<HTMLElement>('[data-about-text]')!;
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]')!;
+    const general = topic.value;
+    form.noValidate = true;
+    started.value = String(Date.now());
+
+    const setTopic = (t: string, s: string) => {
+      topic.value = t || general;
+      source.value = s || 'page';
+      about.hidden = topic.value === general;
+      aboutText.textContent = topic.value;
+    };
+    form.querySelector('[data-about-clear]')!.addEventListener('click', () => setTopic(general, source.value));
+
+    // Any "Talk to us" / "Ask about…": open the form in a dialog where you are, unless it's already on screen.
+    document.addEventListener('click', (e) => {
+      const a = (e.target as Element).closest<HTMLAnchorElement>('[data-enquire]');
+      if (!a) return;
+      e.preventDefault();
+      setTopic(a.dataset.topic ?? general, a.dataset.source ?? 'page');
+      const r = home.getBoundingClientRect();
+      const onScreen = form.parentElement === home && r.top > 0 && r.bottom < innerHeight;
+      if (!onScreen && !dialog.open) {
+        slot.append(form);
+        dialog.showModal();
+        document.documentElement.classList.add('dialog-open');
+      }
+      if (!form.classList.contains('is-sent')) form.querySelector<HTMLInputElement>('#enq-name')!.focus();
+    });
+    dialog.addEventListener('close', () => { home.append(form); document.documentElement.classList.remove('dialog-open'); });
+    dialog.querySelector('[data-dialog-close]')!.addEventListener('click', () => dialog.close());
+    // A click on the dimmed backdrop closes it.
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+
+    const fields = {
+      name: form.querySelector<HTMLInputElement>('#enq-name')!,
+      email: form.querySelector<HTMLInputElement>('#enq-email')!,
+      message: form.querySelector<HTMLTextAreaElement>('#enq-message')!,
+    };
+    const showError = (el: HTMLInputElement | HTMLTextAreaElement, text: string) => {
+      form.querySelector<HTMLElement>(`#${el.id}-err`)!.textContent = text;
+      el.toggleAttribute('aria-invalid', !!text);
+    };
+    const check = () => {
+      let first: HTMLElement | null = null;
+      const fail = (el: HTMLInputElement | HTMLTextAreaElement, t: string) => { showError(el, t); first ??= el; };
+      for (const el of Object.values(fields)) showError(el, '');
+      if (!fields.name.value.trim()) fail(fields.name, msg.required);
+      if (!fields.email.value.trim()) fail(fields.email, msg.required);
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email.value.trim())) fail(fields.email, msg.emailError);
+      if (!fields.message.value.trim()) fail(fields.message, msg.required);
+      else if (fields.message.value.length > 2000) fail(fields.message, msg.tooLong);
+      (first as HTMLElement | null)?.focus();
+      return !first;
+    };
+    for (const el of Object.values(fields)) el.addEventListener('input', () => el.hasAttribute('aria-invalid') && showError(el, ''));
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = '';
+      if (!check()) return;
+      submit.disabled = true;
+      submitLabel.textContent = msg.sending;
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        });
+        const body = (await res.json().catch(() => ({}))) as { ok?: boolean };
+        if (!res.ok || !body.ok) throw new Error(String(res.status));
+        form.classList.add('is-sent');
+        status.textContent = msg.success;
+        status.focus();
+      } catch {
+        // Say what happened and give the way round it: the email address, as a link.
+        const [before, after] = msg.failure.split(msg.email);
+        const link = Object.assign(document.createElement('a'), { href: `mailto:${msg.email}`, textContent: msg.email });
+        status.replaceChildren(before ?? '', link, after ?? '');
+      } finally {
+        submit.disabled = false;
+        submitLabel.textContent = msg.submit;
+      }
+    });
+  }
+</script>
+
+<style>
+  .enquiry { display: grid; gap: 22px; }
+  .about {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 10px 14px 10px 16px; border-radius: 10px; background: rgb(var(--glow) / 0.12); color: var(--color-mist); font-size: 0.95rem;
+  }
+  .about[hidden] { display: none; }
+  .about strong { font-weight: 600; }
+  .about-clear {
+    font: inherit; font-size: 0.85rem; color: var(--color-haze); background: none; border: 0; padding: 0 2px; cursor: pointer;
+    text-decoration: underline; text-underline-offset: 0.2em; min-height: 32px;
+  }
+  .about-clear:focus-visible { outline: 2px solid var(--color-mist); outline-offset: 2px; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .fields { display: grid; gap: 20px; }
+  .field { display: grid; gap: 8px; }
+  label { font-size: 0.95rem; font-weight: 500; color: var(--color-mist); }
+  input:not([type='hidden']), textarea {
+    width: 100%; box-sizing: border-box; font: inherit; font-size: 1.05rem; color: var(--color-mist);
+    background: rgb(232 237 241 / 0.04); border: 1px solid rgb(232 237 241 / 0.24); border-radius: 10px;
+    padding: 14px 16px; transition: border-color 300ms var(--ease), background-color 300ms var(--ease);
+  }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.5; }
+  @media (hover: hover) and (pointer: fine) { input:hover, textarea:hover { border-color: rgb(232 237 241 / 0.45); } }
+  input:focus-visible, textarea:focus-visible { outline: 2px solid var(--color-coral); outline-offset: 2px; background: rgb(232 237 241 / 0.07); }
+  [aria-invalid] { border-color: var(--color-coral); }
+  .hint { font-size: 0.85rem; color: var(--color-haze); }
+  .err { font-size: 0.9rem; color: var(--color-coral); }
+  .err:empty { display: none; }
+  .send { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 4px; }
+  .send .btn { min-height: 56px; }
+  .send .btn[disabled] { opacity: 0.7; cursor: progress; }
+  .privacy { font-size: 0.85rem; color: var(--color-haze); }
+  .privacy a { color: var(--color-mist); }
+  .status { font-size: 1.05rem; color: var(--color-mist); }
+  .status:empty { display: none; }
+  .status:focus { outline: none; }
+  .status :global(a) { color: var(--color-mist); }
+  .is-sent .fields, .is-sent .about { display: none; }
+  .is-sent .status { font-size: clamp(1.3rem, 2vw, 1.7rem); font-weight: 520; letter-spacing: -0.02em; line-height: 1.3; padding-block: 16px; }
+  .is-sent .status::before { content: ''; display: block; width: 12px; height: 12px; background: var(--color-coral); margin-bottom: 18px; box-shadow: 0 0 24px 4px rgb(var(--glow) / 0.5); }
+
+
+</style>

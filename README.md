@@ -4,14 +4,14 @@ One-page sales site for Me² ("Me Squared"), which sets up AI roles for repetiti
 
 Built with Astro + TypeScript and Tailwind CSS v4, as a static site. **Live at https://mesquaredagency.com** on Cloudflare Workers (static assets) in the Me² account; how to publish is in [DEPLOY.md](DEPLOY.md). No CMS, database or third-party scripts. Full spec: [BRIEF.md](BRIEF.md). Standing rules for future changes: [CLAUDE.md](CLAUDE.md).
 
-**Look ("Squared", BRIEF §5):** Me² = me, squared. The hero says what Me² does and shows it on a live Command Centre board: sample tasks drafted by AI, checked by a person, some caught and corrected (the coral ² square). Near-black and ivory, hairlines, Instrument Serif headlines with italic emphasis, superscript section numbers, coral only for the ² and caught errors.
+**Look ("Squared", BRIEF §5):** Me² = me, squared. The hero says what Me² does and shows it on a live Command Centre board: sample tasks drafted by AI, checked by a person, some caught and corrected (the coral ² square). Below it, a scroll-driven story of squares (tasks) ends in the Me² mark; a soft coral glow is the ² as light. Near-black and ivory, hairlines, Instrument Serif headlines with italic emphasis, superscript section numbers, coral only for the ² and caught errors.
 
 **Content rules:** real claims only (no invented numbers, testimonials or clients). Stock photos are illustrative and credited in [docs/media.md](docs/media.md). Never copy competitors.
 
 ## Pages
 | Path | What it is |
 | --- | --- |
-| `/` | The sales page: hero with the Command Centre board, the problem, what we take on (six use-case examples), the demo, the "AI does the volume" statement, how we work, why Me², two services, questions, call to action |
+| `/` | The sales page: hero with the Command Centre board, the squares story (the problem, AI drafts, people check, the Me² mark), what we take on (six use-case examples), the demo, how we work, why Me², two services, questions, call to action |
 | `/404.html` | "Page not found" (noindex) |
 | `/privacy/` | Privacy policy; only built when `showPrivacyPage` is on |
 
@@ -66,3 +66,10 @@ Tick only what has been checked.
 - [ ] Cloudflare Web Analytics turned on
 - [ ] Sitemap submitted in Google Search Console; `npm run indexnow` run
 - [ ] Vector logo master from the designer swapped in (optional; the traced one works)
+- [x] v0.15 redesign live, by EC's choice (10 Oct 2026; it went live when the Resend key was saved, and EC kept it)
+- [ ] `npm run verify` rewritten for the v0.15 sections
+- [ ] APN Real Estate confirmed as a Me² project the client is happy to show; other portfolio projects supplied
+- [ ] The six named AI roles, the service lists and the "What you can count on" commitments confirmed by EC
+- [ ] Privacy policy draft reviewed (EC, Patrick, ideally a lawyer), including the Phnom Penh disclosure
+- [ ] Resend account created, mesquaredagency.com verified there, `RESEND_API_KEY` set as a Worker secret, and a test enquiry received ([DEPLOY.md](DEPLOY.md#enquiry-form-email))
+- [ ] Rate-limiting rule on /api/enquiry added in Cloudflare (DEPLOY.md)

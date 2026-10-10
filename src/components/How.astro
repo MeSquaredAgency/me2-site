@@ -1,0 +1,69 @@
+---
+import { content } from '../content/site';
+const c = content.how;
+---
+<section id="how" class="how on-dark render-later" aria-labelledby="how-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">{c.kicker}</p>
+      <h2 id="how-title">{c.h2}</h2>
+    </div>
+    <ul class="items">
+      {c.items.map((it) => (
+        <li class="item" data-how>
+          <span class="mark" aria-hidden="true"></span>
+          <h3 class="title">{it.title}</h3>
+          <p class="body">{it.body}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<script>
+  // Each commitment's square goes through the board's stages as it comes on screen: drafted, checked, done.
+  const items = document.querySelectorAll<HTMLElement>('[data-how]');
+  if (items.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelector('.how')?.classList.add('is-live');
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-on'); io.unobserve(e.target); }
+    }, { rootMargin: '0px 0px -25% 0px' });
+    items.forEach((i) => io.observe(i));
+  }
+</script>
+
+<style>
+  .how {
+    padding-block: var(--section-y);
+    background:
+      radial-gradient(50% 60% at 100% 0%, rgb(var(--glow) / 0.08), transparent 70%),
+      var(--color-abyss);
+  }
+  .head { display: grid; gap: 28px; margin-bottom: clamp(56px, 7vw, 104px); }
+  .items { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--color-line-dark); }
+  .item { display: grid; gap: 14px; padding: 36px 0 44px; border-bottom: 1px solid var(--color-line-dark); }
+  .mark { width: 14px; height: 14px; box-sizing: border-box; background: var(--color-mist); margin-bottom: 10px; }
+  .item:last-child .mark { background: var(--color-coral); box-shadow: 0 0 22px 3px rgb(var(--glow) / 0.45); }
+  /* Drafted (outline), being checked (half), done (solid); the last one lands coral, like the ². */
+  .how:global(.is-live) .mark { background: transparent; border: 1.5px solid rgb(232 237 241 / 0.55); box-shadow: none; }
+  .how:global(.is-live) .item:global(.is-on) .mark { animation: check 1400ms var(--ease-out) forwards; }
+  .how:global(.is-live) .item:last-child:global(.is-on) .mark { animation: check-coral 1600ms var(--ease-out) forwards; }
+  @keyframes check {
+    0% { border-color: rgb(232 237 241 / 0.55); background: transparent; }
+    45% { border-color: var(--color-mist); background: linear-gradient(0deg, var(--color-mist) 50%, transparent 50%); }
+    100% { border-color: var(--color-mist); background: var(--color-mist); }
+  }
+  @keyframes check-coral {
+    0% { border-color: rgb(232 237 241 / 0.55); background: transparent; }
+    40% { border-color: var(--color-mist); background: linear-gradient(0deg, var(--color-mist) 50%, transparent 50%); }
+    100% { border-color: var(--color-coral); background: var(--color-coral); box-shadow: 0 0 22px 3px rgb(var(--glow) / 0.45); }
+  }
+  .title { font-size: clamp(1.6rem, 2.6vw, 2.6rem); font-weight: 520; font-stretch: 90%; letter-spacing: -0.035em; line-height: 1.05; max-width: 18ch; }
+  .body { color: var(--color-haze); max-width: 44ch; font-size: 1.08rem; }
+  @media (min-width: 1000px) {
+    .head { grid-template-columns: 1fr 2.4fr; align-items: start; }
+    .head .kicker { margin-top: 0.9em; }
+    .items { grid-template-columns: 1fr 1fr; column-gap: clamp(48px, 6vw, 112px); }
+    .item { padding: 44px 0 56px; }
+  }
+</style>

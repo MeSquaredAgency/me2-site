@@ -1,0 +1,122 @@
+---
+import { Picture } from 'astro:assets';
+import { content } from '../content/site';
+const c = content.work;
+// Project screenshots live in src/assets/work/<file>.png (real sites; never pictures of individual people).
+const images = import.meta.glob<{ default: ImageMetadata }>('../assets/work/*.png', { eager: true });
+const imageFor = (file: string) => images[`../assets/work/${file}.png`]?.default;
+// Only projects with pictures are shown; the rest wait in site.ts until their case study is ready.
+const items = c.items
+  .map((p) => ({ ...p, shots: p.shots.map((s) => ({ ...s, img: imageFor(s.file) })).filter((s) => s.img) }))
+  .filter((p) => p.shots.length);
+// Phone shots side by side; wide shots on their own.
+type Shot = (typeof items)[number]['shots'][number];
+const rows = (shots: Shot[]) => shots.reduce<Shot[][]>((acc, s) => {
+  const last = acc[acc.length - 1];
+  if (s.kind === 'phone' && last?.[0].kind === 'phone') last.push(s); else acc.push([s]);
+  return acc;
+}, []);
+---
+<section id="work" class="work on-dark render-later" aria-labelledby="work-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">{c.kicker}</p>
+      <h2 id="work-title">{c.h2}</h2>
+    </div>
+
+    {items.map((p) => (
+      <article class="case" aria-labelledby={`case-${p.key}`}>
+        <div class="info">
+          <h3 id={`case-${p.key}`} class="name">{p.name}</h3>
+          <p class="what">{p.what}</p>
+          <dl class="facts">
+            {p.services.length > 0 && <div><dt>What we did</dt><dd>{p.services.join(' and ')}</dd></div>}
+            {p.year && <div><dt>Year</dt><dd>{p.year}</dd></div>}
+          </dl>
+          {p.url && <a href={p.url} class="tlink visit" target="_blank" rel="noopener">{p.linkText}</a>}
+        </div>
+        <div class="media" data-media>
+          {rows(p.shots).map((row) => (
+            <div class:list={['row', row[0].kind]}>
+              {row.map((s) => (
+                <figure class:list={['shot', s.kind]} data-shot>
+                  <Picture src={s.img!} alt="" widths={s.kind === 'phone' ? [360, 720] : [800, 1200, 1600]}
+                    sizes={s.kind === 'phone' ? '(min-width: 1000px) 22vw, 45vw' : '(min-width: 1000px) 62vw, 100vw'}
+                    formats={['avif', 'webp']} fallbackFormat="jpg" loading="lazy" decoding="async" />
+                </figure>
+              ))}
+            </div>
+          ))}
+        </div>
+      </article>
+    ))}
+    <p class="note">{c.note}</p>
+  </div>
+</section>
+
+<script>
+  const media = [...document.querySelectorAll<HTMLElement>('[data-media]')];
+  if (media.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const shots = media.flatMap((m) => [...m.querySelectorAll<HTMLElement>('[data-shot]')]);
+    // Each picture opens from the bottom as it arrives. Watch its row: a clipped-shut picture never counts as on screen.
+    const show = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { e.target.querySelectorAll('[data-shot]').forEach((s) => s.classList.add('is-in')); show.unobserve(e.target); }
+    }, { rootMargin: '0px 0px -10% 0px' });
+    shots.forEach((s) => s.classList.add('will-reveal'));
+    media.forEach((m) => m.querySelectorAll('.row').forEach((r) => show.observe(r)));
+
+    // Pictures drift a little slower than the page.
+    let ticking = false;
+    const drift = () => {
+      ticking = false;
+      for (const s of shots) {
+        const r = s.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight) continue;
+        s.style.setProperty('--drift', `${(((r.top + r.height / 2 - innerHeight / 2) / (innerHeight + r.height)) * 8).toFixed(2)}%`);
+      }
+    };
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(drift); } };
+    new IntersectionObserver(([e]) => {
+      e.isIntersecting ? addEventListener('scroll', onScroll, { passive: true }) : removeEventListener('scroll', onScroll);
+    }).observe(document.querySelector('#work')!);
+  }
+</script>
+
+<style>
+  .work { padding-block: clamp(24px, 4vw, 64px) var(--section-y); }
+  .head { display: grid; gap: 28px; margin-bottom: clamp(56px, 7vw, 104px); }
+  .head h2 { max-width: 14ch; }
+
+  .case { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; padding-top: 40px; border-top: 1px solid var(--color-line-dark); }
+  .info { display: grid; gap: 20px; align-content: start; justify-items: start; }
+  .name { font-size: clamp(2.2rem, 4vw, 4.2rem); font-weight: 520; font-stretch: 88%; letter-spacing: -0.045em; line-height: 0.95; }
+  .what { color: var(--color-haze); max-width: 42ch; font-size: 1.08rem; line-height: 1.6; }
+  .facts { display: grid; grid-template-columns: auto auto; gap: 8px 32px; margin: 8px 0 0; }
+  .facts div { display: grid; gap: 4px; }
+  .facts dt { font-size: 0.85rem; color: var(--color-haze); }
+  .facts dd { margin: 0; font-weight: 520; }
+  .visit { font-weight: 560; margin-top: 8px; }
+
+  .media { display: grid; gap: clamp(20px, 2.4vw, 36px); }
+  .row.phone { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 2.4vw, 36px); padding-inline: clamp(0px, 6%, 80px); }
+  .shot { position: relative; margin: 0; overflow: hidden; isolation: isolate; background: var(--color-abyss-2); }
+  .shot :global(picture), .shot :global(img) { display: block; width: 100%; height: 100%; }
+  .shot :global(img) { object-fit: cover; object-position: top center; transform: translateY(var(--drift, 0%)) scale(1.1); }
+  .wide { aspect-ratio: 16 / 10; border-radius: 10px; box-shadow: 0 40px 100px -40px rgb(0 0 0 / 0.8), inset 0 0 0 1px rgb(232 237 241 / 0.06); }
+  /* Phone shots in a plain phone-shaped frame (no device artwork). */
+  .shot.phone { aspect-ratio: 390 / 844; border-radius: 30px; border: 7px solid #142433; box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.8); }
+  .shot.phone :global(img) { transform: translateY(var(--drift, 0%)) scale(1.04); }
+  @media (prefers-reduced-motion: reduce) { .shot :global(img) { transform: none; } }
+  .shot.will-reveal { clip-path: inset(100% 0 0 0 round 10px); transition: clip-path 1400ms var(--ease-out); }
+  .shot.phone.will-reveal { clip-path: inset(100% 0 0 0 round 30px); transition-delay: 150ms; }
+  .shot.will-reveal:global(.is-in) { clip-path: inset(0 0 0 0 round 10px); }
+  .shot.phone.will-reveal:global(.is-in) { clip-path: inset(0 0 0 0 round 30px); }
+  .note { margin-top: 56px; color: var(--color-haze); font-size: var(--text-small); }
+
+  @media (min-width: 1000px) {
+    .head { grid-template-columns: 1fr 2.4fr; align-items: start; }
+    .head .kicker { margin-top: 0.9em; }
+    .case { grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr); column-gap: clamp(40px, 5vw, 96px); }
+    .info { position: sticky; top: 120px; align-self: start; }
+  }
+</style>

@@ -1,0 +1,59 @@
+---
+import EnquiryForm from './EnquiryForm.astro';
+import EnquiryDialog from './EnquiryDialog.astro';
+import EnquireLink from './EnquireLink.astro';
+import { config, fill, flags } from '../config';
+import { content } from '../content/site';
+const c = content.contact;
+// The ² square sits on the last word, so it stays tight to the full stop however the line wraps.
+const words = c.h2.split(' ');
+const last = words.pop();
+const [emailBefore, emailAfter] = fill(c.emailLine).split(config.CONTACT_EMAIL);
+---
+<!-- The close: the promise in the brand's own word, the ² lit at its corner, and the form beside it. -->
+<section id="contact" class="contact on-dark render-later" aria-labelledby="contact-title">
+  <div class="light" aria-hidden="true"></div>
+  <div class="wrap inner">
+    <div class="ask">
+      <h2 id="contact-title">{words.join(' ')} <span class="last">{last}<span class="sq" aria-hidden="true"></span></span></h2>
+      <p class="lede">{c.body}</p>
+      <p class="mail">{emailBefore}<a href={`mailto:${config.CONTACT_EMAIL}`} class="tlink">{config.CONTACT_EMAIL}</a>{emailAfter}</p>
+      {flags.enableBooking && <a href={config.BOOKING_URL} class="btn btn-line" target="_blank" rel="noopener">{c.booking}</a>}
+    </div>
+    {flags.enableContactForm
+      ? <div class="panel"><EnquiryForm /></div>
+      : <div class="panel-off"><EnquireLink source="contact" class="btn btn-light btn-lg"><span class="dot" aria-hidden="true"></span>{c.button}</EnquireLink></div>}
+  </div>
+</section>
+{flags.enableContactForm && <EnquiryDialog />}
+
+<style>
+  .contact { position: relative; overflow: hidden; isolation: isolate; padding-block: clamp(120px, 18vh, 220px) clamp(96px, 14vh, 160px); border-top: 1px solid var(--color-line-dark); }
+  .light {
+    position: absolute; z-index: -1; width: min(110vw, 1500px); aspect-ratio: 1; right: -34vw; top: -40%;
+    background: radial-gradient(closest-side, rgb(var(--glow) / 0.2), rgb(var(--glow) / 0.06) 45%, transparent 100%);
+    pointer-events: none;
+  }
+  .inner { display: grid; gap: clamp(56px, 7vw, 96px); align-items: start; }
+  h2 { font-size: clamp(3.2rem, 9vw, 10.5rem); line-height: 0.88; letter-spacing: -0.055em; font-stretch: 84%; max-width: none; }
+  .last { position: relative; display: inline-block; }
+  /* The ²: a lit square set as an exponent, tight to the full stop. */
+  .sq {
+    position: absolute; right: -0.3em; top: 0.06em; width: 0.2em; height: 0.2em; background: var(--color-coral);
+    box-shadow: 0 0 0.3em 0.04em rgb(var(--glow) / 0.6), 0 0 1.2em 0.3em rgb(var(--glow) / 0.22);
+  }
+  .ask { display: grid; gap: 32px; justify-items: start; }
+  .ask .lede { max-width: 40ch; }
+  .mail { color: var(--color-haze); }
+  .mail a { color: var(--color-mist); }
+  /* The form sits on a pane of the same dark glass as the mark. */
+  .panel {
+    position: relative; border-radius: 18px; padding: clamp(24px, 3vw, 40px);
+    background: linear-gradient(160deg, rgb(16 32 47 / 0.9), rgb(8 18 28 / 0.9));
+    box-shadow: 0 40px 100px -30px rgb(0 0 0 / 0.7), inset 0 1px 0 rgb(232 237 241 / 0.09), inset 0 0 0 1px rgb(232 237 241 / 0.06);
+  }
+  @media (min-width: 1100px) {
+    .inner { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); column-gap: clamp(56px, 6vw, 120px); }
+    h2 { font-size: clamp(3.2rem, 7.4vw, 9rem); }
+  }
+</style>

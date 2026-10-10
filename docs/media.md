@@ -6,6 +6,15 @@ Real photos of Me² (the Command Centre, the team, real client work) always beat
 ## Photos in use
 None. Since v0.13 (9 Oct 2026) the page uses no photographs: the real estate keys photo (Unsplash, Maria Ziegler) was removed with the real estate section, and the footer's stock-photo note with it. The hero's Command Centre board, the demo and the type carry the page.
 
+## Portfolio images (v0.15 proposal)
+Screenshots of real Me² projects, in `src/assets/work/<image>.png`, named by the project's `image` key in `content.work.items` (`src/content/site.ts`). Astro resizes them to AVIF and WebP at build time.
+
+| File | What it is | Status |
+| --- | --- | --- |
+| `src/assets/work/apnre.png` | The home page of apnre.com.au at 1600×1000, captured 9 Oct 2026 (hero only; no staff photos) | Waiting on EC: confirm APN Real Estate is a Me² project and the client is happy to be shown |
+
+Never use a screenshot that shows or names an individual person (team pages, agent profiles, reviews). A project without an image is not shown.
+
 **Adding a photo:** put it in `src/assets/photos/` (landscape, at least 2000px wide, metadata stripped), show it with Astro's `<Image>` so it is resized at build time, add a row here with the photographer and source, and put the footer note back (`footer.imagery` in `src/content/site.ts`).
 
 ## Logo

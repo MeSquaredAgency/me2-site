@@ -1,0 +1,28 @@
+---
+// Where the enquiry form lands without JavaScript, once the enquiry has been emailed (worker/index.ts). noindex.
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { content } from '../content/site';
+const c = content.thanks;
+---
+<Base path="/thanks/">
+  <Header />
+  <main id="main" class="done on-dark">
+    <div class="wrap inner">
+      <span class="sq" aria-hidden="true"></span>
+      <h1>{c.h1}</h1>
+      <p>{c.body}</p>
+      <a href="/" class="btn btn-light btn-lg"><span class="dot" aria-hidden="true"></span>{c.button}</a>
+    </div>
+  </main>
+  <Footer />
+</Base>
+<style>
+  .done { min-height: 72vh; display: flex; align-items: center; }
+  .inner { display: grid; justify-items: start; gap: 24px; padding-top: 160px; padding-bottom: 120px; }
+  h1 { font-size: clamp(3rem, 8vw, 7rem); line-height: 0.9; letter-spacing: -0.05em; }
+  p { color: var(--color-haze); font-size: 1.2rem; }
+  .sq { width: 16px; height: 16px; background: var(--color-coral); box-shadow: 0 0 30px 6px rgb(var(--glow) / 0.5); }
+  .btn-lg { min-height: 58px; margin-top: 12px; }
+</style>

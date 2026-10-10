@@ -3,31 +3,25 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import Statement from '../components/Statement.astro';
-import Demo from '../components/Demo.astro';
-import OperatingModel from '../components/OperatingModel.astro';
-import Compare from '../components/Compare.astro';
-import Offers from '../components/Offers.astro';
-import UseCases from '../components/UseCases.astro';
-import Interlude from '../components/Interlude.astro';
+import Work from '../components/Work.astro';
+import Offer from '../components/Offer.astro';
+import How from '../components/How.astro';
 import Faq from '../components/Faq.astro';
-import FinalCta from '../components/FinalCta.astro';
+import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
 import { homeSchema } from '../lib/schema';
-// Section labels carry a superscript index (the "²" idea): pass each section its number.
+import { flags } from '../config';
 ---
 <Base path="/" schema={homeSchema()}>
   <Header />
   <main id="main">
     <Hero />
-    <Statement n={1} />
-    <UseCases n={2} />
-    <Demo n={3} />
-    <Interlude />
-    <OperatingModel n={4} />
-    <Compare n={5} />
-    <Offers n={6} />
-    <Faq n={7} />
-    <FinalCta />
+    <Statement />
+    {flags.showProof && <Work />}
+    <Offer />
+    <How />
+    <Faq />
+    <Contact />
   </main>
   <Footer />
 </Base>

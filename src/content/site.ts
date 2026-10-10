@@ -1,6 +1,8 @@
 /**
- * Headings may wrap their bold part in **double asterisks**; `Emph` renders it as <strong>.
- * All visible copy, word for word from BRIEF Appendix A, in section order.
+ * All visible copy, in section order (BRIEF Appendix A, v0.15 "Lit").
+ * v0.15 copy is a DRAFT for EC's approval: the agency positioning (design, build, run), the six named
+ * AI roles and the privacy policy are new; lines reused from the approved v0.14 copy are marked "approved".
+ * Prices are EC's (9 Oct 2026): an AI role from $2,000 + GST to set up; an EBU from $3,000 + GST a month.
  * Placeholders like {SITE_NAME} are filled from the config by `fill()`; never type them out.
  * Don't rewrite copy here unless EC asks.
  */
@@ -9,321 +11,216 @@ export const content = {
     skipLink: 'Skip to content',
     logoLabel: '{SITE_NAME_PLAIN}',
     logoHomeLabel: '{SITE_NAME_PLAIN} home',
-    subjects: {
-      general: 'Website enquiry',
-      aiRoles: 'AI Roles enquiry',
-      ebu: 'Effective Business Units enquiry',
-    },
-    form: {
-      name: 'Your name',
-      email: 'Work email',
-      business: 'Business name',
-      task: 'What work would you like off your plate?',
-      taskHint: "A sentence or two is plenty. Please don't include client, customer or tenant details.",
-      submit: 'Send enquiry',
-      sending: 'Sending…',
-      required: 'Please fill in this field.',
-      emailError: 'Enter an email address like name@business.com.au.',
-      tooLong: 'Keep this under 2,000 characters.',
-      success: "Enquiry sent. We'll reply to the email you gave us.",
-      failure: "Your enquiry didn't send. Email us at {CONTACT_EMAIL} instead.",
-      turnstileFailure: "We couldn't confirm you're not a bot. Try again, or email us at {CONTACT_EMAIL}.",
-      fallback: 'Prefer email? Write to {CONTACT_EMAIL}',
-    },
+    /** Mailto subjects, for the plain email links that remain (and when the form is switched off). */
+    subjects: { general: 'Website enquiry' },
+    viewProject: 'View',
   },
 
   header: {
     button: 'Talk to us',
     nav: [
-      { label: 'What we take on', href: '#use-cases' },
-      { label: 'How it works', href: '#how' },
-      { label: 'Services', href: '#offers' },
+      { label: 'Work', href: '#work', flag: 'showProof' },
+      { label: 'Start here', href: '#services' },
+      { label: 'How we work', href: '#how' },
       { label: 'Questions', href: '#faq' },
     ],
     navLabel: 'Sections',
   },
 
   hero: {
-    h1: 'We run the back office. **You run the business.**',
+    /** approved (v0.10, EC's preferred hero, again on 10 Oct 2026). Two sentences, each set on two lines. */
+    h1: 'AI does the volume. People own the outcome.',
+    /** The screen in the mark cycles through the three services, each with its caption. */
+    scenes: [
+      { scene: 'design', label: 'Websites and digital products' },
+      { scene: 'build', label: 'AI systems that do real work' },
+      { scene: 'run', label: 'Your back office, checked by people' },
+    ],
+    scenesLabel: 'Show',
     subhead:
-      '{SITE_NAME} takes the repetitive admin off your team: invoices, inboxes, reports, data entry and follow-ups. AI does the first draft, a trained operator checks every detail, and the work comes back done.',
-    kicker: 'Managed back-office services',
+      '{SITE_NAME} is one team for the digital side of an established business. We design your website, build the AI systems behind it and run the back-office work that keeps it all moving.',
     primary: 'Talk to us',
-    secondary: 'See what we take on',
-    /** The live board in the hero: sample work moving through the Command Centre. */
-    board: {
-      title: 'Command Centre',
-      live: 'Live',
-      colTask: 'Task',
-      colStage: 'Stage',
-      stages: {
-        queued: 'In queue',
-        drafting: 'AI drafting',
-        checking: 'Operator checking',
-        caught: 'Error caught',
-        done: 'Checked, done',
-        fixed: 'Corrected, done',
-      },
-      /** Illustration only: kinds of work and kinds of business, not clients. */
-      tasks: [
-        { task: 'Supplier bills coded', for: 'Accounting practice', fix: true },
-        { task: 'Overdue invoice reminders', for: 'Trades business', fix: false },
-        { task: 'Customer email replies', for: 'Online store', fix: false },
-        { task: 'New client intake', for: 'Law firm', fix: false },
-        { task: 'Weekly sales report', for: 'Wholesaler', fix: true },
-        { task: 'Rent arrears summary', for: 'Property manager', fix: false },
-        { task: 'Quote follow-ups', for: 'Builder', fix: false },
-        { task: 'Timesheets for payroll', for: 'Cleaning company', fix: false },
-        { task: 'Meeting notes and actions', for: 'Consultancy', fix: true },
-        { task: 'Purchase orders matched', for: 'Distributor', fix: false },
-      ],
-      note: 'Illustration with sample tasks.',
-      srSummary:
-        'Illustration: a board of sample tasks from different kinds of business, such as supplier bills for an accounting practice and customer email replies for an online store. Each task is drafted by AI, checked by an operator and marked done. Now and then the check catches an error, and it is corrected before the task is done.',
-    },
-    /** Key under the board: what the three kinds of square mean */
-    legendLabel: 'How to read the board',
-    legend: ['Drafted by AI', 'Checked by a person', 'Caught and corrected'],
-    /** showLocations */
+    /** The hero's second link: to the work, or (while showProof is off) to Start here. */
+    secondary: 'See our work',
+    secondaryStart: 'See where to start',
+    markSummary:
+      'Illustration: the {SITE_NAME} mark, a dark glass square with a small coral square glowing at its corner. The glass is a screen that shows the work: a web page being designed, an AI role drafting, and the Command Centre board of back-office tasks being checked.',
+    /** showLocations (approved) */
     location: 'Command Centre teams in Adelaide and Phnom Penh.',
   },
 
-  pillars: [
-    { big: 'AI', small: 'does the first pass' },
-    { big: 'People', small: 'check every output' },
-    { big: 'One job', small: 'is enough to start' },
-    { big: 'Your tools', small: 'are where we start' },
-  ],
-
-  problem: {
-    eyebrow: 'The problem',
-    h2: 'Admin grows faster than **headcount.**',
-    /** Illustration only: the kinds of work that pile up (from the audience description). */
-    pile: ['Inbox', 'Weekly reports', 'Overdue reminders', 'Data entry'],
-    pileStatus: 'Waiting',
-    pileLabel: 'Work waiting on someone',
-    paragraphs: [
-      'Every new client brings more inbox, more reports and more chasing. Hiring to keep up is slow and expensive, and the work still lands on your best people.',
-      "AI tools on their own don't fix it. Someone still has to set them up, check what they produce and fix what they get wrong. That someone is usually you.",
-    ],
-  },
-
-  demo: {
-    eyebrow: 'See it in action',
-    h2: 'One task, **start to finish.**',
-    intro: 'An AI Role drafts the work. A trained operator checks every name, date and number against the source before anything leaves. This is what that looks like.',
-    srSummary: 'Illustration: an AI Role drafts a weekly summary of overdue invoices. An operator checks it against the accounts ledger, finds that the draft shows $1,200 owing on invoice 1042 when the ledger shows $1,020, corrects it, completes the remaining checks and signs it off for you to approve.',
-    windowTitle: 'Overdue invoices · sample business',
-    roleLabel: 'AI Role · Overdue invoices',
-    operatorLabel: 'Operator check',
-    draftTitle: 'Overdue invoices this week',
-    lines: [
-      { unit: 'Invoice 1042', days: '16 days overdue', amount: '$1,200', amountFixed: '$1,020' },
-      { unit: 'Invoice 1057', days: '4 days overdue', amount: '$640', amountFixed: '' },
-    ],
-    suggestion: 'Suggested next step: send the standard reminder for invoice 1042.',
-    ledgerTitle: 'Source: accounts ledger',
-    ledger: [
-      { unit: 'Invoice 1042', days: '16 days', amount: '$1,020' },
-      { unit: 'Invoice 1057', days: '4 days', amount: '$640' },
-    ],
-    checks: [
-      'Invoices match the records',
-      'Days overdue match the ledger',
-      'Amounts match the ledger',
-      'Your template and tone',
-    ],
-    failIndex: 2,
-    failNote: 'Invoice 1042: draft said $1,200, ledger says $1,020. Corrected.',
-    signoff: 'Checked and signed off. Ready for you to approve.',
-    status: {
-      drafting: 'AI Role drafting…',
-      checking: 'Operator checking against the ledger…',
-      done: 'Checked and signed off',
+  /** Illustrations on the hero screen (decorative; described for screen readers). */
+  visuals: {
+    design: {
+      srSummary: 'Illustration: a web page assembling itself, block by block, inside a browser window.',
+      url: 'yourbusiness.com.au',
     },
-    note: 'Illustration with made-up sample data.',
-    replay: 'Replay the demo',
+    build: {
+      srSummary: 'Illustration: emails, invoices and forms flow into an AI role, are checked by a person, and go out to your accounts, your CRM and your reports.',
+      inputs: ['Emails', 'Invoices', 'Forms'],
+      core: 'AI role',
+      check: 'Checked',
+      outputs: ['Accounts', 'CRM', 'Reports'],
+    },
   },
 
-  model: {
-    eyebrow: 'How we work',
-    h2: 'Every task runs on **four parts.**',
-    intro: "AI on its own makes confident mistakes. People on their own are slow and expensive. We use both, with written processes and checking, on every piece of work.",
-    parts: [
-      { title: 'AI', body: 'Drafts reports, sorts inboxes, extracts and summarises. It does the first pass, fast.' },
-      { title: 'Human judgement', body: 'A trained operator asks the question AI can\'t: does this make sense for this client, today?' },
-      { title: 'Written processes', body: 'Every repeat task has a written, approved way of doing it. If it happens more than twice a month, it gets one.' },
-      { title: 'Quality checks', body: 'Every task is checked before it goes out. A sample is checked again by someone else, and work involving money or legal notices gets a second person.' },
+  /** The Run scene: a live board of sample back-office tasks (illustration; kinds of business, never clients). */
+  board: {
+    title: 'Command Centre',
+    live: 'Live',
+    stages: {
+      queued: 'In queue',
+      drafting: 'AI drafting',
+      checking: 'Operator checking',
+      caught: 'Error caught',
+      done: 'Checked, done',
+      fixed: 'Corrected, done',
+    },
+    tasks: [
+      { task: 'Supplier bills coded', for: 'Accounting practice', fix: true },
+      { task: 'Overdue invoice reminders', for: 'Trades business', fix: false },
+      { task: 'Customer email replies', for: 'Online store', fix: false },
+      { task: 'New client intake', for: 'Law firm', fix: false },
+      { task: 'Weekly sales report', for: 'Wholesaler', fix: true },
+      { task: 'Rent arrears summary', for: 'Property manager', fix: false },
+      { task: 'Quote follow-ups', for: 'Builder', fix: false },
+      { task: 'Timesheets for payroll', for: 'Cleaning company', fix: false },
     ],
-    stepsTitle: 'The eight steps behind every task',
-    steps: [
-      { title: 'Understand the task', body: 'What is being asked, by whom and by when.' },
-      { title: 'Follow the process', body: 'The written process for the task. No process yet? We check before we start.' },
-      { title: 'Use approved AI', body: 'Only business AI tools we have approved, where the process allows.' },
-      { title: 'Review the output', body: 'Read every word. Check every number against the source.' },
-      { title: 'Apply judgement', body: 'Does this make sense for this client, today?' },
-      { title: 'Quality check', body: 'A self-check every time, plus a second check where the work needs one.' },
-      { title: 'Deliver', body: 'Through the channel you agreed, in your templates and tone.' },
-      { title: 'Record and flag', body: 'Log the work and raise anything unusual with you straight away.' },
-    ],
+    note: 'Illustration with sample tasks.',
+    srSummary:
+      'Illustration: a board of sample back-office tasks from different kinds of business. Each task is drafted by AI, checked by an operator and marked done. Now and then the check catches an error, and it is corrected before the task is done.',
   },
 
-  compare: {
-    eyebrow: 'Why Me²',
-    h2: 'Not an assistant to manage. **A result we own.**',
-    intro: "Most outsourcing gives you a person and leaves the managing to you. We take on the work itself, and we're responsible for getting it right.",
-    tableLabel: 'How Me² compares with a typical virtual assistant service',
-    colTopic: 'Topic',
-    colThem: 'Typical VA service',
-    colUs: 'Me²',
-    rows: [
-      { topic: 'Who manages the work', them: 'You manage the assistant', us: 'We manage the work and the people doing it' },
-      { topic: 'Where quality comes from', them: 'Whoever you happen to get', us: 'Written processes, AI and quality checks' },
-      { topic: 'When someone leaves', them: 'Their know-how leaves with them', us: 'It stays in our processes and handover notes' },
-      { topic: 'How AI is used', them: 'Informally, if at all', us: 'Built into every suitable task, with clear rules' },
-      { topic: 'What you pay for', them: 'Hours', us: 'A defined role or outcome' },
+  /** Read out as one paragraph; the words light up as you scroll. */
+  statement: {
+    label: 'Why one partner',
+    text: 'Most businesses run their digital side through three suppliers: an agency for the website, a developer for the systems and a team buried in the admin they create. Nobody owns the whole picture. We do. One team and one point of accountability, from the first sketch to the thousandth invoice.',
+  },
+
+  work: {
+    kicker: 'Selected work',
+    h2: 'Work we have designed, built and run.',
+    /**
+     * Real projects only, each with the client's OK (EC). `confirmed: false` items are for the mock-up
+     * and must be confirmed or removed before launch. Never use screenshots that show or name individual people.
+     */
+    items: [
+      {
+        key: 'apnre',
+        name: 'APN Real Estate',
+        what: 'A new website for a South Australian real estate agency with offices in Adelaide and Mount Gambier: sales, leasing and property management, with an appraisal request a tap away on every page.',
+        services: ['Design', 'Build'],
+        year: '2026',
+        url: 'https://apnre.com.au/',
+        linkText: 'Visit apnre.com.au',
+        /** src/assets/work/<file>.png; "phone" shots sit in a phone frame. */
+        shots: [
+          { file: 'apnre', kind: 'wide' },
+          { file: 'apnre-phone', kind: 'phone' },
+          { file: 'apnre-phone-2', kind: 'phone' },
+          { file: 'apnre-explore', kind: 'wide' },
+        ],
+        confirmed: false,
+      },
     ],
+    note: 'More projects are being added.',
+  },
+
+  /** Start here: the offer, named and priced. */
+  offer: {
+    kicker: 'Start here',
+    h2: 'Start with one job.',
+    intro:
+      "Pick one AI role for one job, hand over a whole workload, or bring us a website. We'll tell you straight whether it's a fit.",
+    roles: {
+      name: 'AI Roles',
+      /** showPricing */
+      price: 'From $2,000 + GST to set up',
+      /** approved (v0.14 offers) */
+      body: 'One AI role for one job, set up around how your team already works. Your team reviews the output and stays in control.',
+      bestFor: 'Best for teams that know exactly which task is eating their week.',
+      listLabel: 'AI roles you can start with',
+      /** Six named roles, drawn from the v0.13 use-case examples. EC to confirm each is deliverable. */
+      items: [
+        { name: 'Inbox triage', outcome: 'Every incoming email sorted, and a reply drafted in your tone for you to approve.' },
+        { name: 'Debtor follow-up', outcome: 'Overdue invoices chased on schedule, with every amount matched to your accounts.' },
+        { name: 'Bill coding', outcome: 'Supplier bills read, coded and prepared for entry, ready for you to approve.' },
+        { name: 'Weekly reporting', outcome: 'The numbers you check every week, pulled together and written up for you.' },
+        { name: 'Client intake', outcome: 'New enquiries turned into client files, with a welcome pack drafted.' },
+        { name: 'Quote follow-up', outcome: 'Every quote without a reply gets a follow-up, drafted from the job notes.' },
+      ],
+      button: 'Ask about this role',
+      also: 'Need something these don\'t cover, like an automation between your tools or a dashboard? Tell us the job.',
+    },
+    ebu: {
+      name: 'Effective Business Units',
+      /** showPricing */
+      price: 'From $3,000 + GST a month',
+      /** approved (v0.14 offers) */
+      body: 'A trained Command Centre operator runs a set of AI roles for you as a managed service. They check the work, handle the exceptions and report back to you.',
+      bestFor: 'Best for businesses that want a whole workload off their plate.',
+      includes: ['A trained operator who owns the work', 'Every output checked before it reaches you', 'Exceptions handled and reported back', 'A written process for every repeat task'],
+      button: 'Ask about an Effective Business Unit',
+      topic: 'Effective Business Unit',
+    },
+    web: {
+      name: 'Websites and digital products',
+      /** showPricing */
+      price: 'Quoted per project',
+      body: 'Sites and products that make an established business look like what it is: clear to read, quick to load and built to win the enquiry.',
+      includes: ['Websites and landing pages', 'Interface design for portals and apps', 'Copy and content structure', 'Search and performance foundations'],
+      button: 'Ask about a website',
+      topic: 'Website or digital product',
+    },
   },
 
   how: {
-    eyebrow: 'How it works',
-    h2: 'The back-office work that buries your team, **handled.**',
-    stepLabel: 'Step',
-    cta: 'Talk to us',
-    intro: "We don't hand you software and walk away. We take on the work.",
-    steps: [
-      {
-        title: 'We map the work',
-        body: 'We start with the tasks that eat the most hours and get done the same way every time.',
-      },
-      {
-        title: 'AI roles do the first pass',
-        body: "Each AI role handles one job: drafting a report, sorting an inbox, working out what's owed, preparing a summary.",
-      },
-      {
-        title: 'A person checks it',
-        body: 'Every output gets checked before it counts, by your team or by a trained {SITE_NAME} operator. AI drafts, people decide.',
-      },
-    ],
-  },
-
-  offers: {
-    eyebrow: 'Services',
-    h2: 'Two ways to **start**',
-    intro: 'Start with one job, or hand over a whole workload.',
-    cards: [
-      {
-        key: 'aiRoles',
-        name: 'AI Roles',
-        body: 'One AI role for one job, set up around how your team already works. Your team reviews the output and stays in control.',
-        bestFor: 'Best for teams that know exactly which task is eating their week.',
-        /** showPricing */
-        price: 'From $2,000 AUD [[TBC: billing basis and GST wording — Patrick]]',
-        button: 'Ask about AI Roles',
-      },
-      {
-        key: 'ebu',
-        name: 'Effective Business Units',
-        body: 'A trained Command Centre operator runs a set of AI roles for you as a managed service. They check the work, handle the exceptions and report back to you.',
-        bestFor: 'Best for businesses that want a whole workload off their plate.',
-        /** showPricing */
-        price: 'From $3,000 AUD [[TBC: billing basis and GST wording — Patrick]]',
-        button: 'Ask about Effective Business Units',
-      },
-    ],
-  },
-
-  interlude: {
-    h2: 'AI does the volume. **People own the outcome.**',
-    body: 'AI drafts the work. A trained person checks every detail before it reaches you.',
-  },
-
-  useCases: {
-    eyebrow: 'What we take on',
-    h2: 'Different businesses. **The same back office.**',
-    intro:
-      'Every business has admin that is repetitive and still has to be right. These are examples of the work an AI Role drafts and an operator checks.',
-    listLabel: 'Examples by kind of business',
-    labels: { work: 'The work', ai: 'AI Role drafts', check: 'Operator checks', result: 'You get' },
-    /** Examples of the kind of work, not clients or case studies. */
+    kicker: 'How we work',
+    h2: 'What you can count on.',
     items: [
       {
-        key: 'accounting',
-        for: 'Accounting practices',
-        work: 'Supplier bills and receipts',
-        ai: 'Reads each bill, codes it and prepares it for entry.',
-        check: 'Amounts, GST and supplier details against the original.',
-        result: 'Bills entered and ready for you to approve.',
+        title: 'One team, answerable for all of it.',
+        body: 'The people who design your site are the people who build and run what sits behind it. When something needs fixing, there is one team to ask.',
       },
       {
-        key: 'trades',
-        for: 'Trades and construction',
-        work: 'Quotes, job sheets and invoices',
-        ai: 'Turns job notes into quotes and invoices, and drafts follow-ups for quotes with no reply.',
-        check: 'Prices against your rate card and the job notes.',
-        result: 'Quotes and invoices ready to send, in your templates.',
+        title: 'A person checks the AI’s work.',
+        /** approved (v0.14 story) */
+        body: 'A trained operator checks every name, date and number against the source before anything leaves.',
       },
       {
-        key: 'retail',
-        for: 'Online retail',
-        work: 'The customer inbox',
-        ai: 'Sorts every email and drafts replies about orders, returns and delivery.',
-        check: 'Order details, refund amounts and tone.',
-        result: 'Replies ready to send, with anything unusual flagged to you.',
+        title: 'Built around how you already work.',
+        /** approved (v0.14 FAQ, adapted) */
+        body: "We start from the tools and processes you already use. If something would need to change, we'll tell you before we start.",
       },
       {
-        key: 'professional',
-        for: 'Professional services',
-        work: 'Client intake and onboarding',
-        ai: 'Pulls the details from each enquiry into your intake forms and drafts the welcome pack.',
-        check: 'Names, dates and contact details against the enquiry.',
-        result: 'New client files ready for your team to review.',
-      },
-      {
-        key: 'property',
-        for: 'Property management',
-        work: 'Arrears and inspection reports',
-        ai: 'Works out who is behind on rent, drafts the reminders and writes up inspection notes.',
-        check: 'Every amount and date against the ledger and the notes.',
-        result: 'Reminders and reports ready for the property manager to approve.',
-      },
-      {
-        key: 'any',
-        for: 'Any growing business',
-        work: 'Debtors and weekly reporting',
-        ai: 'Builds the weekly numbers and drafts reminders for overdue invoices.',
-        check: 'Every figure against your accounting system.',
-        result: 'A report you can rely on, and reminders ready to send.',
+        title: 'Straight answers.',
+        body: "We'll tell you plainly what we can do, what it will take, and when something isn't a fit.",
       },
     ],
-    note: 'Examples of the kind of work we take on, not client case studies.',
-    closing: "Don't see your business here? If the work is repeatable, tell us about it.",
-    closingButton: 'Talk to us',
-    /** showProof */
-    proof: '[[TBC: client case study, approved in writing by the client — EC]]',
   },
 
   faq: {
-    eyebrow: 'Questions',
-    h2: 'Common **questions**',
+    kicker: 'Questions',
+    h2: 'Common questions.',
     aside: 'Something else on your mind? Ask us directly.',
     asideButton: 'Talk to us',
     items: [
+      {
+        q: 'What does {SITE_NAME} actually do?',
+        a: 'We design and build websites and digital products, set up AI systems that take on repetitive work, and run back-office work for you as a managed service. You can start with one and add the others later.',
+      },
+      {
+        q: 'What does it cost?',
+        a: 'An AI role starts from $2,000 + GST to set up. An Effective Business Unit starts from $3,000 + GST a month. Websites and other builds are quoted per project once we understand the job.',
+        flag: 'showPricing',
+      },
       {
         q: 'Do we have to change the software we use?',
         a: "We start from the tools and processes you already use and set each AI role up around them. If something would need to change, we'll tell you before we start.",
       },
       {
         q: "Who checks the AI's work?",
-        a: 'With an AI Role, your team reviews the output. With an Effective Business Unit, a trained {SITE_NAME} operator checks it before it reaches you. Either way, a person signs off.',
-      },
-      {
-        q: "What's the difference between the two options?",
-        a: 'An AI Role is one tool for one job that your team runs. An Effective Business Unit is a managed service: a {SITE_NAME} operator runs several AI roles for you and owns the result.',
-      },
-      {
-        q: 'What kinds of business do you work with?',
-        a: "Any business with back-office work that is repetitive and has to be right: practices, trades, retailers, property managers and more. If the work gets done the same way every week, it's worth a conversation.",
+        a: 'A person, every time. With an AI role, your team reviews the output and stays in control. With an Effective Business Unit, a trained {SITE_NAME} operator checks it before it reaches you.',
       },
       {
         q: 'Where is the team based?',
@@ -332,18 +229,51 @@ export const content = {
       },
       {
         q: 'How do we get started?',
-        a: "Email us about the task that takes up the most time. We'll tell you whether it's a fit, and what an AI Role or Effective Business Unit for it would look like.",
+        a: "Send us a short note about what you're working on. We'll tell you whether it's a fit, and what the first step would look like.",
       },
     ],
   },
 
-  finalCta: {
-    h2: 'Tell us which task is **eating your week.**',
-    body: "Send a short email about the work you'd like off your plate. We'll tell you straight whether we can help.",
-    button: 'Talk to us',
+  /** The close, with the enquiry form. */
+  contact: {
+    h2: 'Your business, squared.',
+    body: "Tell us what you're working on: a new site, a system that should exist, or the work that's eating your team's week. We'll tell you straight whether we can help.",
     /** enableBooking */
     booking: 'Book a call',
-    emailLine: 'Or email us at {CONTACT_EMAIL}',
+    emailLine: 'Prefer email? Write to {CONTACT_EMAIL}',
+    /** Shown instead of the form when enableContactForm is off. */
+    button: 'Talk to us',
+  },
+
+  /** The enquiry form: contact details and a short message only (BRIEF data rule). */
+  form: {
+    title: 'Tell us what you need',
+    about: 'About',
+    clearAbout: 'Remove',
+    generalTopic: 'General enquiry',
+    name: 'Your name',
+    email: 'Work email',
+    message: 'What would you like to talk about?',
+    hint: "A sentence or two is plenty. Please don't include client, customer or tenant details.",
+    submit: 'Send enquiry',
+    sending: 'Sending…',
+    required: 'Please fill in this field.',
+    emailError: 'Enter an email address like name@business.com.au.',
+    tooLong: 'Keep this under 2,000 characters.',
+    success: "Enquiry sent. We'll reply to the email you gave us.",
+    failure: "Your enquiry didn't send. Email us at {CONTACT_EMAIL} instead.",
+    privacy: 'We use these details only to reply to you. See our privacy policy.',
+    privacyLink: 'privacy policy',
+    close: 'Close',
+  },
+
+  /** The page the form lands on without JavaScript. */
+  thanks: {
+    h1: 'Enquiry sent.',
+    body: "We'll reply to the email you gave us.",
+    failH1: "Your enquiry didn't send.",
+    failBody: 'Email us at {CONTACT_EMAIL} instead.',
+    button: 'Back to the home page',
   },
 
   footer: {
@@ -360,9 +290,57 @@ export const content = {
     button: 'Go to the home page',
   },
 
+  /**
+   * DRAFT privacy policy (v0.15) for EC, Patrick and ideally a lawyer to review before it goes live.
+   * It describes what the site actually does: one enquiry form, no cookies of its own, hosting on Cloudflare,
+   * form emails delivered by Resend, email in Google Workspace, and a team in Adelaide and Phnom Penh (overseas disclosure, APP 8).
+   */
   privacy: {
     h1: 'Privacy',
-    body: '[[TBC: lawyer-reviewed privacy policy text, including offshore disclosure — Patrick + lawyer]]',
-    contact: 'Questions about privacy: {PRIVACY_EMAIL}',
+    updated: 'Last updated 9 October 2026',
+    sections: [
+      {
+        h: 'Who we are',
+        p: ['{SITE_NAME} ({SITE_NAME_PLAIN}) designs and builds websites and AI systems and runs back-office work for businesses. This policy explains how we handle personal information we collect through this website. "We" means {SITE_NAME}.'],
+      },
+      {
+        h: 'What we collect',
+        p: [
+          'When you send an enquiry through the form on this site, we collect your name, your work email address, what you write in your message and which part of the site you sent it from. Please don\'t include details about your clients, customers or tenants.',
+          'If you email us, we collect your email address and whatever your email contains.',
+          'Our hosting provider, Cloudflare, processes technical information such as your IP address and browser type to deliver this site and protect it from abuse. This site doesn\'t set cookies of its own and doesn\'t use advertising or tracking tools.',
+        ],
+      },
+      {
+        h: 'How we use it',
+        p: [
+          'We use your details to reply to your enquiry, to discuss and provide our services if you go ahead, and to keep a record of our correspondence.',
+          'We don\'t sell personal information and we don\'t add you to a mailing list.',
+        ],
+      },
+      {
+        h: 'Where it is kept and who can see it',
+        p: [
+          'Enquiries are emailed to our team by Resend, an email delivery service, and kept in our business email system, which is provided by Google.',
+          'Our team works from Adelaide and from Phnom Penh, Cambodia, so people in Cambodia may see your enquiry when they help us respond. Our service providers, Cloudflare, Resend and Google, may store or process information on servers outside Australia.',
+        ],
+      },
+      {
+        h: 'Keeping it safe',
+        p: ['We take reasonable steps to protect personal information from misuse, loss and unauthorised access, and we delete enquiries we no longer need.'],
+      },
+      {
+        h: 'Seeing or correcting your information',
+        p: ['You can ask to see or correct the personal information we hold about you by emailing {PRIVACY_EMAIL}. We\'ll respond within 30 days.'],
+      },
+      {
+        h: 'Questions and complaints',
+        p: ['If you have a question or a concern about how we have handled your information, email {PRIVACY_EMAIL}. If you are not satisfied with our response, you can contact the Office of the Australian Information Commissioner at oaic.gov.au.'],
+      },
+      {
+        h: 'Changes',
+        p: ['We may update this policy from time to time. The current version is always on this page.'],
+      },
+    ],
   },
 } as const;
