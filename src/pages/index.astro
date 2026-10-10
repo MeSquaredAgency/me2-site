@@ -10,13 +10,14 @@ import Faq from '../components/Faq.astro';
 import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
 import { homeSchema } from '../lib/schema';
+import { flags } from '../config';
 ---
 <Base path="/" schema={homeSchema()}>
   <Header />
   <main id="main">
     <Hero />
     <Statement />
-    <Work />
+    {flags.showProof && <Work />}
     <Offer />
     <How />
     <Faq />

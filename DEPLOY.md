@@ -73,16 +73,21 @@ npx wrangler whoami
 - The DNS records for `mesquaredagency.com` and `www` are now managed by the Workers project. Don't edit or delete them in the DNS page; change domains in `wrangler.jsonc` instead.
 
 ## Enquiry form email
-The enquiry form posts to `/api/enquiry` (in `worker/index.ts`), which emails each enquiry to `hello@mesquaredagency.com` through **Cloudflare Email Sending**, from `website@mesquaredagency.com`, with the visitor's address as Reply-To. The binding in `wrangler.jsonc` can only ever deliver to hello@. Until the steps below are done, the form shows "Your enquiry didn't send. Email us at hello@… instead." (with the address as a link), so nobody is left stuck.
+The enquiry form posts to `/api/enquiry` (in `worker/index.ts`), which emails each enquiry to `hello@mesquaredagency.com` through **Resend**, from `website@mesquaredagency.com`, with the visitor's address as Reply-To. Resend's free plan allows 3,000 emails a month (100 a day), far more than the form needs. (Cloudflare's own Email Sending needs the Workers Paid plan, so it isn't used.) Until the steps below are done, the form shows "Your enquiry didn't send. Email us at hello@… instead." with the address as a link, so nobody is left stuck.
 
-One-time setup, in the Cloudflare dashboard signed in to the **Me²** account (this PC's Wrangler sign-in can't do these):
+One-time setup:
 
-1. **Compute → Email Service → Email Sending → Onboard Domain → mesquaredagency.com.** Review the records before you accept. Cloudflare's sending records go on the `cf-bounce` subdomain (MX, SPF and DKIM for `cf-bounce.mesquaredagency.com`), so Google Workspace's MX and SPF on the bare domain are untouched. **The domain already has a DMARC record** (`_dmarc`, `p=none`, from the Google setup): if Cloudflare offers to add another DMARC record, don't; keep exactly one.
-2. **Verify hello@ as a destination** if Cloudflare asks (Email Service → Email Routing → Destination addresses → add `hello@mesquaredagency.com`, then click the link in the email it sends). Sending to a verified address of your own is free on every plan; only sending to other people's addresses needs Workers Paid, and the form never does that.
-3. **Test:** send an enquiry from the preview link or the live site. It should arrive in hello@ within a minute, subject "Website enquiry: …". Reply to it to check the reply goes to the sender. Then send and receive an ordinary email at hello@ to confirm Google mail still works.
-4. **Rate limit:** Security → WAF → **Rate limiting rules** → create: URI path equals `/api/enquiry`, 5 requests per 10 minutes per IP, action Block. (The form also drops obvious bots itself: a hidden field and a minimum time to fill.)
+1. **Create a Resend account** at resend.com (the free plan), ideally signed up with a business address such as tech@ so it isn't tied to one person.
+2. **Resend → Domains → Add domain → `mesquaredagency.com`.** Resend lists the DNS records to add: a DKIM record (`resend._domainkey`) and, for bounces, an MX and an SPF record on the `send` subdomain. None of them touch the bare domain's MX or SPF, so Google Workspace mail is unaffected. **The domain already has a DMARC record** (`_dmarc`, `p=none`): if Resend suggests one, keep the existing record and don't add a second.
+3. **Add those records in Cloudflare** (Me² account → Domains → mesquaredagency.com → DNS → Records → Add record), copying each name and value exactly; leave proxying off ("DNS only"). Back in Resend, press **Verify**; it usually turns green within minutes.
+4. **Resend → API Keys → Create API key**: permission **Sending access**, domain **mesquaredagency.com**. Copy it (Resend shows it once).
+5. **Give the key to the site as a secret**, not in the code: Cloudflare → Workers & Pages → **mesquared** → Settings → **Variables and Secrets** → Add → type **Secret**, name `RESEND_API_KEY`, paste the key, Deploy. (Or in a terminal: `npx wrangler secret put RESEND_API_KEY`.) Secrets stay in place across future deploys.
+6. **Test:** send an enquiry on the site. It should arrive in hello@ within a minute, subject "Website enquiry: …"; replying should go to the sender. Then send and receive an ordinary email at hello@ to confirm Google mail still works.
+7. **Rate limit:** Cloudflare → Security → WAF → **Rate limiting rules** → create: URI path equals `/api/enquiry`, 5 requests per 10 minutes per IP, action Block. (The form also drops obvious bots itself: a hidden field and a minimum time to fill.)
 
-**Seeing enquiries come in:** Workers & Pages → `mesquared` → Logs. Each enquiry writes one line: `sent`, `dropped` (a bot), `send-failed` (with Cloudflare's reason) or `not-configured`, plus its topic. No names, emails or messages are logged.
+**Seeing enquiries come in:** Workers & Pages → `mesquared` → Logs (one line per enquiry: `sent`, `dropped` for a bot, `send-failed` with Resend's reason, or `not-configured`, plus its topic; never names, emails or messages). Resend's dashboard also lists every email it delivered.
+
+**Changing the key:** create a new key in Resend, replace the secret in Cloudflare, then delete the old key in Resend.
 
 ## After launch
 - Submit `https://mesquaredagency.com/sitemap.xml` in Google Search Console (add the domain as a property first).

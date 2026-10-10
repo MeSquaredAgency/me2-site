@@ -46,9 +46,8 @@ const llms = `# ${name}
 - Websites and digital products:${flagOn('showPricing') ? ' quoted per project.' : ' designed and built to brief.'}
 
 ## Key pages
-- [Home](${base}/): what ${name} does, selected work, the offer and common questions
-- [Work](${base}/#work): projects ${name} has designed, built and run
-- [Start here](${base}/#services): AI Roles, Effective Business Units and websites, with prices
+- [Home](${base}/): what ${name} does, the offer and common questions
+${flagOn('showProof') ? `- [Work](${base}/#work): projects ${name} has designed, built and run\n` : ''}- [Start here](${base}/#services): AI Roles, Effective Business Units and websites, with prices
 - [How we work](${base}/#how): one accountable team; a person checks the AI's work
 ${flagOn('showPrivacyPage') ? `- [Privacy](${base}/privacy/): how enquiries are handled\n` : ''}
 ## Contact

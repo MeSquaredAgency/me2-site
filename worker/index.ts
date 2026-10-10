@@ -2,17 +2,14 @@
 // Almost everything is a static file from dist/. The worker:
 //  1. sends every visitor to https:// and the bare domain (no www), in a single 301;
 //  2. handles the enquiry form (POST /api/enquiry): checks it, drops bots, and emails it to
-//     FORM_TO_EMAIL through Cloudflare Email Sending (the EMAIL binding in wrangler.jsonc).
+//     FORM_TO_EMAIL through Resend (its HTTP API; the RESEND_API_KEY secret, set in Cloudflare, see DEPLOY.md).
 // Data rule (BRIEF §6): the form takes contact details and a short message only.
 import { siteConfig } from '../src/config/site.config';
 
-interface EmailAddress { email: string; name?: string }
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
-  /** Cloudflare Email Sending. Missing until the domain is onboarded (DEPLOY.md). */
-  EMAIL?: {
-    send(message: { from: EmailAddress; to: string; replyTo?: EmailAddress; subject: string; text: string; html?: string }): Promise<{ messageId: string }>;
-  };
+  /** Resend API key (a Worker secret, never in the code). Missing until it's set in Cloudflare (DEPLOY.md). */
+  RESEND_API_KEY?: string;
 }
 
 const LIMITS = { name: 100, email: 254, message: 2000, topic: 120, source: 60 };
@@ -72,25 +69,36 @@ async function enquiry(request: Request, env: Env): Promise<Response> {
   const valid = name && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && message && message.length <= LIMITS.message;
   if (!valid) return done(false);
 
-  if (!env.EMAIL) {
+  if (!env.RESEND_API_KEY) {
     console.log(JSON.stringify({ event: 'enquiry', result: 'not-configured', topic, source }));
     return done(false, 503);
   }
 
   const text = [`${topic}`, '', message, '', '—', `From: ${name} <${email}>`, `Sent from: ${source} on ${new URL(request.url).hostname}`].join('\n');
   const html = `<p><strong>${esc(topic)}</strong></p><p style="white-space:pre-wrap">${esc(message)}</p><hr><p>From: ${esc(name)} &lt;${esc(email)}&gt;<br>Sent from: ${esc(source)} on ${esc(new URL(request.url).hostname)}</p><p style="color:#666">Reply to this email to answer them directly.</p>`;
+  // Resend's HTTP API (https://resend.com/docs/api-reference/emails/send-email). The sender's name uses the
+  // plain spelling, which every mail program shows correctly; Reply-To is the visitor's checked address only.
+  let failed = '';
   try {
-    await env.EMAIL.send({
-      from: { email: siteConfig.FORM_FROM_EMAIL, name: `${siteConfig.SITE_NAME} website` },
-      to: siteConfig.FORM_TO_EMAIL,
-      replyTo: { email, name },
-      subject: `Website enquiry: ${topic} (${name})`,
-      text,
-      html,
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: `${siteConfig.SITE_NAME_PLAIN} website <${siteConfig.FORM_FROM_EMAIL}>`,
+        to: [siteConfig.FORM_TO_EMAIL],
+        reply_to: email,
+        subject: `Website enquiry: ${topic} (${name})`,
+        text,
+        html,
+      }),
     });
+    if (!res.ok) failed = `http-${res.status} ${((await res.json().catch(() => ({}))) as { name?: string }).name ?? ''}`.trim();
   } catch (e) {
+    failed = String(e);
+  }
+  if (failed) {
     // No personal details in logs: just what failed.
-    console.log(JSON.stringify({ event: 'enquiry', result: 'send-failed', code: (e as { code?: string }).code ?? String(e), topic, source }));
+    console.log(JSON.stringify({ event: 'enquiry', result: 'send-failed', code: failed, topic, source }));
     return done(false, 502);
   }
   console.log(JSON.stringify({ event: 'enquiry', result: 'sent', topic, source }));

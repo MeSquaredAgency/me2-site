@@ -1,6 +1,6 @@
 ---
 import Logo from './Logo.astro';
-import { config, fill, flags } from '../config';
+import { config, fill, flags, shown } from '../config';
 import { content } from '../content/site';
 const c = content.footer;
 ---
@@ -14,7 +14,7 @@ const c = content.footer;
     <nav class="col" aria-label={c.navHeading}>
       <h2 class="col-title">{c.navHeading}</h2>
       <ul>
-        {content.header.nav.map((item) => <li><a href={`/${item.href}`}>{item.label}</a></li>)}
+        {shown(content.header.nav).map((item) => <li><a href={`/${item.href}`}>{item.label}</a></li>)}
       </ul>
     </nav>
   </div>

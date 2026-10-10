@@ -34,6 +34,11 @@ for (const key of ['enableContactForm', 'enableBooking', 'enableTracking'] as co
 if (merged.enableBooking && !config.BOOKING_URL) merged.enableBooking = false;
 export const flags: Flags = merged;
 
+/** Copy items that name a flag (e.g. a menu link to a hidden section) are kept only while that flag is on. */
+export function shown<T extends object>(items: readonly T[]): T[] {
+  return items.filter((item) => !('flag' in item) || flags[(item as { flag: string }).flag as keyof Flags]);
+}
+
 /** Fills {SITE_NAME}-style placeholders in copy from the config. */
 export function fill(text: string): string {
   return text

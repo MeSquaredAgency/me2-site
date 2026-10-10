@@ -8,7 +8,7 @@ Two things are added automatically so leads arrive labelled:
 - **Source**: which part of the page they clicked it in (header, hero, start-here, questions, contact).
 
 ## Where it goes
-`/api/enquiry` in `worker/index.ts` checks the enquiry and emails it to `hello@mesquaredagency.com` from `website@mesquaredagency.com`, subject "Website enquiry: {topic} ({name})", with the sender's address as Reply-To, so pressing Reply answers them. Both addresses come from `src/config/site.config.ts` (`FORM_TO_EMAIL`, `FORM_FROM_EMAIL`). Setup: [DEPLOY.md](../DEPLOY.md#enquiry-form-email).
+`/api/enquiry` in `worker/index.ts` checks the enquiry and emails it through Resend to `hello@mesquaredagency.com` from `website@mesquaredagency.com`, subject "Website enquiry: {topic} ({name})", with the sender's address as Reply-To, so pressing Reply answers them. Both addresses come from `src/config/site.config.ts` (`FORM_TO_EMAIL`, `FORM_FROM_EMAIL`). Setup: [DEPLOY.md](../DEPLOY.md#enquiry-form-email).
 
 ## How it behaves
 | Situation | What the visitor sees |
@@ -24,4 +24,4 @@ Two things are added automatically so leads arrive labelled:
 All the form's words are in `form` (and `thanks`) in `src/content/site.ts`.
 
 ## Testing it
-Locally: `npm run build`, then `npx wrangler dev --local --local-protocol https`. Cloudflare's simulator doesn't send real mail; it writes each email to `.wrangler/tmp/email/` and prints the path. On a preview link (after the domain is onboarded), real emails arrive in hello@.
+Locally: `npm run build`, then `npx wrangler dev --local --local-protocol https`. Without a `RESEND_API_KEY` the form reports "didn't send" (by design); to send real test emails locally, put the key in a git-ignored `.dev.vars` file as `RESEND_API_KEY=…`. On a preview link or the live site, once the secret is set in Cloudflare, real emails arrive in hello@.

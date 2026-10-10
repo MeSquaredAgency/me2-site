@@ -19,7 +19,7 @@ export const content = {
   header: {
     button: 'Talk to us',
     nav: [
-      { label: 'Work', href: '#work' },
+      { label: 'Work', href: '#work', flag: 'showProof' },
       { label: 'Start here', href: '#services' },
       { label: 'How we work', href: '#how' },
       { label: 'Questions', href: '#faq' },
@@ -40,7 +40,9 @@ export const content = {
     subhead:
       '{SITE_NAME} is one team for the digital side of an established business. We design your website, build the AI systems behind it and run the back-office work that keeps it all moving.',
     primary: 'Talk to us',
+    /** The hero's second link: to the work, or (while showProof is off) to Start here. */
     secondary: 'See our work',
+    secondaryStart: 'See where to start',
     markSummary:
       'Illustration: the {SITE_NAME} mark, a dark glass square with a small coral square glowing at its corner. The glass is a screen that shows the work: a web page being designed, an AI role drafting, and the Command Centre board of back-office tasks being checked.',
     /** showLocations (approved) */
@@ -291,7 +293,7 @@ export const content = {
   /**
    * DRAFT privacy policy (v0.15) for EC, Patrick and ideally a lawyer to review before it goes live.
    * It describes what the site actually does: one enquiry form, no cookies of its own, hosting on Cloudflare,
-   * email in Google Workspace, and a team in Adelaide and Phnom Penh (overseas disclosure, APP 8).
+   * form emails delivered by Resend, email in Google Workspace, and a team in Adelaide and Phnom Penh (overseas disclosure, APP 8).
    */
   privacy: {
     h1: 'Privacy',
@@ -319,8 +321,8 @@ export const content = {
       {
         h: 'Where it is kept and who can see it',
         p: [
-          'Enquiries are emailed to our team and kept in our business email system, which is provided by Google.',
-          'Our team works from Adelaide and from Phnom Penh, Cambodia, so people in Cambodia may see your enquiry when they help us respond. Our service providers, Cloudflare and Google, may store or process information on servers outside Australia.',
+          'Enquiries are emailed to our team by Resend, an email delivery service, and kept in our business email system, which is provided by Google.',
+          'Our team works from Adelaide and from Phnom Penh, Cambodia, so people in Cambodia may see your enquiry when they help us respond. Our service providers, Cloudflare, Resend and Google, may store or process information on servers outside Australia.',
         ],
       },
       {
