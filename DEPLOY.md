@@ -1,6 +1,6 @@
 # Publishing the site (Cloudflare)
 
-**Live at https://mesquaredagency.com since 9 Oct 2026.**
+**Live at https://mesquaredagency.com since 9 Oct 2026.** The v0.15 "Lit" redesign has been live since 10 Oct 2026.
 
 | | |
 | --- | --- |
@@ -81,13 +81,16 @@ One-time setup:
 2. **Resend → Domains → Add domain → `mesquaredagency.com`.** Resend lists the DNS records to add: a DKIM record (`resend._domainkey`) and, for bounces, an MX and an SPF record on the `send` subdomain. None of them touch the bare domain's MX or SPF, so Google Workspace mail is unaffected. **The domain already has a DMARC record** (`_dmarc`, `p=none`): if Resend suggests one, keep the existing record and don't add a second.
 3. **Add those records in Cloudflare** (Me² account → Domains → mesquaredagency.com → DNS → Records → Add record), copying each name and value exactly; leave proxying off ("DNS only"). Back in Resend, press **Verify**; it usually turns green within minutes.
 4. **Resend → API Keys → Create API key**: permission **Sending access**, domain **mesquaredagency.com**. Copy it (Resend shows it once).
-5. **Give the key to the site as a secret**, not in the code: Cloudflare → Workers & Pages → **mesquared** → Settings → **Variables and Secrets** → Add → type **Secret**, name `RESEND_API_KEY`, paste the key, Deploy. (Or in a terminal: `npx wrangler secret put RESEND_API_KEY`.) Secrets stay in place across future deploys.
+5. **Give the key to the site as a secret**, not in the code. Safest, in a terminal in this folder: `npx wrangler versions secret put RESEND_API_KEY` (paste the key when asked). That adds the secret without publishing anything; the next push to `main` goes live with it. Secrets stay in place across future deploys. **See the warning below before using the dashboard.**
 6. **Test:** send an enquiry on the site. It should arrive in hello@ within a minute, subject "Website enquiry: …"; replying should go to the sender. Then send and receive an ordinary email at hello@ to confirm Google mail still works.
 7. **Rate limit:** Cloudflare → Security → WAF → **Rate limiting rules** → create: URI path equals `/api/enquiry`, 5 requests per 10 minutes per IP, action Block. (The form also drops obvious bots itself: a hidden field and a minimum time to fill.)
 
 **Seeing enquiries come in:** Workers & Pages → `mesquared` → Logs (one line per enquiry: `sent`, `dropped` for a bot, `send-failed` with Resend's reason, or `not-configured`, plus its topic; never names, emails or messages). Resend's dashboard also lists every email it delivered.
 
-**Changing the key:** create a new key in Resend, replace the secret in Cloudflare, then delete the old key in Resend.
+**Changing the key:** create a new key in Resend, replace the secret with `npx wrangler versions secret put RESEND_API_KEY` and push `main` (or follow the warning below), then delete the old key in Resend.
+
+### Warning: saving a secret in the dashboard publishes the newest preview
+Saving a secret (or variable) in the Cloudflare dashboard with **Deploy** makes a new version from the **latest uploaded** version, which is often a branch preview, and puts it **live**. That's how the v0.15 redesign went live on 10 Oct 2026 when the Resend key was saved. Before touching secrets in the dashboard, check that nothing newer than live has been uploaded (`npx wrangler versions list` against `npx wrangler deployments list`). Otherwise use `npx wrangler versions secret put` (adds it without deploying), or `npx wrangler secret put` once `main` is the latest version (it refuses if a newer preview exists).
 
 ## After launch
 - Submit `https://mesquaredagency.com/sitemap.xml` in Google Search Console (add the domain as a property first).

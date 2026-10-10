@@ -66,7 +66,8 @@ Tick only what has been checked.
 - [ ] Cloudflare Web Analytics turned on
 - [ ] Sitemap submitted in Google Search Console; `npm run indexnow` run
 - [ ] Vector logo master from the designer swapped in (optional; the traced one works)
-- [ ] v0.15 redesign approved by EC (preview from branch `agency-redesign`), and `npm run verify` rewritten for its sections
+- [x] v0.15 redesign live, by EC's choice (10 Oct 2026; it went live when the Resend key was saved, and EC kept it)
+- [ ] `npm run verify` rewritten for the v0.15 sections
 - [ ] APN Real Estate confirmed as a Me² project the client is happy to show; other portfolio projects supplied
 - [ ] The six named AI roles, the service lists and the "What you can count on" commitments confirmed by EC
 - [ ] Privacy policy draft reviewed (EC, Patrick, ideally a lawyer), including the Phnom Penh disclosure
