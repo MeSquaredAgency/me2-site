@@ -26,6 +26,7 @@ Allowed: astro, typescript, @astrojs/check, tailwindcss, @tailwindcss/vite, @fon
 Out of scope: CMS, auth, database, client-side routing, UI frameworks, animation/icon libraries, carousels, chat widgets, cookie banners, newsletter signup, Google Fonts CDN, third-party scripts.
 
 ## Git and deploys
+- **Private behind Cloudflare Access since 10 Oct 2026** (One-time PIN; previews too), so you can't fetch the live site or previews without EC: check locally. See DEPLOY.md.
 - **Live since 9 Oct 2026** at https://mesquaredagency.com: Cloudflare Workers project `mesquared` in the **Me²** account (`wrangler.jsonc`, `worker/index.ts`). See DEPLOY.md.
 - Code lives on GitHub at **MeSquaredAgency/me2-site** (private). A GitHub Actions workflow (`.github/workflows/publish.yml`) publishes it to the Me² Cloudflare account: **pushing or merging to `main` puts it live**; pushing any other branch makes a preview URL (in the run summary). Not Cloudflare Workers Builds: the MeSquaredAgency org is linked to the APN Cloudflare account (APNRE site), so don't re-point it. Never push or merge to `main` without EC's explicit yes for that change. `main` must always equal what's live.
 - `npx wrangler deploy` (the by-hand fallback) also publishes immediately; same rule. For a look first, push a branch or use `npx wrangler versions upload`.

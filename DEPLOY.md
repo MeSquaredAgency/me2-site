@@ -1,6 +1,6 @@
 # Publishing the site (Cloudflare)
 
-**Live at https://mesquaredagency.com since 9 Oct 2026.** The v0.15 "Lit" redesign has been live since 10 Oct 2026.
+**Live at https://mesquaredagency.com since 9 Oct 2026.** The v0.15 "Lit" redesign has been live since 10 Oct 2026. **Since 10 Oct 2026 the site is private behind Cloudflare Access** (see below): only people on the allow list can open it.
 
 | | |
 | --- | --- |
@@ -65,6 +65,14 @@ Sign in as elliot.crabb@mesquaredagency.com (or any user in the Me² account), a
 ```bash
 npx wrangler whoami
 ```
+
+## Private behind Cloudflare Access (since 10 Oct 2026)
+EC put the site behind **Cloudflare Access** (Zero Trust → Access controls → Applications) while the privacy page, the six roles and the GST wording are confirmed. The Access application covers `mesquaredagency.com`, `www.mesquaredagency.com`, `mesquared.co.uk` and `www.mesquared.co.uk`, plus the `mesquared` Worker's production and preview URLs (so preview links are private too). Sign-in is by **One-time PIN**: allowed people type their email and get a code.
+
+- Email (Google Workspace) and the GitHub deploys are unaffected; the enquiry form still works for people who are signed in.
+- While it's on, search engines can't crawl the site and shared links show no preview image.
+- Tools and sessions without a sign-in (including Claude) get a redirect to the sign-in page, so checks run locally (`npm run build`, `npm run preview`) or need a short-lived Access service token.
+- **To open the site to everyone:** disable or delete the Access application. No code change or deploy is needed.
 
 ## Cloudflare settings worth knowing
 - **Email Address Obfuscation:** currently not rewriting the site's email links (checked 9 Oct: the live page has 9 normal `mailto:` links and no `/cdn-cgi/l/email-protection` links). If someone turns Scrape Shield on later, turn this off again.
