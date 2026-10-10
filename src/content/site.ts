@@ -28,11 +28,13 @@ export const content = {
   },
 
   hero: {
-    /** One headline, three lines. Each line has a scene on the screen in the mark. */
-    lines: [
-      { text: 'We design it.', scene: 'design', label: 'Websites and digital products' },
-      { text: 'We build it.', scene: 'build', label: 'AI systems that do real work' },
-      { text: 'We run it.', scene: 'run', label: 'Your back office, checked by people' },
+    /** approved (v0.10, EC's preferred hero, again on 10 Oct 2026). Two sentences, each set on two lines. */
+    h1: 'AI does the volume. People own the outcome.',
+    /** The screen in the mark cycles through the three services, each with its caption. */
+    scenes: [
+      { scene: 'design', label: 'Websites and digital products' },
+      { scene: 'build', label: 'AI systems that do real work' },
+      { scene: 'run', label: 'Your back office, checked by people' },
     ],
     scenesLabel: 'Show',
     subhead:

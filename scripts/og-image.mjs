@@ -8,8 +8,12 @@ import { resolve } from 'node:path';
 
 const routes = JSON.parse(readFileSync('src/data/routes.json', 'utf8'));
 const title = routes.find((r) => r.path === '/').ogTitle;
-// "We design it. We build it. We run it." → one sentence per line, as in the hero.
-const lines = title.split(/(?<=\.)\s+/).map((l) => `<span>${l}</span>`).join('');
+// "AI does the volume. People own the outcome." → each sentence on two lines (first two words, then the rest),
+// the first a shade back, as in the hero.
+const lines = title.split(/(?<=\.)\s+/).map((sentence, i) => {
+  const w = sentence.split(' ');
+  return `<span class="s${i}">${w.slice(0, 2).join(' ')}<br>${w.slice(2).join(' ')}</span>`;
+}).join('');
 const logo = readFileSync('src/assets/brand/me2-logo-light.svg', 'utf8');
 const { siteConfig } = await import('../src/config/site.config.ts');
 const domain = siteConfig.SITE_DOMAIN;
@@ -21,8 +25,9 @@ html,body{margin:0;width:1200px;height:630px;overflow:hidden}
 body{background:radial-gradient(60% 80% at 82% 42%,#0e1f2f 0%,#08121c 70%);color:#e8edf1;font-family:ISans,sans-serif;position:relative}
 .logo svg{height:46px;width:auto;display:block}
 .wrap{position:absolute;left:80px;top:64px}
-h1{font-weight:520;font-stretch:88%;font-size:96px;line-height:.92;letter-spacing:-.045em;margin:96px 0 0}
+h1{font-weight:520;font-stretch:88%;font-size:84px;line-height:.92;letter-spacing:-.045em;margin:56px 0 0}
 h1 span{display:block}
+h1 .s0{color:#93a3b3}
 .url{position:absolute;left:80px;bottom:54px;font-size:22px;font-weight:500;color:#93a3b3}
 /* The mark: dark glass, lit from its corner by the coral square. */
 .big{position:absolute;left:850px;top:214px;width:250px;height:250px;border-radius:10px;transform:perspective(900px) rotateY(-20deg) rotateX(12deg);

@@ -261,7 +261,7 @@ function run(gl: WebGLRenderingContext, canvas: HTMLCanvasElement, screen: HTMLE
     const cw = canvas.clientWidth, ch = canvas.clientHeight;
     if (cw >= 1100) return { x: cw * 0.665, y: ch * 0.5, s: Math.min(cw * 0.135, ch * 0.26) };
     if (cw >= 640) return { x: cw * 0.6, y: ch * 0.32, s: Math.min(cw * 0.2, ch * 0.17) };
-    return { x: cw * 0.42, y: ch * 0.3, s: Math.min(cw * 0.29, ch * 0.135) };
+    return { x: cw * 0.42, y: ch * 0.27, s: Math.min(cw * 0.28, ch * 0.13) };
   };
 
   const resize = () => {
