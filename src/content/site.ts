@@ -91,10 +91,35 @@ export const content = {
       'Illustration: a board of sample back-office tasks from different kinds of business. Each task is assigned to an operator, drafted by an AI agent and checked by the operator before it is marked done. Now and then the check catches an error, and it is corrected before the task is done.',
   },
 
-  /** Read out as one paragraph; the words light up as you scroll. */
-  statement: {
-    label: 'Why one partner',
-    text: 'Most businesses run their digital side through three suppliers: an agency for the website, a developer for the systems and a team buried in the admin they create. Nobody owns the whole picture. We do. One team and one point of accountability, from the first sketch to the thousandth invoice.',
+  /** Where your week goes: four pains, each picked up by Me² as it settles on screen (EC, 14 Oct 2026: "a penny drop, oh shit moment"). */
+  pain: {
+    label: 'Where your week goes',
+    rows: [
+      {
+        line: 'The invoice nobody chased is still sitting there.',
+        cost: "Work you've already done, waiting to be paid for, because nobody had the hour to follow it up.",
+        stamp: 'Finance · owned by {SITE_NAME}',
+      },
+      {
+        line: 'Your best person spent Friday building a report.',
+        cost: 'The people who should be selling and looking after customers are doing data entry instead.',
+        stamp: 'Operations · owned by {SITE_NAME}',
+      },
+      {
+        line: 'You hired for it. They left, and took the process with them.',
+        cost: 'Every new hire starts from scratch, and the backlog is back the week they go.',
+        stamp: 'Every process written down · owned by {SITE_NAME}',
+      },
+      {
+        line: 'Three suppliers, and nobody owns the whole picture.',
+        cost: 'An agency for the site, a developer for the systems, a bookkeeper for the rest. When something breaks, everyone points somewhere else.',
+        stamp: 'One team · owned by {SITE_NAME}',
+      },
+    ],
+    /** Not the hero line again: say each idea once. */
+    turn: '{SITE_NAME} is the team behind all of it.',
+    turnBody: 'Finance, operations and marketing, owned by people and backed by AI agents trained on your business.',
+    link: 'See where to start',
   },
 
   work: {

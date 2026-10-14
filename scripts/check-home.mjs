@@ -35,6 +35,26 @@ check('FAQ: people or AI', has('Is it people or AI doing the work?') && lacks("W
 check('contact body', has("Tell us what's eating your week"));
 check('no "back end" anywhere visible', lacks('back end') && lacks('back-end'));
 for (const w of ['revolutionary', 'game-changing', 'supercharge', 'seamless', 'cutting-edge', 'unlock', 'guarantee']) check(`no banned word: ${w}`, lacks(w));
+// Task 2: where your week goes
+check('pain label', has('Where your week goes'));
+for (const t of [
+  'The invoice nobody chased is still sitting there.',
+  "Work you've already done, waiting to be paid for, because nobody had the hour to follow it up.",
+  'Finance · owned by Me²',
+  'Your best person spent Friday building a report.',
+  'The people who should be selling and looking after customers are doing data entry instead.',
+  'Operations · owned by Me²',
+  'You hired for it. They left, and took the process with them.',
+  'Every new hire starts from scratch, and the backlog is back the week they go.',
+  'Every process written down · owned by Me²',
+  'Three suppliers, and nobody owns the whole picture.',
+  'An agency for the site, a developer for the systems, a bookkeeper for the rest. When something breaks, everyone points somewhere else.',
+  'One team · owned by Me²',
+  'Me² is the team behind all of it.',
+  'Finance, operations and marketing, owned by people and backed by AI agents trained on your business.',
+]) check(`pain copy: ${t.slice(0, 40)}…`, has(t));
+check('old statement gone', lacks('Most businesses run their digital side through three suppliers'));
+check('pain comes straight after the hero', /id="hero-title"[\s\S]*?<\/section>(?:\s*(?:<script[\s\S]*?<\/script>|<!--[\s\S]*?-->))*\s*<section[^>]*data-pain/.test(html));
 // ---- end task checks ----
 
 if (!args.has('--static')) {
@@ -80,6 +100,26 @@ if (!args.has('--static')) {
       await page.context().close();
     }
   }
+  // Task 2: the pain section without JavaScript, with reduced motion, and scrolled through with motion on.
+  browserChecks.push(async ({ open, check }) => {
+    const shown = (page) => page.$$eval('[data-pain] .line, [data-pain] .stamp-text', (els) => els.length > 0 && els.every((e) => getComputedStyle(e).opacity === '1'));
+    const noJs = await open(1280, { javaScriptEnabled: false });
+    check('pain: lines and stamps all visible without JavaScript', await shown(noJs));
+    await noJs.context().close();
+    const still = await open(375, { reducedMotion: 'reduce' });
+    check('pain: lines and stamps all visible with reduced motion', await shown(still));
+    await still.context().close();
+    const live = await open(1280, { reducedMotion: 'no-preference' });
+    for (const row of await live.$$('[data-pain-row]')) {
+      await row.evaluate((r) => r.scrollIntoView({ block: 'center' }));
+      await live.waitForTimeout(300);
+    }
+    await live.waitForTimeout(2200);
+    const lit = await live.$$eval('[data-pain-row]', (rows) => rows.map((r) => r.classList.contains('is-on')));
+    check('pain: every row lit after scrolling through', lit.length === 4 && lit.every(Boolean), lit.join(','));
+    check('pain: every stamp shown after scrolling through', await shown(live));
+    await live.context().close();
+  });
   for (const fn of browserChecks) await fn({ open, check });
   // ---- end browser checks ----
   await browser.close();
