@@ -1,4 +1,5 @@
 ---
+import { fill } from '../config';
 import { content } from '../content/site';
 const c = content.how;
 ---
@@ -13,7 +14,7 @@ const c = content.how;
         <li class="item" data-how>
           <span class="mark" aria-hidden="true"></span>
           <h3 class="title">{it.title}</h3>
-          <p class="body">{it.body}</p>
+          <p class="body">{fill(it.body)}</p>
         </li>
       ))}
     </ul>

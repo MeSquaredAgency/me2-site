@@ -6,7 +6,7 @@ import RunBoard from './RunBoard.astro';
 import { fill, flags } from '../config';
 import { content } from '../content/site';
 const c = content.hero;
-// "AI does the volume. People own the outcome." → each sentence on two lines, its first two words on the first.
+// "We run the back office. You run the business." → each sentence on two lines, its first two words on the first.
 const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
   const words = sentence.split(' ');
   return [words.slice(0, 2).join(' '), words.slice(2).join(' ')].map((text) => ({ text, s }));

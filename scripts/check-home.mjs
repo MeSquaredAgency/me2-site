@@ -1,0 +1,90 @@
+// Checks the built home page for the v0.16 "human first" round (spec: docs/superpowers/specs/2026-10-14-human-first-design.md):
+// visible copy, structured data and llms.txt, then in a browser: axe and sideways scroll at 375 and 1280 (motion on and off,
+// enquiry dialog open), plus the section checks the tasks add. Stands in for `npm run verify` until that is rewritten for v0.15+.
+// Usage: npm run build && npm run check:home            (add -- --static to skip the browser)
+import { readFileSync } from 'node:fs';
+import { createServer } from 'node:http';
+import { extname, join } from 'node:path';
+
+const args = new Set(process.argv.slice(2));
+const html = readFileSync('dist/index.html', 'utf8');
+const llms = readFileSync('dist/llms.txt', 'utf8');
+const decode = (s) => s.replace(/&#39;|&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+const text = decode(html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ');
+const ld = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap((m) => JSON.parse(m[1]));
+
+let failed = 0;
+const check = (name, ok, detail = '') => {
+  if (!ok) failed++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${!ok && detail ? `  (${detail})` : ''}`);
+};
+const has = (t) => text.includes(t);
+const lacks = (t) => !text.toLowerCase().includes(t.toLowerCase());
+const browserChecks = [];
+
+// ---- task checks ----
+// Task 1: human first, hero chosen by EC (14 Oct 2026)
+check('hero line', /<h1[^>]*>[\s\S]*<\/h1>/.test(html) && decode(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim() === 'We run the back office. You run the business.');
+check('old hero line gone', lacks('AI does the volume'));
+check('hero subhead leads with people', has('Me² is the team behind your business. Our people run your finance, operations and marketing, backed by AI agents trained on how you work, and we design and build the website out front.'));
+check('hero screen captions', html.includes('aria-label="AI agents trained on your business"') && html.includes('aria-label="Your back office, run by people"'));
+check('board stages', has('Agent drafting') && lacks('AI drafting'));
+check('how we work leads with a person', /A person owns every task\.[\s\S]*One team, answerable for all of it\./.test(text));
+check('old "checks the AI" commitment gone', lacks("A person checks the AI"));
+check('FAQ: people or AI', has('Is it people or AI doing the work?') && lacks("Who checks the AI's work?"));
+check('contact body', has("Tell us what's eating your week"));
+check('no "back end" anywhere visible', lacks('back end') && lacks('back-end'));
+for (const w of ['revolutionary', 'game-changing', 'supercharge', 'seamless', 'cutting-edge', 'unlock', 'guarantee']) check(`no banned word: ${w}`, lacks(w));
+// ---- end task checks ----
+
+if (!args.has('--static')) {
+  const { chromium } = await import('@playwright/test');
+  const { AxeBuilder } = await import('@axe-core/playwright');
+  const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.avif': 'image/avif', '.woff2': 'font/woff2', '.json': 'application/json', '.txt': 'text/plain', '.xml': 'application/xml', '.ico': 'image/x-icon' };
+  const server = createServer((req, res) => {
+    let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    if (p.endsWith('/')) p += 'index.html';
+    try {
+      const body = readFileSync(join('dist', p));
+      res.writeHead(200, { 'content-type': types[extname(p)] ?? 'application/octet-stream' });
+      res.end(body);
+    } catch { res.writeHead(404); res.end(); }
+  }).listen(4399);
+  const browser = await chromium.launch({ channel: process.env.PW_CHANNEL ?? 'msedge' });
+  const open = async (width, opts = {}) => {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 }, ...opts });
+    const page = await ctx.newPage();
+    await page.goto('http://localhost:4399/', { waitUntil: 'networkidle' });
+    if (opts.javaScriptEnabled !== false) await page.evaluate(() => document.fonts.ready);
+    // With motion on, let the hero's entrance (it starts after load, later on phones) finish first, so axe judges what a visitor reads, not a fade.
+    if (opts.javaScriptEnabled !== false && opts.reducedMotion !== 'reduce') {
+      await page.waitForTimeout(4000);
+      await page.evaluate(() => Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished.catch(() => {}))));
+    }
+    return page;
+  };
+  const axe = async (page) => (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()).violations.map((v) => `${v.id} (${v.nodes.length})`);
+
+  for (const width of [375, 1280]) {
+    for (const reducedMotion of ['reduce', 'no-preference']) {
+      const tag = `${width}px, motion ${reducedMotion === 'reduce' ? 'off' : 'on'}`;
+      const page = await open(width, { reducedMotion });
+      const v = await axe(page);
+      check(`axe clean (${tag})`, v.length === 0, v.join(', '));
+      const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth }));
+      check(`no sideways scroll (${tag})`, sw <= iw, `${sw}/${iw}`);
+      await page.locator('[data-enquire]').first().click();
+      await page.waitForSelector('dialog[open]');
+      const vd = await axe(page);
+      check(`axe clean, enquiry dialog open (${tag})`, vd.length === 0, vd.join(', '));
+      await page.context().close();
+    }
+  }
+  for (const fn of browserChecks) await fn({ open, check });
+  // ---- end browser checks ----
+  await browser.close();
+  server.close();
+}
+
+console.log(failed ? `\n${failed} check(s) failed` : '\nAll checks passed');
+process.exit(failed ? 1 : 0);

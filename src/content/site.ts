@@ -28,23 +28,23 @@ export const content = {
   },
 
   hero: {
-    /** approved (v0.10, EC's preferred hero, again on 10 Oct 2026). Two sentences, each set on two lines. */
-    h1: 'AI does the volume. People own the outcome.',
+    /** EC's choice (14 Oct 2026): the approved v0.13 hero, people first. Two sentences, each set on two lines. */
+    h1: 'We run the back office. You run the business.',
     /** The screen in the mark cycles through the three services, each with its caption. */
     scenes: [
       { scene: 'design', label: 'Websites and digital products' },
-      { scene: 'build', label: 'AI systems that do real work' },
-      { scene: 'run', label: 'Your back office, checked by people' },
+      { scene: 'build', label: 'AI agents trained on your business' },
+      { scene: 'run', label: 'Your back office, run by people' },
     ],
     scenesLabel: 'Show',
     subhead:
-      '{SITE_NAME} is one team for the digital side of an established business. We design your website, build the AI systems behind it and run the back-office work that keeps it all moving.',
+      '{SITE_NAME} is the team behind your business. Our people run your finance, operations and marketing, backed by AI agents trained on how you work, and we design and build the website out front.',
     primary: 'Talk to us',
     /** The hero's second link: to the work, or (while showProof is off) to Start here. */
     secondary: 'See our work',
     secondaryStart: 'See where to start',
     markSummary:
-      'Illustration: the {SITE_NAME} mark, a dark glass square with a small coral square glowing at its corner. The glass is a screen that shows the work: a web page being designed, an AI role drafting, and the Command Centre board of back-office tasks being checked.',
+      'Illustration: the {SITE_NAME} mark, a dark glass square with a small coral square glowing at its corner. The glass is a screen that shows the work: a web page being designed, an AI agent drafting for a person to check, and the Command Centre board of back-office tasks being checked.',
     /** showLocations (approved) */
     location: 'Command Centre teams in Adelaide and Phnom Penh.',
   },
@@ -56,9 +56,9 @@ export const content = {
       url: 'yourbusiness.com.au',
     },
     build: {
-      srSummary: 'Illustration: emails, invoices and forms flow into an AI role, are checked by a person, and go out to your accounts, your CRM and your reports.',
+      srSummary: 'Illustration: emails, invoices and forms flow into an AI agent, are checked by a person, and go out to your accounts, your CRM and your reports.',
       inputs: ['Emails', 'Invoices', 'Forms'],
-      core: 'AI role',
+      core: 'AI agent',
       check: 'Checked',
       outputs: ['Accounts', 'CRM', 'Reports'],
     },
@@ -69,8 +69,8 @@ export const content = {
     title: 'Command Centre',
     live: 'Live',
     stages: {
-      queued: 'In queue',
-      drafting: 'AI drafting',
+      queued: 'Assigned',
+      drafting: 'Agent drafting',
       checking: 'Operator checking',
       caught: 'Error caught',
       done: 'Checked, done',
@@ -88,7 +88,7 @@ export const content = {
     ],
     note: 'Illustration with sample tasks.',
     srSummary:
-      'Illustration: a board of sample back-office tasks from different kinds of business. Each task is drafted by AI, checked by an operator and marked done. Now and then the check catches an error, and it is corrected before the task is done.',
+      'Illustration: a board of sample back-office tasks from different kinds of business. Each task is assigned to an operator, drafted by an AI agent and checked by the operator before it is marked done. Now and then the check catches an error, and it is corrected before the task is done.',
   },
 
   /** Read out as one paragraph; the words light up as you scroll. */
@@ -179,13 +179,12 @@ export const content = {
     h2: 'What you can count on.',
     items: [
       {
-        title: 'One team, answerable for all of it.',
-        body: 'The people who design your site are the people who build and run what sits behind it. When something needs fixing, there is one team to ask.',
+        title: 'A person owns every task.',
+        body: 'Every task has a trained {SITE_NAME} person responsible for it. AI agents do the drafting; that person checks every name, date and number against the source before anything leaves.',
       },
       {
-        title: 'A person checks the AI’s work.',
-        /** approved (v0.14 story) */
-        body: 'A trained operator checks every name, date and number against the source before anything leaves.',
+        title: 'One team, answerable for all of it.',
+        body: 'The people who design your site are the people who build and run what sits behind it. When something needs fixing, there is one team to ask.',
       },
       {
         title: 'Built around how you already work.',
@@ -207,11 +206,11 @@ export const content = {
     items: [
       {
         q: 'What does {SITE_NAME} actually do?',
-        a: 'We design and build websites and digital products, set up AI systems that take on repetitive work, and run back-office work for you as a managed service. You can start with one and add the others later.',
+        a: 'We run the back office of established businesses: finance, operations and marketing, done by trained people backed by AI agents built for your business. We also design and build websites. You can start with one job and add the rest later.',
       },
       {
         q: 'What does it cost?',
-        a: 'An AI role starts from $2,000 + GST to set up. An Effective Business Unit starts from $3,000 + GST a month. Websites and other builds are quoted per project once we understand the job.',
+        a: 'The whole back office starts from $3,000 + GST a month. One job starts from $2,000 + GST to set up. Websites are quoted per project once we understand the job.',
         flag: 'showPricing',
       },
       {
@@ -219,8 +218,8 @@ export const content = {
         a: "We start from the tools and processes you already use and set each AI role up around them. If something would need to change, we'll tell you before we start.",
       },
       {
-        q: "Who checks the AI's work?",
-        a: 'A person, every time. With an AI role, your team reviews the output and stays in control. With an Effective Business Unit, a trained {SITE_NAME} operator checks it before it reaches you.',
+        q: 'Is it people or AI doing the work?',
+        a: 'People, backed by AI. Every task is owned by a trained {SITE_NAME} person. AI agents trained on your business do the drafting and the volume, and that person checks it before it reaches you. If you start with one job, your own team reviews the output.',
       },
       {
         q: 'Where is the team based?',
@@ -237,7 +236,7 @@ export const content = {
   /** The close, with the enquiry form. */
   contact: {
     h2: 'Your business, squared.',
-    body: "Tell us what you're working on: a new site, a system that should exist, or the work that's eating your team's week. We'll tell you straight whether we can help.",
+    body: "Tell us what's eating your week: the back-office work you want off your plate, or the website you need. We'll tell you straight whether we can help.",
     /** enableBooking */
     booking: 'Book a call',
     emailLine: 'Prefer email? Write to {CONTACT_EMAIL}',
