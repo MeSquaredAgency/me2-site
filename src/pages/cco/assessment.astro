@@ -31,7 +31,7 @@ try{
   state={...initial,answers:{name:old.name||'',email:old.email||'',location:old.location||''}};
  }
 }catch{state={...initial,answers:{}}}
-const app=document.querySelector('#app');
+if(state.page===total&&!state.submitted){state.submitting=false;state.submitError=state.submitError||'We could not confirm receipt. Your draft is still saved on this device. Please retry when you’re ready.'}const app=document.querySelector('#app');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const val=n=>esc(state.answers[n]||'');
 function save(){try{localStorage.setItem(key,JSON.stringify(state))}catch{}const el=document.querySelector('.save');if(el)el.textContent='Saved on this device';}
