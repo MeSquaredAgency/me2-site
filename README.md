@@ -34,6 +34,7 @@ Then open http://localhost:4321.
 | `npm run build` | Builds the site into `dist/` (plus sitemap, robots.txt, llms.txt) |
 | `npm run preview` | Serves `dist/` at http://localhost:4321 |
 | `npm run verify` | Builds the real and test versions and runs every check (copy, links, accessibility, speed, search tags). Report in `.verify/report.md`; screenshots in `screenshots/` |
+| `node scripts/check-hero-clicks.mjs` | After `npm run build`: checks the hero's buttons take a mouse click at phone to wide-screen sizes, with the mark moving and still |
 | `npm run build:fixture` | Builds the test-only version with every switch on and fake values (never deploy it) |
 | `npm run brand` | Remakes `logo.png`, the favicons and the link-preview image from the logo SVGs |
 | `npm run og` | Remakes just the link-preview image |

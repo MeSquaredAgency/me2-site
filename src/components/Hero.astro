@@ -176,7 +176,8 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
 
   /* ---- The words ---- */
   .inner { position: relative; z-index: 1; padding-top: 140px; padding-bottom: clamp(40px, 6vh, 72px); pointer-events: none; }
-  .inner :is(h1, a, p) { pointer-events: auto; }
+  /* The h1's box spans the hero and sits over the screen's tabs, so only the words themselves take the pointer. */
+  .inner :is(.text, a, p) { pointer-events: auto; }
   .lines { display: grid; row-gap: 0.02em; font-size: clamp(3rem, min(7.6vw, 11.6svh), 8.8rem); max-width: none; justify-items: start; }
   .line { display: block; }
   /* The volume, a shade back; the outcome, full strength. */
