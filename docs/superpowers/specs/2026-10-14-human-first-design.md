@@ -11,16 +11,16 @@ EC's notes on the live v0.15 page (screenshots, 14 Oct 2026):
 - Overall: "We're making the AI too prominent. They're a human first, with custom trained AI agents to support them. Not the other way around."
 - The offer: "The point of the EBU is so that we would be your marketing team, your ops team, finance team, the whole unit." "$3,000 per month for your entire business's backend covered, leaving the business owner / sales team / front line of the business to do what they do best without having to worry about the backend crap."
 
-Decisions from the Q&A: a client buys **people, backed by AI**; the pain is built on all four of the pains below; pain layout is option A (four lines, each "picked up"); the "Effective Business Unit" name is dropped; hero gets drafted options to choose from.
+Decisions from the Q&A: a client buys **people, backed by AI**; the pain is built on all four of the pains below; pain layout is option A (four lines, each "picked up"); the "Effective Business Unit" name is dropped. On the spec (14 Oct): the marketing jobs are confirmed; the hero is "We run the back office. You run the business."; "back end" is out (EC: "that sounds like you want booty"), so the offer says **back office**; the $3,000 is a guideline for now ("From" covers it).
 
-**The page's idea:** you run the front of the business; Me² runs everything behind it (finance, operations, marketing) with trained people who own the work and AI agents built for your business.
+**The page's idea:** we run the back office; you run the business. Me² runs finance, operations and marketing with trained people who own the work and AI agents built for your business, so the owner, the sales team and the front line do what they're best at.
 
 ## Success
 
 A business owner who lands on the page:
 
 1. Recognises their own week in the pain section before they reach the offer.
-2. Understands that Me² is people who take the back end off them, and that the AI is the tools those people use.
+2. Understands that Me² is people who take the back office off their hands, and that the AI is the tools those people use.
 3. Sees one clear price for that ($3,000 + GST a month), with a smaller way in and websites as the other door.
 
 ## 1. Pain section (replaces "Why one partner")
@@ -38,7 +38,7 @@ Four rows, one per pain. Each row: a large line (display size, the hero's type),
 | 3 | You hired for it. They left, and took the process with them. | Every new hire starts from scratch, and the backlog is back the week they go. | Every process written down · owned by Me² |
 | 4 | Three suppliers, and nobody owns the whole picture. | An agency for the site, a developer for the systems, a bookkeeper for the rest. When something breaks, everyone points somewhere else. | One team · owned by Me² |
 
-The turn, after the four rows, full strength: **You run the front. Me² runs everything behind it.** Under it: "Finance, operations and marketing, owned by people and backed by AI agents trained on your business." Then a link down to Start here.
+The turn, after the four rows, full strength: **Me² is the team behind all of it.** (Not the hero line again: say each idea once.) Under it: "Finance, operations and marketing, owned by people and backed by AI agents trained on your business." Then a link down to Start here.
 
 **Motion.** Each row arrives as it reaches the middle of the screen. Once it's settled, the stamp lands: a small coral square goes outline → half → solid (the board's language), and the stamp text fades in beside it. Rows that have been passed stay fully readable. The coral square is light on ink, which `--glow` allows; stamp text is mist on abyss, never coral text.
 
@@ -53,27 +53,27 @@ The turn, after the four rows, full strength: **You run the front. Me² runs eve
 Copy (drafts):
 
 - Label: Start here
-- H2: **Hand us the back end.**
+- H2: **Your back office, handled.**
 - Intro: One team runs your finance, operations and marketing, so you, your sales team and your front line can do what you're best at.
 
 **Main panel (dark glass, the page's big offer).**
 
-- Name: **Your whole back end**
+- Name: **The whole back office**
 - Price: From $3,000 + GST a month (`showPricing`)
 - Body: Trained {SITE_NAME} people own the work, backed by AI agents built around your business. They check every output, handle the exceptions and report back to you.
 - Three columns inside the panel, each a unit with the jobs it takes off you (job name, one-line outcome):
   - **Finance:** Debtor follow-up; Bill coding; Weekly reporting (existing outcomes)
   - **Operations:** Inbox triage; Client intake; Quote follow-up (existing outcomes)
-  - **Marketing** (NEW, EC to confirm each is deliverable):
+  - **Marketing** (new; EC confirmed 14 Oct):
     - Social posts and newsletters: drafted on schedule in your voice, for you to approve.
     - Enquiry follow-up: every new enquiry gets a reply and a follow-up.
     - Website updates: new pages, offers and news kept current.
     - Monthly marketing report: what ran, what worked and what's next, written up for you.
-- Footer of the panel: "A written process for every repeat task, so the work never depends on one person." and one button: **Talk to us about your back end** (topic "Whole back end").
+- Footer of the panel: "A written process for every repeat task, so the work never depends on one person." and one button: **Talk to us about your back office** (topic "Whole back office").
 
 **Beneath it, two smaller panels side by side.**
 
-- **Start with one job.** From $2,000 + GST to set up. "Not ready to hand over the back end? We'll set up one AI agent for one job, built around how your team already works. Your team reviews the output and stays in control." Button: Ask about one job (topic "One job").
+- **Start with one job.** From $2,000 + GST to set up. "Not ready to hand over the whole back office? We'll set up one AI agent for one job, built around how your team already works. Your team reviews the output and stays in control." Button: Ask about one job (topic "One job").
 - **Websites and digital products.** Quoted per project. Copy and list unchanged. Button: Ask about a website.
 
 The "anything else" line ("Need something these don't cover…") stays as a quiet line under the two panels.
@@ -85,30 +85,21 @@ The "anything else" line ("Need something these don't cover…") stays as a quie
 | Where | Now | Proposed |
 |---|---|---|
 | Hero subhead | {SITE_NAME} is one team for the digital side of an established business… | {SITE_NAME} is the team behind your business. Our people run your finance, operations and marketing, backed by AI agents trained on how you work, and we design and build the website out front. |
-| Hero screen captions | AI systems that do real work / Your back office, checked by people | AI agents trained on your business / Your back end, run by people |
+| Hero screen captions | AI systems that do real work / Your back office, checked by people | AI agents trained on your business / Your back office, run by people |
 | Board stages | In queue / AI drafting / Operator checking | Assigned / Agent drafting / Operator checking (done states unchanged) |
 | How we work | Item 2 "A person checks the AI's work." | Moves to item 1: **A person owns every task.** Every task has a trained {SITE_NAME} person responsible for it. AI agents do the drafting; that person checks every name, date and number against the source before anything leaves. |
-| FAQ | What does {SITE_NAME} actually do? | We run the back end of established businesses: finance, operations and marketing, done by trained people backed by AI agents built for your business. We also design and build websites. You can start with one job and add the rest later. |
-| FAQ | What does it cost? | Your whole back end starts from $3,000 + GST a month. One job starts from $2,000 + GST to set up. Websites are quoted per project once we understand the job. |
+| FAQ | What does {SITE_NAME} actually do? | We run the back office of established businesses: finance, operations and marketing, done by trained people backed by AI agents built for your business. We also design and build websites. You can start with one job and add the rest later. |
+| FAQ | What does it cost? | The whole back office starts from $3,000 + GST a month. One job starts from $2,000 + GST to set up. Websites are quoted per project once we understand the job. |
 | FAQ | Who checks the AI's work? | **Is it people or AI doing the work?** People, backed by AI. Every task is owned by a trained {SITE_NAME} person. AI agents trained on your business do the drafting and the volume, and that person checks it before it reaches you. If you start with one job, your own team reviews the output. |
-| Contact body | Tell us what you're working on: a new site, a system that should exist, or the work that's eating your team's week… | Tell us what's eating your week: the back-end work you want off your plate, or the website you need. We'll tell you straight whether we can help. |
+| Contact body | Tell us what you're working on: a new site, a system that should exist, or the work that's eating your team's week… | Tell us what's eating your week: the back-office work you want off your plate, or the website you need. We'll tell you straight whether we can help. |
 | Header nav | Start here | unchanged |
-| `schema.ts` | Services: AI Roles, EBUs, websites | Services: Your whole back end, Start with one job, Websites |
-| `postbuild.mjs` (llms.txt) | Build/Run lines, AI Roles, EBUs | Back end (finance, operations, marketing, people backed by AI), one job, websites |
-| `flags.ts` comment | EBU | "whole back end" |
+| `schema.ts` | Services: AI Roles, EBUs, websites | Services: The whole back office, Start with one job, Websites |
+| `postbuild.mjs` (llms.txt) | Build/Run lines, AI Roles, EBUs | The whole back office (finance, operations, marketing; people backed by AI), one job, websites |
+| `flags.ts` comment | EBU | "whole back office" |
 
-## 4. Hero options (EC to choose)
+## 4. Hero
 
-The H1 is read from `content.hero.h1`. For the preview only, a picker under the hero switches between options client-side (`?hero=1…6` also works, for sharing). The picker sits behind a new flag `showHeroPicker` (off by default, on in this branch); with it off the page shows `h1` alone. Before merge, the chosen line goes into `h1`, the flag goes off and `heroOptions` is deleted.
-
-1. People own the outcome. AI does the volume. (EC's line, flipped)
-2. You run the front. We run everything behind it.
-3. We run the back office. You run the business. (approved v0.13 hero)
-4. Real people run your back end. AI makes them fast.
-5. A person who owns the work. AI that does the heavy lifting.
-6. Your back end, run by people who own it.
-
-The OG title in `routes.json` follows whichever is chosen.
+EC chose **We run the back office. You run the business.** (the approved v0.13 hero) on 14 Oct 2026. It goes into `content.hero.h1`, set like today's: two sentences, the first a shade back (haze), the second full strength. The OG title in `routes.json` and the link-preview image follow it. No picker.
 
 ## Rules this keeps
 
@@ -124,10 +115,7 @@ The OG title in `routes.json` follows whichever is chosen.
 
 ## Open items for EC
 
-1. The four marketing jobs: deliverable as written?
-2. Which hero line.
-3. "Hand us the back end." and "Your whole back end" as the offer's names.
-4. The $3,000 covers all three units: is there any limit worth stating (e.g. volume), or leave it to the conversation?
+None blocking the build. Still to confirm before launch (as before): the six existing jobs and the four marketing jobs are deliverable as written; the price stays a guideline.
 
 ## Out of scope
 
