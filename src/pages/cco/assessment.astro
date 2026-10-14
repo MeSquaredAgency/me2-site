@@ -177,7 +177,7 @@ async function submitAssessment(){
   const result=await response.json().catch(()=>({}));
   if(!response.ok||result.ok!==true||!result.receiptId)throw new Error('not_confirmed');
   state.submitted={receiptId:result.receiptId,submittedAt:new Date().toISOString()};state.answers={};state.submitting=false;
-  localStorage.removeItem('me2-operator-assessment-v2');localStorage.removeItem('me2-operator-assessment-v3');
+  try{localStorage.removeItem('me2-operator-assessment-v2');localStorage.removeItem('me2-operator-assessment-v3')}catch{}
   save();showStatus();
  }catch{
   state.submitting=false;state.submitError='We could not confirm receipt. Your draft is still saved on this device. Please try again when you’re ready.';save();showStatus(state.submitError,false);
