@@ -23,8 +23,8 @@ export function homeSchema() {
     return flags.showPricing && min ? { offers: { '@type': 'Offer', priceCurrency: 'AUD', description, priceSpecification: { '@type': 'PriceSpecification', minPrice: min, priceCurrency: 'AUD', valueAddedTaxIncluded: false } } } : {};
   };
   const services = [
-    { name: o.roles.name, description: o.roles.body, ...offerFrom(o.roles.price) },
-    { name: o.ebu.name, description: o.ebu.body, ...offerFrom(o.ebu.price) },
+    { name: o.office.name, description: fill(o.office.body), ...offerFrom(o.office.price) },
+    { name: o.one.name, description: o.one.body, ...offerFrom(o.one.price) },
     { name: o.web.name, description: o.web.body },
   ].map((s) => ({ '@context': 'https://schema.org', '@type': 'Service', ...s, provider, areaServed: 'AU' }));
   const faq = {

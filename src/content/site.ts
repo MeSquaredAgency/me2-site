@@ -151,42 +151,58 @@ export const content = {
     note: 'More projects are being added.',
   },
 
-  /** Start here: the offer, named and priced. */
+  /** Start here: the whole back office (people backed by AI, one monthly price), one job, or a website. EC, 14 Oct 2026. */
   offer: {
     kicker: 'Start here',
-    h2: 'Start with one job.',
-    intro:
-      "Pick one AI role for one job, hand over a whole workload, or bring us a website. We'll tell you straight whether it's a fit.",
-    roles: {
-      name: 'AI Roles',
+    h2: 'Your back office, handled.',
+    intro: "One team runs your finance, operations and marketing, so you, your sales team and your front line can do what you're best at.",
+    office: {
+      name: 'The whole back office',
+      /** showPricing. EC: "$3,000 per month for your entire business's backend covered"; a guideline for now. */
+      price: 'From $3,000 + GST a month',
+      body: 'Trained {SITE_NAME} people own the work, backed by AI agents built around your business. They check every output, handle the exceptions and report back to you.',
+      /** Jobs: finance and operations from the v0.15 roles; marketing confirmed by EC on 14 Oct 2026. */
+      units: [
+        {
+          key: 'finance',
+          name: 'Finance',
+          jobs: [
+            { name: 'Debtor follow-up', outcome: 'Overdue invoices chased on schedule, with every amount matched to your accounts.' },
+            { name: 'Bill coding', outcome: 'Supplier bills read, coded and prepared for entry, ready for you to approve.' },
+            { name: 'Weekly reporting', outcome: 'The numbers you check every week, pulled together and written up for you.' },
+          ],
+        },
+        {
+          key: 'operations',
+          name: 'Operations',
+          jobs: [
+            { name: 'Inbox triage', outcome: 'Every incoming email sorted, and a reply drafted in your tone for you to approve.' },
+            { name: 'Client intake', outcome: 'New enquiries turned into client files, with a welcome pack drafted.' },
+            { name: 'Quote follow-up', outcome: 'Every quote without a reply gets a follow-up, drafted from the job notes.' },
+          ],
+        },
+        {
+          key: 'marketing',
+          name: 'Marketing',
+          jobs: [
+            { name: 'Social posts and newsletters', outcome: 'Drafted on schedule in your voice, for you to approve.' },
+            { name: 'Enquiry follow-up', outcome: 'Every new enquiry gets a reply and a follow-up.' },
+            { name: 'Website updates', outcome: 'New pages, offers and news kept current.' },
+            { name: 'Monthly marketing report', outcome: "What ran, what worked and what's next, written up for you." },
+          ],
+        },
+      ],
+      process: 'A written process for every repeat task, so the work never depends on one person.',
+      button: 'Talk to us about your back office',
+      topic: 'Whole back office',
+    },
+    one: {
+      name: 'Start with one job',
       /** showPricing */
       price: 'From $2,000 + GST to set up',
-      /** approved (v0.14 offers) */
-      body: 'One AI role for one job, set up around how your team already works. Your team reviews the output and stays in control.',
-      bestFor: 'Best for teams that know exactly which task is eating their week.',
-      listLabel: 'AI roles you can start with',
-      /** Six named roles, drawn from the v0.13 use-case examples. EC to confirm each is deliverable. */
-      items: [
-        { name: 'Inbox triage', outcome: 'Every incoming email sorted, and a reply drafted in your tone for you to approve.' },
-        { name: 'Debtor follow-up', outcome: 'Overdue invoices chased on schedule, with every amount matched to your accounts.' },
-        { name: 'Bill coding', outcome: 'Supplier bills read, coded and prepared for entry, ready for you to approve.' },
-        { name: 'Weekly reporting', outcome: 'The numbers you check every week, pulled together and written up for you.' },
-        { name: 'Client intake', outcome: 'New enquiries turned into client files, with a welcome pack drafted.' },
-        { name: 'Quote follow-up', outcome: 'Every quote without a reply gets a follow-up, drafted from the job notes.' },
-      ],
-      button: 'Ask about this role',
-      also: 'Need something these don\'t cover, like an automation between your tools or a dashboard? Tell us the job.',
-    },
-    ebu: {
-      name: 'Effective Business Units',
-      /** showPricing */
-      price: 'From $3,000 + GST a month',
-      /** approved (v0.14 offers) */
-      body: 'A trained Command Centre operator runs a set of AI roles for you as a managed service. They check the work, handle the exceptions and report back to you.',
-      bestFor: 'Best for businesses that want a whole workload off their plate.',
-      includes: ['A trained operator who owns the work', 'Every output checked before it reaches you', 'Exceptions handled and reported back', 'A written process for every repeat task'],
-      button: 'Ask about an Effective Business Unit',
-      topic: 'Effective Business Unit',
+      body: "Not ready to hand over the whole back office? We'll set up one AI agent for one job, built around how your team already works. Your team reviews the output and stays in control.",
+      button: 'Ask about one job',
+      topic: 'One job',
     },
     web: {
       name: 'Websites and digital products',
@@ -197,6 +213,7 @@ export const content = {
       button: 'Ask about a website',
       topic: 'Website or digital product',
     },
+    also: "Need something these don't cover, like an automation between your tools or a dashboard? Tell us the job.",
   },
 
   how: {

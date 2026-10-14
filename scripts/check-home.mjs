@@ -55,6 +55,20 @@ for (const t of [
 ]) check(`pain copy: ${t.slice(0, 40)}…`, has(t));
 check('old statement gone', lacks('Most businesses run their digital side through three suppliers'));
 check('pain comes straight after the hero', /id="hero-title"[\s\S]*?<\/section>(?:\s*(?:<script[\s\S]*?<\/script>|<!--[\s\S]*?-->))*\s*<section[^>]*data-pain/.test(html));
+// Task 3: Start here
+const offerHtml = html.match(/<section id="services"[\s\S]*?<\/section>(?=\s*(?:<script|<!--|<section))/)?.[0] ?? '';
+const offerText = decode(offerHtml.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ');
+check('offer headline', offerText.includes('Your back office, handled.'));
+check('offer intro', offerText.includes("One team runs your finance, operations and marketing, so you, your sales team and your front line can do what you're best at."));
+check('main panel name and price', offerText.includes('The whole back office') && offerText.includes('$3,000') && offerText.includes('a month'));
+for (const u of ['Finance', 'Operations', 'Marketing']) check(`unit: ${u}`, new RegExp(`<h4[^>]*>${u}</h4>`).test(offerHtml));
+for (const j of ['Debtor follow-up', 'Bill coding', 'Weekly reporting', 'Inbox triage', 'Client intake', 'Quote follow-up', 'Social posts and newsletters', 'Enquiry follow-up', 'Website updates', 'Monthly marketing report']) check(`job: ${j}`, offerText.includes(j));
+check('one job panel', offerText.includes('Start with one job') && offerText.includes('$2,000') && offerText.includes('Not ready to hand over the whole back office?'));
+check('websites panel kept', offerText.includes('Websites and digital products') && offerText.includes('Quoted per project'));
+check('EBU name gone', lacks('Effective Business Unit'));
+check('"AI Roles" heading gone', !/AI Roles/.test(offerText) && !offerText.includes('Ask about this role'));
+check('no dashed checkbox glyphs', !offerHtml.includes('class="glyph'));
+check('one enquiry button for the whole back office', (offerHtml.match(/data-topic="Whole back office"/g) ?? []).length === 1);
 // ---- end task checks ----
 
 if (!args.has('--static')) {
@@ -119,6 +133,16 @@ if (!args.has('--static')) {
     check('pain: every row lit after scrolling through', lit.length === 4 && lit.every(Boolean), lit.join(','));
     check('pain: every stamp shown after scrolling through', await shown(live));
     await live.context().close();
+  });
+  // Task 3: Start here's label, headline, intro and main panel share one left edge (EC: "why is the formatting here so weird?").
+  browserChecks.push(async ({ open, check }) => {
+    for (const width of [375, 1280]) {
+      const page = await open(width, { reducedMotion: 'reduce' });
+      await page.evaluate(() => document.documentElement.classList.add('render-all'));
+      const lefts = await page.$$eval('#services .kicker, #services h2, #services .intro, #services .office', (els) => els.map((e) => Math.round(e.getBoundingClientRect().left)));
+      check(`Start here: one left edge at ${width}px`, lefts.length === 4 && lefts.every((l) => Math.abs(l - lefts[0]) <= 1), lefts.join(','));
+      await page.context().close();
+    }
   });
   for (const fn of browserChecks) await fn({ open, check });
   // ---- end browser checks ----
