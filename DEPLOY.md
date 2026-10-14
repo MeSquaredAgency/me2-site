@@ -80,6 +80,10 @@ EC put the site behind **Cloudflare Access** (Zero Trust → Access controls →
 - **Web Analytics:** not yet on. Turn it on in the dashboard (Analytics & Logs → Web Analytics → add mesquaredagency.com). The security headers in `public/_headers` allow only the site's own scripts. If Cloudflare injects its beacon automatically, add `https://static.cloudflareinsights.com` to `script-src` and `https://cloudflareinsights.com` to `connect-src` there.
 - The DNS records for `mesquaredagency.com` and `www` are now managed by the Workers project. Don't edit or delete them in the DNS page; change domains in `wrangler.jsonc` instead.
 
+## Assessment submissions and results
+
+Candidate work samples are stored in Cloudflare D1, not emailed. To review them, open **Workers & Pages → D1 → me2-assessment-submissions → Console** and run the query in [docs/assessment-results.sql](docs/assessment-results.sql). Scored results are included inside `responses_json` for new submissions; the query also calculates results for existing submissions that use the current question set. See [docs/assessment-results.md](docs/assessment-results.md) for the scoring rubric and manual-review guidance.
+
 ## Enquiry form email
 The enquiry form posts to `/api/enquiry` (in `worker/index.ts`), which emails each enquiry to `hello@mesquaredagency.com` through **Resend**, from `website@mesquaredagency.com`, with the visitor's address as Reply-To. Resend's free plan allows 3,000 emails a month (100 a day), far more than the form needs. (Cloudflare's own Email Sending needs the Workers Paid plan, so it isn't used.) Until the steps below are done, the form shows "Your enquiry didn't send. Email us at hello@… instead." with the address as a link, so nobody is left stuck.
 
