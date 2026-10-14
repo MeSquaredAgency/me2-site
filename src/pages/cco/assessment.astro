@@ -131,7 +131,9 @@ function render(){
    area('motivation','What would you be curious to learn first in this role?','Optional · one sentence.',250,false)+
    '<p class="fineprint">Your answers go to the Me² hiring team when you choose Finish. You’ll see a receipt once they are stored.</p>';
  }
- app.innerHTML=body+'<div class="toolbar"><button class="btn secondary" id="back" '+(state.page===0?'disabled':'')+'>Back</button><div><button class="btn primary" id="next">'+(state.page===total-1?'Finish':'Continue')+'</button></div></div><div class="save">Saved on this device</div>';\n const nextButton=app.querySelector('#next');\n if(state.page===5&&!state.answers.typingCompleted)nextButton.disabled=true;
+ app.innerHTML=body+'<div class="toolbar"><button class="btn secondary" id="back" '+(state.page===0?'disabled':'')+'>Back</button><div><button class="btn primary" id="next">'+(state.page===total-1?'Finish':'Continue')+'</button></div></div><div class="save">Saved on this device</div>';
+ const nextButton=app.querySelector('#next');
+ if(state.page===5&&!state.answers.typingCompleted)nextButton.disabled=true;
  app.querySelectorAll('input,textarea').forEach(el=>{el.addEventListener('input',onChange);el.addEventListener('change',onChange)});
  const typingInput=app.querySelector('#typingInput');
  if(typingInput&&!state.answers.typingCompleted){
