@@ -4,7 +4,7 @@
 Three things, and nothing else: **your name**, **work email**, and **what you'd like to talk about** (up to 2,000 characters). The hint under the message box asks people not to include client, customer or tenant details. Never add fields for financial, health or identity information (BRIEF data rule).
 
 Two things are added automatically so leads arrive labelled:
-- **Topic**: what the person clicked, e.g. "AI role: Debtor follow-up", "Effective Business Unit", "Website or digital product", or "General enquiry". They can remove it in the form.
+- **Topic**: what the person clicked, e.g. "Whole back office", "Extra set of hands", "Website or digital product", "Something else", or "General enquiry". They can remove it in the form.
 - **Source**: which part of the page they clicked it in (header, hero, start-here, questions, contact).
 
 ## Where it goes

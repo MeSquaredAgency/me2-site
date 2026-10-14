@@ -33,22 +33,17 @@ writeFileSync(`${outDir}/robots.txt`, robots);
 const price = (text) => (flagOn('showPricing') ? ` ${text}` : '');
 const llms = `# ${name}
 
-> ${name} (also known as ${plain}) is one team for the digital side of an established business. It designs websites and digital products, builds AI systems that take repetitive work off a team, and runs back-office work as a managed service, where AI drafts and trained operators in the ${name} Command Centre check every detail.
+> ${name} (also known as ${plain}) runs the back office of established businesses, everything behind the front line from admin and accounts to customer service and marketing, done by trained people backed by AI agents built for each business (never AI on its own), so the owner, the sales team and the front line can do what they're best at. ${name} also designs and builds websites and digital products.
 
 ## Services
-- Design: websites and digital products. Websites and landing pages, interface design for portals and apps, copy and content structure, search and performance foundations.
-- Build: AI systems that do real work. AI roles that draft, sort and summarise; automations between the tools a business already uses; dashboards and internal tools; testing against the client's own data.
-- Run: the back office, checked by people. Invoices, bills and debtors; inbox and customer replies; weekly reports and data entry; client intake and follow-ups. AI does the first draft and a trained operator checks it before it goes back to the client.
-
-## Start here
-- AI Roles: one AI role for one job, set up around how a team already works; the team reviews the output.${price('From $2,000 + GST to set up.')} Roles include inbox triage, debtor follow-up, bill coding, weekly reporting, client intake and quote follow-up.
-- Effective Business Units: a trained Command Centre operator runs a set of AI roles as a managed service, checks the work and reports back.${price('From $3,000 + GST a month.')}
-- Websites and digital products:${flagOn('showPricing') ? ' quoted per project.' : ' designed and built to brief.'}
+- The whole back office: trained ${name} people own the work, backed by AI agents built around the business; they check every output, handle the exceptions and report back.${price('From $3,000 + GST a month.')} Areas: business operations, admin, customer service and support, finance and accounting, marketing, social media, paid ads. Coming next: legal, tech development, consulting and strategy.
+- An extra set of hands: a ${name} person takes one job off the team's plate (the inbox, the invoices, the data entry), backed by an AI agent set up around how the business already works.${price('From $2,000 + GST to set up.')}
+- Websites and digital products: websites and landing pages, interface design for portals and apps, copy and content structure, search and performance foundations;${flagOn('showPricing') ? ' quoted per project.' : ' designed and built to brief.'}
 
 ## Key pages
 - [Home](${base}/): what ${name} does, the offer and common questions
-${flagOn('showProof') ? `- [Work](${base}/#work): projects ${name} has designed, built and run\n` : ''}- [Start here](${base}/#services): AI Roles, Effective Business Units and websites, with prices
-- [How we work](${base}/#how): one accountable team; a person checks the AI's work
+${flagOn('showProof') ? `- [Work](${base}/#work): projects ${name} has designed, built and run\n` : ''}- [Start here](${base}/#services): the whole back office, an extra set of hands and websites, with prices
+- [How we work](${base}/#how): a person owns every task; one accountable team
 ${flagOn('showPrivacyPage') ? `- [Privacy](${base}/privacy/): how enquiries are handled\n` : ''}
 ## Contact
 - [Email ${email}](mailto:${email})

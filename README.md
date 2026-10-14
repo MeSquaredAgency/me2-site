@@ -1,6 +1,6 @@
 # Me² website
 
-One-page sales site for Me² ("Me Squared"), which sets up AI roles for repetitive back-office work and pairs them with trained operators who run them and check the output. It's for Australian business owners and managers in any industry with repetitive admin. The page has one job: get the visitor to click **Talk to us**, which opens an email to the contact address.
+One-page sales site for Me² ("Me Squared"), which runs the back office of established businesses (finance, operations and marketing) with trained people backed by AI agents, and designs and builds websites. It's for Australian business owners and managers in any industry with repetitive admin. The page has one job: get the visitor to click **Talk to us**, which opens an email to the contact address.
 
 Built with Astro + TypeScript and Tailwind CSS v4. The marketing site is static; the candidate assessment uses a Cloudflare Worker endpoint and D1 database to store completed responses. **Live at https://mesquaredagency.com** on Cloudflare Workers in the Me² account; how to publish is in [DEPLOY.md](DEPLOY.md). Full spec: [BRIEF.md](BRIEF.md). Standing rules for future changes: [CLAUDE.md](CLAUDE.md).
 
@@ -70,7 +70,7 @@ Tick only what has been checked.
 - [x] v0.15 redesign live, by EC's choice (10 Oct 2026; it went live when the Resend key was saved, and EC kept it)
 - [ ] `npm run verify` rewritten for the v0.15 sections
 - [ ] APN Real Estate confirmed as a Me² project the client is happy to show; other portfolio projects supplied
-- [ ] The six named AI roles, the service lists and the "What you can count on" commitments confirmed by EC
+- [ ] The pain lines, the back-office areas and their example lines, the service lists and the "What you can count on" commitments confirmed by EC
 - [ ] Privacy policy draft reviewed (EC, Patrick, ideally a lawyer), including the Phnom Penh disclosure
 - [x] Resend account created, mesquaredagency.com verified there, `RESEND_API_KEY` set as a Worker secret, and a test enquiry received in hello@'s inbox (10 Oct 2026)
 - [ ] Site opened to the public (it's private behind Cloudflare Access since 10 Oct 2026; disable the Access application to open it)

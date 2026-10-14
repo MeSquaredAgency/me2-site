@@ -1,182 +1,127 @@
 ---
 import EnquireLink from './EnquireLink.astro';
-import { flags } from '../config';
+import { fill, flags } from '../config';
 import { content } from '../content/site';
 const c = content.offer;
-// "From $2,000 + GST to set up" → the figure set large, the words around it small.
+// "From $3,000 + GST a month" → the figure set large, the words around it small.
 const price = (text: string) => {
   const m = text.match(/^(.*?)(\$[\d,]+)(.*)$/);
   return m ? { before: m[1].trim(), figure: m[2], after: m[3].trim() } : { before: '', figure: '', after: text };
 };
-const rolePrice = price(c.roles.price);
-const ebuPrice = price(c.ebu.price);
+// "back office" never splits across lines.
+const keep = (t: string) => t.replace('back office', 'back office');
+const officePrice = price(c.office.price);
+const onePrice = price(c.one.price);
 ---
-<!-- Start here: the offer, named and priced. One AI role for one job; a whole workload; or a website. -->
+<!-- Start here: the whole back office (the big offer), an extra set of hands, or a website. One left edge for everything. -->
 <section id="services" class="offer on-paper render-later" aria-labelledby="offer-title">
   <div class="wrap">
     <div class="head">
       <p class="kicker">{c.kicker}</p>
-      <div>
-        <h2 id="offer-title">{c.h2}</h2>
-        <p class="lede intro">{c.intro}</p>
-      </div>
+      <h2 id="offer-title">{keep(c.h2)}</h2>
+      <p class="lede intro">{c.intro}</p>
     </div>
 
-    <!-- AI Roles -->
-    <div class="roles">
-      <div class="roles-side">
-        <h3 class="tier">{c.roles.name}</h3>
-        {flags.showPricing && (
-          <p class="price">{rolePrice.before} <span class="figure">{rolePrice.figure}</span> <span class="after">{rolePrice.after}</span></p>
-        )}
-        <p class="body">{c.roles.body}</p>
-        <p class="best">{c.roles.bestFor}</p>
+    <!-- The whole back office: people backed by AI, on dark glass like the mark. -->
+    <article class="office on-dark" aria-labelledby="office-title">
+      <div class="office-top">
+        <div>
+          <h3 id="office-title" class="tier">{keep(c.office.name)}</h3>
+          {flags.showPricing && (
+            <p class="price">{officePrice.before} <span class="figure">{officePrice.figure}</span> <span class="after">{officePrice.after}</span></p>
+          )}
+        </div>
+        <p class="body">{fill(c.office.body)}</p>
       </div>
-      <ul class="role-grid" aria-label={c.roles.listLabel} data-spot>
-        {c.roles.items.map((r) => (
-          <li class="role">
-            <span class="glyph" aria-hidden="true"></span>
-            <h4 class="role-name">{r.name}</h4>
-            <p class="role-out">{r.outcome}</p>
-            <EnquireLink topic={`AI role: ${r.name}`} source="start-here" class="role-ask" aria-label={`${c.roles.button}: ${r.name}`}>
-              <span class="dot" aria-hidden="true"></span>{c.roles.button}
-            </EnquireLink>
-          </li>
+      <ul class="areas">
+        {c.office.areas.map((a) => (
+          <li><span class="area">{a.name}</span><span class="area-eg">{a.example}</span></li>
         ))}
-        <li class="role role-also">
-          <p>{c.roles.also}</p>
-          <EnquireLink topic="AI system: something else" source="start-here" class="role-ask"><span class="dot" aria-hidden="true"></span>{content.header.button}</EnquireLink>
-        </li>
       </ul>
-    </div>
+      <p class="coming">{c.office.coming}</p>
+      <div class="office-foot">
+        <p class="process"><span class="sq" aria-hidden="true"></span>{c.office.process}</p>
+        <EnquireLink topic={c.office.topic} source="start-here" class="btn btn-light"><span class="dot" aria-hidden="true"></span>{c.office.button}</EnquireLink>
+      </div>
+    </article>
 
     <div class="pair">
-      <!-- Effective Business Units: the managed service, on dark glass like the mark. -->
-      <article class="tier-panel ebu on-dark" aria-labelledby="ebu-title">
-        <h3 id="ebu-title" class="tier">{c.ebu.name}</h3>
+      <article class="tier-panel one" aria-labelledby="one-title">
+        <h3 id="one-title" class="tier tier-sm">{c.one.name}</h3>
         {flags.showPricing && (
-          <p class="price">{ebuPrice.before} <span class="figure">{ebuPrice.figure}</span> <span class="after">{ebuPrice.after}</span></p>
+          <p class="price">{onePrice.before} <span class="figure">{onePrice.figure}</span> <span class="after">{onePrice.after}</span></p>
         )}
-        <p class="body">{c.ebu.body}</p>
-        <ul class="includes">{c.ebu.includes.map((x) => <li>{x}</li>)}</ul>
-        <p class="best">{c.ebu.bestFor}</p>
-        <EnquireLink topic={c.ebu.topic} source="start-here" class="btn btn-light"><span class="dot" aria-hidden="true"></span>{c.ebu.button}</EnquireLink>
+        <p class="body">{fill(c.one.body)}</p>
+        <div class="panel-foot"><EnquireLink topic={c.one.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.one.button}</EnquireLink></div>
       </article>
 
-      <!-- Websites and digital products -->
       <article class="tier-panel web" aria-labelledby="web-title">
-        <h3 id="web-title" class="tier">{c.web.name}</h3>
+        <h3 id="web-title" class="tier tier-sm">{c.web.name}</h3>
         {flags.showPricing && <p class="price"><span class="figure figure-words">{c.web.price}</span></p>}
         <p class="body">{c.web.body}</p>
         <ul class="includes">{c.web.includes.map((x) => <li>{x}</li>)}</ul>
-        <EnquireLink topic={c.web.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.web.button}</EnquireLink>
+        <div class="panel-foot"><EnquireLink topic={c.web.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.web.button}</EnquireLink></div>
       </article>
     </div>
+
+    <p class="also">{c.also} <EnquireLink topic="Something else" source="start-here" class="tlink">{content.header.button}</EnquireLink></p>
   </div>
 </section>
 
-<script>
-  // A soft light follows the pointer across the roles (fine pointers only; the cells work the same without it).
-  const grid = document.querySelector<HTMLElement>('[data-spot]');
-  if (grid && matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    grid.addEventListener('pointermove', (e) => {
-      const r = grid.getBoundingClientRect();
-      grid.style.setProperty('--mx', `${e.clientX - r.left}px`);
-      grid.style.setProperty('--my', `${e.clientY - r.top}px`);
-    });
-    grid.addEventListener('pointerenter', () => grid.classList.add('is-lit'));
-    grid.addEventListener('pointerleave', () => grid.classList.remove('is-lit'));
-  }
-</script>
-
 <style>
   .offer { padding-block: var(--section-y); }
-  .head { display: grid; gap: 28px; margin-bottom: clamp(56px, 7vw, 104px); }
-  .intro { margin-top: 28px; }
+  .head { display: grid; justify-items: start; gap: 24px; margin-bottom: clamp(48px, 6vw, 88px); }
+  .head h2 { max-width: 22ch; text-wrap: balance; }
+  .intro { max-width: 52ch; }
 
   .tier { font-size: clamp(2.2rem, 3.6vw, 3.6rem); font-weight: 520; font-stretch: 88%; letter-spacing: -0.045em; line-height: 0.95; }
+  .tier-sm { font-size: clamp(1.8rem, 2.6vw, 2.6rem); }
   .price { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 1rem; color: var(--color-slate); }
   .figure { font-size: clamp(2rem, 3vw, 2.8rem); font-weight: 560; font-stretch: 90%; letter-spacing: -0.04em; color: var(--color-ink); font-variant-numeric: tabular-nums; }
   .figure-words { font-size: clamp(1.5rem, 2.2vw, 2rem); }
-  .body { margin-top: 18px; max-width: 44ch; font-size: 1.08rem; line-height: 1.6; color: var(--color-slate); }
-  .best { margin-top: 14px; max-width: 44ch; font-weight: 500; }
+  .body { margin-top: 18px; max-width: 46ch; font-size: 1.08rem; line-height: 1.6; color: var(--color-slate); }
 
-  /* ---- AI roles ---- */
-  .roles { display: grid; gap: 40px; padding-top: 40px; border-top: 1px solid var(--color-ink); }
-  .role-grid {
-    position: relative; list-style: none; margin: 0; padding: 0; isolation: isolate;
-    display: grid; grid-template-columns: 1fr; border-top: 1px solid var(--color-line);
-  }
-  /* The light that follows the pointer. */
-  .role-grid::before {
-    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 500ms var(--ease);
-    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(var(--glow) / 0.14), transparent 60%);
-  }
-  .role-grid.is-lit::before { opacity: 1; }
-  .role {
-    display: grid; grid-template-rows: auto auto 1fr auto; gap: 10px; align-content: start;
-    padding: 28px 24px 26px 0; border-bottom: 1px solid var(--color-line);
-  }
-  .glyph { width: 12px; height: 12px; box-sizing: border-box; border: 1.5px dashed rgb(8 18 28 / 0.5); margin-bottom: 8px; transition: all 500ms var(--ease-out); }
-  .role-name { font-size: 1.45rem; font-weight: 560; letter-spacing: -0.025em; line-height: 1.15; }
-  .role-out { color: var(--color-slate); line-height: 1.55; max-width: 34ch; }
-  .role :global(.role-ask) {
-    justify-self: start; margin-top: 10px; display: inline-flex; align-items: center; gap: 10px; min-height: 44px;
-    font-weight: 560; font-size: 0.95rem; color: var(--color-ink); text-decoration: none;
-    border-bottom: 1px solid var(--color-line); transition: border-color 400ms var(--ease);
-  }
-  .role :global(.role-ask .dot) { width: 7px; height: 7px; background: var(--color-coral-deep); transition: transform 450ms var(--ease-out); }
-  /* On hover, a role's square goes through the board's stages: drafted, checked, done. */
-  @media (hover: hover) and (pointer: fine) {
-    .role:hover .glyph { border-style: solid; border-color: var(--color-ink); background: linear-gradient(0deg, var(--color-ink) 50%, transparent 50%); }
-    .role:hover .glyph { animation: settle 900ms var(--ease-out) 350ms forwards; }
-    .role :global(.role-ask:hover) { border-color: var(--color-ink); }
-    .role :global(.role-ask:hover .dot) { transform: rotate(90deg) scale(1.25); }
-  }
-  @keyframes settle { to { background: var(--color-ink); } }
-  /* The last row: anything else, across the full width. */
-  .role.role-also { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 32px; padding: 22px 0 !important; border-left: 0 !important; }
-  .role-also p { color: var(--color-slate); max-width: 52ch; line-height: 1.55; }
-  .role-also :global(.role-ask) { margin-top: 0; }
-
-  /* ---- EBU and websites ---- */
-  .pair { display: grid; gap: 24px; margin-top: clamp(56px, 7vw, 96px); }
-  .tier-panel { position: relative; display: grid; align-content: start; justify-items: start; border-radius: 18px; padding: clamp(28px, 3.4vw, 48px); }
-  .tier-panel :global(.btn) { margin-top: 32px; }
-  .includes { list-style: none; margin: 26px 0 0; padding: 0; width: 100%; max-width: 44ch; border-top: 1px solid var(--color-line); }
-  .includes li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--color-line); font-weight: 500; }
-  .includes li::before { content: ''; width: 6px; height: 6px; background: currentColor; flex: none; }
-  .ebu {
-    overflow: hidden; isolation: isolate;
+  /* ---- The whole back office ---- */
+  .office {
+    position: relative; overflow: hidden; isolation: isolate; border-radius: 18px; padding: clamp(28px, 4vw, 56px);
     background: radial-gradient(70% 60% at 100% 0%, rgb(var(--glow) / 0.2), transparent 70%), linear-gradient(160deg, #10202f, var(--color-abyss) 70%);
     box-shadow: 0 40px 80px -30px rgb(8 18 28 / 0.5);
   }
-  .ebu::after {
+  .office::after {
     content: ''; position: absolute; top: 28px; right: 28px; width: 14px; height: 14px; background: var(--color-coral);
     box-shadow: 0 0 24px 4px rgb(var(--glow) / 0.55);
   }
-  .ebu .price, .ebu .body { color: var(--color-haze); }
-  .ebu .figure { color: var(--color-mist); }
-  .ebu .includes { border-color: var(--color-line-dark); }
-  .ebu .includes li { border-color: var(--color-line-dark); }
-  .ebu :focus-visible { outline-color: var(--color-mist); }
-  .web { background: var(--color-paper-2); }
+  .office .price, .office .body { color: var(--color-haze); }
+  .office .figure { color: var(--color-mist); }
+  .office .body { margin-top: 0; }
+  .office .tier { padding-right: 32px; } /* clear of the glowing square */
+  .office-top { display: grid; gap: 24px; }
+  /* Everything the team takes on: one row per area, the area and an example of the work. */
+  .areas { list-style: none; margin: clamp(36px, 4vw, 56px) 0 0; padding: 0; border-top: 1px solid var(--color-line-dark); }
+  .areas li { display: grid; gap: 4px; padding-block: 18px; border-bottom: 1px solid var(--color-line-dark); }
+  .area { font-size: 1.2rem; font-weight: 560; letter-spacing: -0.015em; color: var(--color-mist); }
+  .area-eg { color: var(--color-haze); line-height: 1.5; max-width: 52ch; }
+  .coming { margin-top: 18px; color: var(--color-haze); line-height: 1.5; }
+  .office-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 32px; margin-top: 32px; }
+  .process { display: inline-flex; align-items: center; gap: 12px; max-width: 48ch; color: var(--color-haze); line-height: 1.5; }
+  .process .sq { width: 8px; height: 8px; flex: none; background: var(--color-coral); }
+  .office :focus-visible { outline-color: var(--color-mist); }
 
-  @media (min-width: 700px) {
-    .role-grid { grid-template-columns: 1fr 1fr; column-gap: 0; }
-    .role:nth-child(odd) { padding-right: 32px; }
-    .role:nth-child(even) { padding-left: 32px; border-left: 1px solid var(--color-line); }
+  /* ---- One job and websites ---- */
+  .pair { display: grid; gap: 24px; margin-top: 24px; }
+  /* The button sits at the foot of each panel, so side-by-side panels end on the same line. */
+  .tier-panel { display: flex; flex-direction: column; align-items: flex-start; border-radius: 18px; padding: clamp(28px, 3.4vw, 48px); background: var(--color-paper-2); }
+  .panel-foot { margin-top: auto; padding-top: 32px; }
+  .includes { list-style: none; margin: 26px 0 0; padding: 0; width: 100%; max-width: 44ch; border-top: 1px solid var(--color-line); }
+  .includes li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--color-line); font-weight: 500; }
+  .includes li::before { content: ''; width: 6px; height: 6px; background: currentColor; flex: none; }
+  .also { margin-top: clamp(32px, 4vw, 48px); max-width: 60ch; color: var(--color-slate); line-height: 1.6; }
+
+  @media (min-width: 800px) {
+    .areas li { grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); column-gap: 32px; align-items: baseline; }
+    .pair { grid-template-columns: 1fr 1fr; }
   }
   @media (min-width: 1000px) {
-    .head { grid-template-columns: 1fr 2.4fr; align-items: start; }
-    .head .kicker { margin-top: 0.9em; }
-    .roles { grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr); column-gap: clamp(40px, 5vw, 96px); }
-    .roles-side { position: sticky; top: 120px; align-self: start; }
-    .pair { grid-template-columns: 1.15fr 1fr; }
-  }
-  @media (min-width: 1300px) {
-    .role-grid { grid-template-columns: repeat(3, 1fr); }
-    .role:nth-child(odd), .role:nth-child(even) { padding: 30px 28px 28px; border-left: 1px solid var(--color-line); }
-    .role:nth-child(3n + 1) { padding-left: 0; border-left: 0; }
+    .office-top { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; column-gap: clamp(40px, 5vw, 96px); }
   }
 </style>

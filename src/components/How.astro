@@ -1,4 +1,5 @@
 ---
+import { fill } from '../config';
 import { content } from '../content/site';
 const c = content.how;
 ---
@@ -13,7 +14,7 @@ const c = content.how;
         <li class="item" data-how>
           <span class="mark" aria-hidden="true"></span>
           <h3 class="title">{it.title}</h3>
-          <p class="body">{it.body}</p>
+          <p class="body">{fill(it.body)}</p>
         </li>
       ))}
     </ul>
@@ -39,7 +40,8 @@ const c = content.how;
       radial-gradient(50% 60% at 100% 0%, rgb(var(--glow) / 0.08), transparent 70%),
       var(--color-abyss);
   }
-  .head { display: grid; gap: 28px; margin-bottom: clamp(56px, 7vw, 104px); }
+  /* One left edge for the label, the headline and the commitments (as in Start here). */
+  .head { display: grid; justify-items: start; gap: 24px; margin-bottom: clamp(48px, 6vw, 88px); }
   .items { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--color-line-dark); }
   .item { display: grid; gap: 14px; padding: 36px 0 44px; border-bottom: 1px solid var(--color-line-dark); }
   .mark { width: 14px; height: 14px; box-sizing: border-box; background: var(--color-mist); margin-bottom: 10px; }
@@ -61,8 +63,6 @@ const c = content.how;
   .title { font-size: clamp(1.6rem, 2.6vw, 2.6rem); font-weight: 520; font-stretch: 90%; letter-spacing: -0.035em; line-height: 1.05; max-width: 18ch; }
   .body { color: var(--color-haze); max-width: 44ch; font-size: 1.08rem; }
   @media (min-width: 1000px) {
-    .head { grid-template-columns: 1fr 2.4fr; align-items: start; }
-    .head .kicker { margin-top: 0.9em; }
     .items { grid-template-columns: 1fr 1fr; column-gap: clamp(48px, 6vw, 112px); }
     .item { padding: 44px 0 56px; }
   }

@@ -28,23 +28,23 @@ export const content = {
   },
 
   hero: {
-    /** approved (v0.10, EC's preferred hero, again on 10 Oct 2026). Two sentences, each set on two lines. */
-    h1: 'AI does the volume. People own the outcome.',
+    /** EC's choice (14 Oct 2026): the approved v0.13 hero, people first. Two sentences, each set on two lines. */
+    h1: 'We run the back office. You run the business.',
     /** The screen in the mark cycles through the three services, each with its caption. */
     scenes: [
+      { scene: 'run', label: 'Your back office, run by people' },
       { scene: 'design', label: 'Websites and digital products' },
-      { scene: 'build', label: 'AI systems that do real work' },
-      { scene: 'run', label: 'Your back office, checked by people' },
+      { scene: 'build', label: 'AI agents trained on your business' },
     ],
     scenesLabel: 'Show',
     subhead:
-      '{SITE_NAME} is one team for the digital side of an established business. We design your website, build the AI systems behind it and run the back-office work that keeps it all moving.',
+      '{SITE_NAME} is the team behind your business: trained people, backed by AI agents, running everything from admin and accounts to customer service and marketing. We design and build the website out front too.',
     primary: 'Talk to us',
     /** The hero's second link: to the work, or (while showProof is off) to Start here. */
     secondary: 'See our work',
     secondaryStart: 'See where to start',
     markSummary:
-      'Illustration: the {SITE_NAME} mark, a dark glass square with a small coral square glowing at its corner. The glass is a screen that shows the work: a web page being designed, an AI role drafting, and the Command Centre board of back-office tasks being checked.',
+      'Illustration: the {SITE_NAME} mark, a dark glass square with a small coral square glowing at its corner. The glass is a screen that shows the work: the Command Centre board of back-office tasks being checked, a web page being designed, and an AI agent drafting for a person to check.',
     /** showLocations (approved) */
     location: 'Command Centre teams in Adelaide and Phnom Penh.',
   },
@@ -56,9 +56,9 @@ export const content = {
       url: 'yourbusiness.com.au',
     },
     build: {
-      srSummary: 'Illustration: emails, invoices and forms flow into an AI role, are checked by a person, and go out to your accounts, your CRM and your reports.',
+      srSummary: 'Illustration: emails, invoices and forms flow into an AI agent, are checked by a person, and go out to your accounts, your CRM and your reports.',
       inputs: ['Emails', 'Invoices', 'Forms'],
-      core: 'AI role',
+      core: 'AI agent',
       check: 'Checked',
       outputs: ['Accounts', 'CRM', 'Reports'],
     },
@@ -69,8 +69,8 @@ export const content = {
     title: 'Command Centre',
     live: 'Live',
     stages: {
-      queued: 'In queue',
-      drafting: 'AI drafting',
+      queued: 'Assigned',
+      drafting: 'Agent drafting',
       checking: 'Operator checking',
       caught: 'Error caught',
       done: 'Checked, done',
@@ -88,13 +88,38 @@ export const content = {
     ],
     note: 'Illustration with sample tasks.',
     srSummary:
-      'Illustration: a board of sample back-office tasks from different kinds of business. Each task is drafted by AI, checked by an operator and marked done. Now and then the check catches an error, and it is corrected before the task is done.',
+      'Illustration: a board of sample back-office tasks from different kinds of business. Each task is assigned to an operator, drafted by an AI agent and checked by the operator before it is marked done. Now and then the check catches an error, and it is corrected before the task is done.',
   },
 
-  /** Read out as one paragraph; the words light up as you scroll. */
-  statement: {
-    label: 'Why one partner',
-    text: 'Most businesses run their digital side through three suppliers: an agency for the website, a developer for the systems and a team buried in the admin they create. Nobody owns the whole picture. We do. One team and one point of accountability, from the first sketch to the thousandth invoice.',
+  /** Where your week goes: four pains, each picked up by Me² as it settles on screen (EC, 14 Oct 2026: "a penny drop, oh shit moment"). */
+  pain: {
+    label: 'Where your week goes',
+    rows: [
+      {
+        line: 'The invoice nobody chased is still sitting there.',
+        cost: "Work you've already done, waiting to be paid for, because nobody had the hour to follow it up.",
+        stamp: 'Finance · owned by {SITE_NAME}',
+      },
+      {
+        line: 'Your best person spent Friday building a report.',
+        cost: 'The people who should be selling and looking after customers are doing data entry instead.',
+        stamp: 'Operations · owned by {SITE_NAME}',
+      },
+      {
+        line: 'You hired for it. They left, and took the process with them.',
+        cost: 'Every new hire starts from scratch, and the backlog is back the week they go.',
+        stamp: 'Every process written down · owned by {SITE_NAME}',
+      },
+      {
+        line: 'Three suppliers, and nobody owns the whole picture.',
+        cost: 'An agency for the site, a developer for the systems, a bookkeeper for the rest. When something breaks, everyone points somewhere else.',
+        stamp: 'One team · owned by {SITE_NAME}',
+      },
+    ],
+    /** Not the hero line again: say each idea once. */
+    turn: '{SITE_NAME} takes all of it off your hands.',
+    turnBody: "So you, your sales team and your front line can do what you're best at.",
+    link: 'See where to start',
   },
 
   work: {
@@ -126,42 +151,43 @@ export const content = {
     note: 'More projects are being added.',
   },
 
-  /** Start here: the offer, named and priced. */
+  /** Start here: the whole back office (people backed by AI, one monthly price), an extra set of hands, or a website. EC, 14 Oct 2026. */
   offer: {
     kicker: 'Start here',
-    h2: 'Start with one job.',
-    intro:
-      "Pick one AI role for one job, hand over a whole workload, or bring us a website. We'll tell you straight whether it's a fit.",
-    roles: {
-      name: 'AI Roles',
+    h2: 'Your back office, handled.',
+    intro: 'One team for everything behind your front line. Hand over the lot, or start with an extra set of hands.',
+    office: {
+      name: 'The whole back office',
+      /** showPricing. EC: "$3,000 per month for your entire business's backend covered"; a guideline for now. */
+      price: 'From $3,000 + GST a month',
+      body: 'Trained {SITE_NAME} people own the work, backed by AI agents built around your business. They check every output, handle the exceptions and report back to you.',
+      /**
+       * Everything behind the front line (EC, 14 Oct 2026: "it's everything"). Only what Me² can take on today;
+       * the examples for operations, finance, marketing and social media come from the confirmed jobs, the rest are new (EC to confirm).
+       */
+      areas: [
+        { name: 'Business operations', example: 'Client intake, quote follow-up and the processes that hold it together.' },
+        { name: 'Admin', example: 'Data entry, scheduling, filing and the inbox.' },
+        { name: 'Customer service and support', example: 'Every customer email and message answered in your tone.' },
+        { name: 'Finance and accounting', example: 'Debtor follow-up, bill coding and weekly reporting.' },
+        { name: 'Marketing', example: 'Newsletters, website updates, enquiry follow-up and a monthly report.' },
+        { name: 'Social media', example: 'Posts drafted on schedule in your voice, for you to approve.' },
+        { name: 'Paid ads', example: 'Campaigns set up, watched and reported on.' },
+      ],
+      /** EC: "eventually legal, tech dev, consulting, strategy". */
+      coming: 'Coming next: legal, tech development, consulting and strategy.',
+      process: 'A written process for every repeat task, so the work never depends on one person.',
+      button: 'Talk to us about your back office',
+      topic: 'Whole back office',
+    },
+    /** EC: "Not in need of a full team, just an extra set of hands to do the admin". A Me² person owns the work; never AI on its own. */
+    one: {
+      name: 'An extra set of hands',
       /** showPricing */
       price: 'From $2,000 + GST to set up',
-      /** approved (v0.14 offers) */
-      body: 'One AI role for one job, set up around how your team already works. Your team reviews the output and stays in control.',
-      bestFor: 'Best for teams that know exactly which task is eating their week.',
-      listLabel: 'AI roles you can start with',
-      /** Six named roles, drawn from the v0.13 use-case examples. EC to confirm each is deliverable. */
-      items: [
-        { name: 'Inbox triage', outcome: 'Every incoming email sorted, and a reply drafted in your tone for you to approve.' },
-        { name: 'Debtor follow-up', outcome: 'Overdue invoices chased on schedule, with every amount matched to your accounts.' },
-        { name: 'Bill coding', outcome: 'Supplier bills read, coded and prepared for entry, ready for you to approve.' },
-        { name: 'Weekly reporting', outcome: 'The numbers you check every week, pulled together and written up for you.' },
-        { name: 'Client intake', outcome: 'New enquiries turned into client files, with a welcome pack drafted.' },
-        { name: 'Quote follow-up', outcome: 'Every quote without a reply gets a follow-up, drafted from the job notes.' },
-      ],
-      button: 'Ask about this role',
-      also: 'Need something these don\'t cover, like an automation between your tools or a dashboard? Tell us the job.',
-    },
-    ebu: {
-      name: 'Effective Business Units',
-      /** showPricing */
-      price: 'From $3,000 + GST a month',
-      /** approved (v0.14 offers) */
-      body: 'A trained Command Centre operator runs a set of AI roles for you as a managed service. They check the work, handle the exceptions and report back to you.',
-      bestFor: 'Best for businesses that want a whole workload off their plate.',
-      includes: ['A trained operator who owns the work', 'Every output checked before it reaches you', 'Exceptions handled and reported back', 'A written process for every repeat task'],
-      button: 'Ask about an Effective Business Unit',
-      topic: 'Effective Business Unit',
+      body: 'Not in need of a full team? A {SITE_NAME} person takes one job off your plate, like the inbox, the invoices or the data entry, backed by an AI agent set up around how you already work. They report back to you, and you stay in control.',
+      button: 'Ask about an extra set of hands',
+      topic: 'Extra set of hands',
     },
     web: {
       name: 'Websites and digital products',
@@ -172,6 +198,7 @@ export const content = {
       button: 'Ask about a website',
       topic: 'Website or digital product',
     },
+    also: "Need something these don't cover, like an automation between your tools or a dashboard? Tell us the job.",
   },
 
   how: {
@@ -179,13 +206,12 @@ export const content = {
     h2: 'What you can count on.',
     items: [
       {
-        title: 'One team, answerable for all of it.',
-        body: 'The people who design your site are the people who build and run what sits behind it. When something needs fixing, there is one team to ask.',
+        title: 'A person owns every task.',
+        body: 'Every task has a trained {SITE_NAME} person responsible for it. AI agents do the drafting; that person checks every name, date and number against the source before anything leaves.',
       },
       {
-        title: 'A person checks the AI’s work.',
-        /** approved (v0.14 story) */
-        body: 'A trained operator checks every name, date and number against the source before anything leaves.',
+        title: 'One team, answerable for all of it.',
+        body: 'The people who design your site are the people who build and run what sits behind it. When something needs fixing, there is one team to ask.',
       },
       {
         title: 'Built around how you already work.',
@@ -207,20 +233,20 @@ export const content = {
     items: [
       {
         q: 'What does {SITE_NAME} actually do?',
-        a: 'We design and build websites and digital products, set up AI systems that take on repetitive work, and run back-office work for you as a managed service. You can start with one and add the others later.',
+        a: 'We run the back office of established businesses: admin, operations, customer service, finance, marketing, social media and paid ads, done by trained people backed by AI agents built for your business. We also design and build websites. You can start with an extra set of hands and add the rest later.',
       },
       {
         q: 'What does it cost?',
-        a: 'An AI role starts from $2,000 + GST to set up. An Effective Business Unit starts from $3,000 + GST a month. Websites and other builds are quoted per project once we understand the job.',
+        a: 'The whole back office starts from $3,000 + GST a month. An extra set of hands starts from $2,000 + GST to set up. Websites are quoted per project once we understand the job.',
         flag: 'showPricing',
       },
       {
         q: 'Do we have to change the software we use?',
-        a: "We start from the tools and processes you already use and set each AI role up around them. If something would need to change, we'll tell you before we start.",
+        a: "We start from the tools and processes you already use and set each AI agent up around them. If something would need to change, we'll tell you before we start.",
       },
       {
-        q: "Who checks the AI's work?",
-        a: 'A person, every time. With an AI role, your team reviews the output and stays in control. With an Effective Business Unit, a trained {SITE_NAME} operator checks it before it reaches you.',
+        q: 'Is it people or AI doing the work?',
+        a: "People, backed by AI. Every task is owned by a trained {SITE_NAME} person. AI agents trained on your business do the drafting and the volume, and that person checks it before it reaches you. We don't sell AI on its own.",
       },
       {
         q: 'Where is the team based?',
@@ -237,7 +263,7 @@ export const content = {
   /** The close, with the enquiry form. */
   contact: {
     h2: 'Your business, squared.',
-    body: "Tell us what you're working on: a new site, a system that should exist, or the work that's eating your team's week. We'll tell you straight whether we can help.",
+    body: "Tell us what's eating your week: the back-office work you want off your plate, or the website you need. We'll tell you straight whether we can help.",
     /** enableBooking */
     booking: 'Book a call',
     emailLine: 'Prefer email? Write to {CONTACT_EMAIL}',
