@@ -1,6 +1,6 @@
-// Checks that the scene tabs at the foot of the hero's glass screen (Design / Build / Run) take a mouse click at every width,
-// with the mark moving and still, and that the hero line's words still take the pointer (so they stay selectable).
-// Bug it guards: the full-width hero h1 sat over the tabs from 1024px up and swallowed the click.
+// Checks that the hero's buttons take a mouse click at every width, with the mark moving and still: the scene tabs at the foot of
+// the glass screen (Design / Build / Run) and Talk to us. Also checks the hero line's words still take the pointer (so they stay selectable).
+// Bugs it guards: the full-width hero h1 sat over the tabs from 1024px up and swallowed the click; Talk to us took no clicks at all.
 // Usage: npm run build && node scripts/check-hero-clicks.mjs
 import { readFileSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -53,6 +53,18 @@ for (const [width, height] of [[375, 812], [1024, 768], [1280, 900], [1440, 900]
 
     const words = await hitAt(page, '#hero-title .line:first-child .text');
     check(`hero words still take the pointer (${tag})`, words.ok, `topmost element there: ${words.on}`);
+
+    // Talk to us comes from a child component (EnquireLink or EmailLink), so it misses Hero's scoped styles.
+    const cta = '.hero .actions > :first-child';
+    await page.$eval(cta, (a) => a.scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(300);
+    const ctaHit = await hitAt(page, cta);
+    check(`hero Talk to us takes the pointer (${tag})`, ctaHit.ok, `topmost element there: ${ctaHit.on}`);
+    if (await page.$eval(cta, (a) => a.hasAttribute('data-enquire'))) {
+      await page.mouse.click(ctaHit.x, ctaHit.y);
+      const opened = await page.waitForSelector('dialog[open]', { timeout: 2000 }).then(() => true, () => false);
+      check(`hero Talk to us opens the enquiry form on a mouse click (${tag})`, opened);
+    }
     await ctx.close();
   }
 }
