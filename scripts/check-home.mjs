@@ -79,6 +79,9 @@ check('llms.txt: back office, no EBU or AI Roles', llms.includes('The whole back
 check('llms.txt: people first', llms.includes('trained people') && llms.includes('AI agents'));
 check('og:title is the hero', html.includes('<meta property="og:title" content="We run the back office. You run the business."'));
 check('page title', /<title>Me²: back-office teams and websites for established businesses<\/title>/.test(html));
+// Final review fixes
+check('no "AI role" left, visible or in structured data', lacks('AI role') && !JSON.stringify(ld).includes('AI role'));
+check('pain section has a heading', /<h2 id="pain-title"/.test(html));
 // ---- end task checks ----
 
 if (!args.has('--static')) {
@@ -153,6 +156,33 @@ if (!args.has('--static')) {
       check(`Start here: one left edge at ${width}px`, lefts.length === 4 && lefts.every((l) => Math.abs(l - lefts[0]) <= 1), lefts.join(','));
       await page.context().close();
     }
+  });
+  // Final review fixes: a pain row lights as its line reaches the middle of the screen (spec), not earlier;
+  // "owned by Me²" never breaks on a phone; Start here's two small panels end on the same line.
+  browserChecks.push(async ({ open, check }) => {
+    const page = await open(1280, { reducedMotion: 'no-preference' });
+    await page.mouse.move(640, 300);
+    await page.mouse.wheel(0, 100);
+    await page.waitForTimeout(300);
+    const at = async (frac) => {
+      await page.evaluate((f) => { const l = document.querySelectorAll('[data-pain] .line')[1]; scrollTo(0, l.getBoundingClientRect().top + scrollY - innerHeight * f); }, frac);
+      await page.waitForTimeout(500);
+      return page.$$eval('[data-pain-row]', (rs) => rs[1].classList.contains('is-on'));
+    };
+    check('pain: row not lit while its line is low on the screen (72%)', (await at(0.72)) === false);
+    check('pain: row lit once its line reaches the middle (45%)', (await at(0.45)) === true);
+    await page.context().close();
+    const phone = await open(375, { reducedMotion: 'reduce' });
+    const broken = await phone.$$eval('[data-pain] .who', (els) => els.filter((e) => e.getClientRects().length !== 1).map((e) => e.closest('.stamp').textContent.trim()));
+    check('pain: "owned by Me²" on one line at 375px', broken.length === 0, broken.join(' | '));
+    await phone.context().close();
+    const desk = await open(1280, { reducedMotion: 'reduce' });
+    const looks = await desk.evaluate(() => ['[data-pain] .kicker', '#how .kicker'].map((sel) => { const c = getComputedStyle(document.querySelector(sel)); return [c.fontSize, c.fontWeight, c.fontStretch, c.lineHeight, c.letterSpacing].join(' '); }));
+    check('pain: its heading looks like every other section label', looks[0] === looks[1], looks.join(' vs '));
+    await desk.evaluate(() => document.documentElement.classList.add('render-all'));
+    const tops = await desk.$$eval('#services .pair .btn', (bs) => bs.map((b) => Math.round(b.getBoundingClientRect().top)));
+    check("Start here: the two small panels' buttons line up at 1280px", tops.length === 2 && Math.abs(tops[0] - tops[1]) <= 1, tops.join(','));
+    await desk.context().close();
   });
   for (const fn of browserChecks) await fn({ open, check });
   // ---- end browser checks ----

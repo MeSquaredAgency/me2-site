@@ -12,7 +12,7 @@ const stamp = (text: string) => { const [what, who] = fill(text).split(' · '); 
 -->
 <section class="pain on-dark" aria-labelledby="pain-title" data-pain>
   <div class="wrap">
-    <p id="pain-title" class="kicker">{c.label}</p>
+    <h2 id="pain-title" class="kicker">{c.label}</h2>
     <ol class="rows">
       {c.rows.map((r) => (
         <li class="row" data-pain-row>
@@ -36,14 +36,15 @@ const stamp = (text: string) => { const [what, who] = fill(text).split(' · '); 
   const el = document.querySelector<HTMLElement>('[data-pain]');
   if (el && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const rows = [...el.querySelectorAll<HTMLElement>('[data-pain-row]')];
+    // A row lights as its line reaches the middle of the screen.
     const lightUp = new IntersectionObserver((entries) => {
-      for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-on'); lightUp.unobserve(e.target); }
-    }, { rootMargin: '0px 0px -40% 0px' });
+      for (const e of entries) if (e.isIntersecting) { e.target.closest('[data-pain-row]')!.classList.add('is-on'); lightUp.unobserve(e.target); }
+    }, { rootMargin: '0px 0px -50% 0px' });
     const start = () => {
       removeEventListener('scroll', start);
       rows.forEach((r) => { if (r.getBoundingClientRect().top < innerHeight) r.classList.add('is-on', 'is-early'); });
       el.classList.add('is-live');
-      rows.forEach((r) => { if (!r.classList.contains('is-on')) lightUp.observe(r); });
+      rows.forEach((r) => { if (!r.classList.contains('is-on')) lightUp.observe(r.querySelector('.line')!); });
     };
     const near = new IntersectionObserver(([e]) => {
       if (!e.isIntersecting) return;
@@ -56,7 +57,8 @@ const stamp = (text: string) => { const [what, who] = fill(text).split(' · '); 
 
 <style>
   .pain { padding-block: clamp(110px, 16vh, 200px) clamp(96px, 14vh, 180px); border-top: 1px solid var(--color-line-dark); }
-  .kicker { margin-bottom: clamp(24px, 4vw, 48px); }
+  /* An h2 for screen readers, set like every other section label. */
+  .kicker { margin-bottom: clamp(24px, 4vw, 48px); font-stretch: 100%; line-height: 1.6; }
   .rows { list-style: none; margin: 0; padding: 0; }
   .row { display: grid; justify-items: start; gap: 18px; padding-block: clamp(44px, 8vh, 88px); border-top: 1px solid var(--color-line-dark); }
   .line {
@@ -65,6 +67,7 @@ const stamp = (text: string) => { const [what, who] = fill(text).split(' · '); 
   }
   .cost { max-width: 52ch; font-size: clamp(1.05rem, 1.4vw, 1.3rem); line-height: 1.55; color: var(--color-haze); }
   .stamp { display: inline-flex; align-items: center; gap: 12px; margin-top: 8px; font-weight: 560; color: var(--color-mist); }
+  .who { white-space: nowrap; }
   .sq { width: 14px; height: 14px; flex: none; box-sizing: border-box; background: var(--color-coral); box-shadow: 0 0 20px 3px rgb(var(--glow) / 0.5); }
   .turn { display: grid; justify-items: start; gap: 22px; padding-top: clamp(64px, 10vh, 120px); border-top: 1px solid var(--color-line-dark); }
   .turn-line {

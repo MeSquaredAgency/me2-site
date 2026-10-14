@@ -58,7 +58,7 @@ const onePrice = price(c.one.price);
           <p class="price">{onePrice.before} <span class="figure">{onePrice.figure}</span> <span class="after">{onePrice.after}</span></p>
         )}
         <p class="body">{c.one.body}</p>
-        <EnquireLink topic={c.one.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.one.button}</EnquireLink>
+        <div class="panel-foot"><EnquireLink topic={c.one.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.one.button}</EnquireLink></div>
       </article>
 
       <article class="tier-panel web" aria-labelledby="web-title">
@@ -66,7 +66,7 @@ const onePrice = price(c.one.price);
         {flags.showPricing && <p class="price"><span class="figure figure-words">{c.web.price}</span></p>}
         <p class="body">{c.web.body}</p>
         <ul class="includes">{c.web.includes.map((x) => <li>{x}</li>)}</ul>
-        <EnquireLink topic={c.web.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.web.button}</EnquireLink>
+        <div class="panel-foot"><EnquireLink topic={c.web.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.web.button}</EnquireLink></div>
       </article>
     </div>
 
@@ -116,8 +116,9 @@ const onePrice = price(c.one.price);
 
   /* ---- One job and websites ---- */
   .pair { display: grid; gap: 24px; margin-top: 24px; }
-  .tier-panel { display: grid; align-content: start; justify-items: start; border-radius: 18px; padding: clamp(28px, 3.4vw, 48px); background: var(--color-paper-2); }
-  .tier-panel :global(.btn) { margin-top: 32px; }
+  /* The button sits at the foot of each panel, so side-by-side panels end on the same line. */
+  .tier-panel { display: flex; flex-direction: column; align-items: flex-start; border-radius: 18px; padding: clamp(28px, 3.4vw, 48px); background: var(--color-paper-2); }
+  .panel-foot { margin-top: auto; padding-top: 32px; }
   .includes { list-style: none; margin: 26px 0 0; padding: 0; width: 100%; max-width: 44ch; border-top: 1px solid var(--color-line); }
   .includes li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--color-line); font-weight: 500; }
   .includes li::before { content: ''; width: 6px; height: 6px; background: currentColor; flex: none; }

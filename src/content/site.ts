@@ -257,7 +257,7 @@ export const content = {
       },
       {
         q: 'Do we have to change the software we use?',
-        a: "We start from the tools and processes you already use and set each AI role up around them. If something would need to change, we'll tell you before we start.",
+        a: "We start from the tools and processes you already use and set each AI agent up around them. If something would need to change, we'll tell you before we start.",
       },
       {
         q: 'Is it people or AI doing the work?',
