@@ -8,7 +8,7 @@ import { resolve } from 'node:path';
 
 const routes = JSON.parse(readFileSync('src/data/routes.json', 'utf8'));
 const title = routes.find((r) => r.path === '/').ogTitle;
-// "AI does the volume. People own the outcome." → each sentence on two lines (first two words, then the rest),
+// "We run the back office. You run the business." → each sentence on two lines (first two words, then the rest),
 // the first a shade back, as in the hero.
 const lines = title.split(/(?<=\.)\s+/).map((sentence, i) => {
   const w = sentence.split(' ');

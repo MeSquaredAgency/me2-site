@@ -3,7 +3,7 @@
  * Flipping a flag never needs a code change.
  */
 export const flags = {
-  /** Price lines in Start here and the pricing question. EC set the basis on 9 Oct 2026: AI role from $2,000 + GST to set up; EBU from $3,000 + GST a month. */
+  /** Price lines in Start here and the pricing question. EC, 14 Oct 2026: the whole back office from $3,000 + GST a month (a guideline); one job from $2,000 + GST to set up. */
   showPricing: true,
   /**
    * Selected work: the portfolio case studies (and the "Work" link in the menu and footer).

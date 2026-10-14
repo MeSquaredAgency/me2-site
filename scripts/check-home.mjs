@@ -69,6 +69,16 @@ check('EBU name gone', lacks('Effective Business Unit'));
 check('"AI Roles" heading gone', !/AI Roles/.test(offerText) && !offerText.includes('Ask about this role'));
 check('no dashed checkbox glyphs', !offerHtml.includes('class="glyph'));
 check('one enquiry button for the whole back office', (offerHtml.match(/data-topic="Whole back office"/g) ?? []).length === 1);
+// Task 4: what search engines and AI assistants read
+const services = ld.filter((x) => x['@type'] === 'Service').map((s) => s.name);
+check('JSON-LD services', JSON.stringify(services) === JSON.stringify(['The whole back office', 'Start with one job', 'Websites and digital products']), services.join(' | '));
+const officeLd = ld.find((x) => x.name === 'The whole back office');
+check('JSON-LD back office price 3000 AUD', officeLd?.offers?.priceSpecification?.minPrice === 3000);
+check('JSON-LD description has Me² filled in', !JSON.stringify(ld).includes('{SITE_NAME}'));
+check('llms.txt: back office, no EBU or AI Roles', llms.includes('The whole back office') && !llms.includes('Effective Business') && !llms.includes('AI Roles') && !/back end/i.test(llms));
+check('llms.txt: people first', llms.includes('trained people') && llms.includes('AI agents'));
+check('og:title is the hero', html.includes('<meta property="og:title" content="We run the back office. You run the business."'));
+check('page title', /<title>Me²: back-office teams and websites for established businesses<\/title>/.test(html));
 // ---- end task checks ----
 
 if (!args.has('--static')) {

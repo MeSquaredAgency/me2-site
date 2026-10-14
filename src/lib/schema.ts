@@ -2,7 +2,7 @@ import { config, fill, flags, siteUrl } from '../config';
 import { content } from '../content/site';
 import { visibleFaq } from './faq';
 
-/** JSON-LD for the home page: Organization, one Service per offer (AI Roles, Effective Business Units, websites), and the visible FAQ. */
+/** JSON-LD for the home page: Organization, one Service per offer (the whole back office, one job, websites), and the visible FAQ. */
 export function homeSchema() {
   const org = {
     '@context': 'https://schema.org',
@@ -14,7 +14,7 @@ export function homeSchema() {
     email: config.CONTACT_EMAIL,
     logo: `${siteUrl}/logo.png`,
   };
-  // One Service per offer. Prices only when showPricing is on (an AI role's setup fee; an EBU's monthly fee; both + GST).
+  // One Service per offer. Prices only when showPricing is on (the back office's monthly fee; one job's setup fee; both + GST).
   const o = content.offer;
   const provider = { '@id': `${siteUrl}/#organization` };
   // The figure comes from the price line in site.ts ("From $2,000 + GST to set up" → 2000), so it can't drift.
