@@ -20,6 +20,14 @@
   ],
   // The enquiry form emails through Resend (worker/index.ts), using the RESEND_API_KEY secret set in the
   // Cloudflare dashboard (never in this file). See DEPLOY.md.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "me2-assessment-submissions",
+      "database_id": "6a4427d9-8b99-4c11-8cb4-ecd659b9c795",
+      "migrations_dir": "migrations"
+    }
+  ],
   // Workers Logs: each enquiry logs one line (sent / dropped / failed, the topic, never the person's details).
   "observability": { "enabled": true },
   // The live site is only on mesquaredagency.com; previews come from `npx wrangler versions upload`.
