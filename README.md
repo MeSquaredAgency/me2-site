@@ -70,7 +70,7 @@ Tick only what has been checked.
 - [x] v0.15 redesign live, by EC's choice (10 Oct 2026; it went live when the Resend key was saved, and EC kept it)
 - [ ] `npm run verify` rewritten for the v0.15 sections
 - [ ] APN Real Estate confirmed as a Me² project the client is happy to show; other portfolio projects supplied
-- [ ] The pain lines, the jobs in each team (finance, operations, marketing), the service lists and the "What you can count on" commitments confirmed by EC
+- [ ] The pain lines, the back-office areas and their example lines, the service lists and the "What you can count on" commitments confirmed by EC
 - [ ] Privacy policy draft reviewed (EC, Patrick, ideally a lawyer), including the Phnom Penh disclosure
 - [x] Resend account created, mesquaredagency.com verified there, `RESEND_API_KEY` set as a Worker secret, and a test enquiry received in hello@'s inbox (10 Oct 2026)
 - [ ] Site opened to the public (it's private behind Cloudflare Access since 10 Oct 2026; disable the Access application to open it)

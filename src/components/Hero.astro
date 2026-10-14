@@ -70,12 +70,12 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
 
   if (hero && screen) {
     // ---- Scenes: the three services in turn, on the screen ----
-    const scenes = ['design', 'build', 'run'];
+    const scenes = ['run', 'design', 'build'];
     const hold: Record<string, number> = { design: 8000, build: 7200, run: 9600 };
     const tabs = [...screen.querySelectorAll<HTMLButtonElement>('[data-scene]')];
     const label = screen.querySelector<HTMLElement>('[data-screen-label]')!;
     const svg = screen.querySelector<SVGSVGElement>('[data-build-svg]');
-    let current = 'design', timer = 0, pausedUntil = 0, onScreen = true;
+    let current = 'run', timer = 0, pausedUntil = 0, onScreen = true;
 
     const show = (scene: string) => {
       current = scene;
@@ -98,13 +98,13 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
     tabs.forEach((t) => t.addEventListener('click', () => { start(); pick(t.dataset.scene!); }));
     new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }).observe(hero);
 
-    // The first screen paints still (the Design scene, unmoving); the motion and the mark start once the page has
+    // The first screen paints still (the Run scene, the back-office board, unmoving); the motion and the mark start once the page has
     // loaded and gone quiet, a little later on phones, where the scenes' SVG animation competes with loading.
     let started = false;
     const start = () => {
       if (started) return;
       started = true;
-      show('design');
+      show('run');
       if (svg && still) svg.setCurrentTime(2.2);
       next();
       if (canvas) startMark(canvas, screen);
@@ -157,7 +157,7 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
     transition: opacity 700ms var(--ease-out), transform 900ms var(--ease-out);
   }
   .vis-run { inset: 10% 8% 17%; place-items: stretch; align-content: center; }
-  .screen[data-active='still'] [data-for='design'],
+  .screen[data-active='still'] [data-for='run'],
   .screen[data-active='design'] [data-for='design'],
   .screen[data-active='build'] [data-for='build'],
   .screen[data-active='run'] [data-for='run'] { opacity: 1; transform: none; }

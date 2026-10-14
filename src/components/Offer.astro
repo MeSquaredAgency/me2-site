@@ -13,7 +13,7 @@ const keep = (t: string) => t.replace('back office', 'back office');
 const officePrice = price(c.office.price);
 const onePrice = price(c.one.price);
 ---
-<!-- Start here: the whole back office (the big offer), one job, or a website. One left edge for everything. -->
+<!-- Start here: the whole back office (the big offer), an extra set of hands, or a website. One left edge for everything. -->
 <section id="services" class="offer on-paper render-later" aria-labelledby="offer-title">
   <div class="wrap">
     <div class="head">
@@ -33,18 +33,12 @@ const onePrice = price(c.one.price);
         </div>
         <p class="body">{fill(c.office.body)}</p>
       </div>
-      <div class="units">
-        {c.office.units.map((u) => (
-          <div class="unit">
-            <h4 class="unit-name">{u.name}</h4>
-            <ul class="jobs">
-              {u.jobs.map((j) => (
-                <li><span class="job">{j.name}</span><span class="job-out">{j.outcome}</span></li>
-              ))}
-            </ul>
-          </div>
+      <ul class="areas">
+        {c.office.areas.map((a) => (
+          <li><span class="area">{a.name}</span><span class="area-eg">{a.example}</span></li>
         ))}
-      </div>
+      </ul>
+      <p class="coming">{c.office.coming}</p>
       <div class="office-foot">
         <p class="process"><span class="sq" aria-hidden="true"></span>{c.office.process}</p>
         <EnquireLink topic={c.office.topic} source="start-here" class="btn btn-light"><span class="dot" aria-hidden="true"></span>{c.office.button}</EnquireLink>
@@ -57,7 +51,7 @@ const onePrice = price(c.one.price);
         {flags.showPricing && (
           <p class="price">{onePrice.before} <span class="figure">{onePrice.figure}</span> <span class="after">{onePrice.after}</span></p>
         )}
-        <p class="body">{c.one.body}</p>
+        <p class="body">{fill(c.one.body)}</p>
         <div class="panel-foot"><EnquireLink topic={c.one.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.one.button}</EnquireLink></div>
       </article>
 
@@ -102,13 +96,12 @@ const onePrice = price(c.one.price);
   .office .body { margin-top: 0; }
   .office .tier { padding-right: 32px; } /* clear of the glowing square */
   .office-top { display: grid; gap: 24px; }
-  .units { display: grid; margin-top: clamp(36px, 4vw, 56px); border-top: 1px solid var(--color-line-dark); }
-  .unit { padding-block: 26px; border-bottom: 1px solid var(--color-line-dark); }
-  .unit-name { font-size: 1.35rem; font-weight: 560; letter-spacing: -0.02em; color: var(--color-mist); }
-  .jobs { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 16px; }
-  .jobs li { display: grid; gap: 4px; }
-  .job { font-weight: 560; color: var(--color-mist); }
-  .job-out { color: var(--color-haze); line-height: 1.5; max-width: 38ch; }
+  /* Everything the team takes on: one row per area, the area and an example of the work. */
+  .areas { list-style: none; margin: clamp(36px, 4vw, 56px) 0 0; padding: 0; border-top: 1px solid var(--color-line-dark); }
+  .areas li { display: grid; gap: 4px; padding-block: 18px; border-bottom: 1px solid var(--color-line-dark); }
+  .area { font-size: 1.2rem; font-weight: 560; letter-spacing: -0.015em; color: var(--color-mist); }
+  .area-eg { color: var(--color-haze); line-height: 1.5; max-width: 52ch; }
+  .coming { margin-top: 18px; color: var(--color-haze); line-height: 1.5; }
   .office-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 32px; margin-top: 32px; }
   .process { display: inline-flex; align-items: center; gap: 12px; max-width: 48ch; color: var(--color-haze); line-height: 1.5; }
   .process .sq { width: 8px; height: 8px; flex: none; background: var(--color-coral); }
@@ -125,9 +118,7 @@ const onePrice = price(c.one.price);
   .also { margin-top: clamp(32px, 4vw, 48px); max-width: 60ch; color: var(--color-slate); line-height: 1.6; }
 
   @media (min-width: 800px) {
-    .units { grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--color-line-dark); }
-    .unit { border-bottom: 0; padding: 30px 28px 32px; border-left: 1px solid var(--color-line-dark); }
-    .unit:first-child { padding-left: 0; border-left: 0; }
+    .areas li { grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); column-gap: 32px; align-items: baseline; }
     .pair { grid-template-columns: 1fr 1fr; }
   }
   @media (min-width: 1000px) {

@@ -33,16 +33,16 @@ writeFileSync(`${outDir}/robots.txt`, robots);
 const price = (text) => (flagOn('showPricing') ? ` ${text}` : '');
 const llms = `# ${name}
 
-> ${name} (also known as ${plain}) runs the back office of established businesses: finance, operations and marketing, done by trained people backed by AI agents built for each business, so the owner, the sales team and the front line can do what they're best at. ${name} also designs and builds websites and digital products.
+> ${name} (also known as ${plain}) runs the back office of established businesses, everything behind the front line from admin and accounts to customer service and marketing, done by trained people backed by AI agents built for each business (never AI on its own), so the owner, the sales team and the front line can do what they're best at. ${name} also designs and builds websites and digital products.
 
 ## Services
-- The whole back office: trained ${name} people own the work, backed by AI agents built around the business; they check every output, handle the exceptions and report back.${price('From $3,000 + GST a month.')} Finance: debtor follow-up, bill coding, weekly reporting. Operations: inbox triage, client intake, quote follow-up. Marketing: social posts and newsletters, enquiry follow-up, website updates, a monthly marketing report.
-- Start with one job: one AI agent for one job, set up around how a team already works; the team reviews the output.${price('From $2,000 + GST to set up.')}
+- The whole back office: trained ${name} people own the work, backed by AI agents built around the business; they check every output, handle the exceptions and report back.${price('From $3,000 + GST a month.')} Areas: business operations, admin, customer service and support, finance and accounting, marketing, social media, paid ads. Coming next: legal, tech development, consulting and strategy.
+- An extra set of hands: a ${name} person takes one job off the team's plate (the inbox, the invoices, the data entry), backed by an AI agent set up around how the business already works.${price('From $2,000 + GST to set up.')}
 - Websites and digital products: websites and landing pages, interface design for portals and apps, copy and content structure, search and performance foundations;${flagOn('showPricing') ? ' quoted per project.' : ' designed and built to brief.'}
 
 ## Key pages
 - [Home](${base}/): what ${name} does, the offer and common questions
-${flagOn('showProof') ? `- [Work](${base}/#work): projects ${name} has designed, built and run\n` : ''}- [Start here](${base}/#services): the whole back office, one job and websites, with prices
+${flagOn('showProof') ? `- [Work](${base}/#work): projects ${name} has designed, built and run\n` : ''}- [Start here](${base}/#services): the whole back office, an extra set of hands and websites, with prices
 - [How we work](${base}/#how): a person owns every task; one accountable team
 ${flagOn('showPrivacyPage') ? `- [Privacy](${base}/privacy/): how enquiries are handled\n` : ''}
 ## Contact

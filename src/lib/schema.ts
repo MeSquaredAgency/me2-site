@@ -24,7 +24,7 @@ export function homeSchema() {
   };
   const services = [
     { name: o.office.name, description: fill(o.office.body), ...offerFrom(o.office.price) },
-    { name: o.one.name, description: o.one.body, ...offerFrom(o.one.price) },
+    { name: o.one.name, description: fill(o.one.body), ...offerFrom(o.one.price) },
     { name: o.web.name, description: o.web.body },
   ].map((s) => ({ '@context': 'https://schema.org', '@type': 'Service', ...s, provider, areaServed: 'AU' }));
   const faq = {

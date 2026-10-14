@@ -26,12 +26,14 @@ const browserChecks = [];
 // Task 1: human first, hero chosen by EC (14 Oct 2026)
 check('hero line', /<h1[^>]*>[\s\S]*<\/h1>/.test(html) && decode(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim() === 'We run the back office. You run the business.');
 check('old hero line gone', lacks('AI does the volume'));
-check('hero subhead leads with people', has('Me² is the team behind your business. Our people run your finance, operations and marketing, backed by AI agents trained on how you work, and we design and build the website out front.'));
+check('hero subhead leads with people', has('Me² is the team behind your business: trained people, backed by AI agents, running everything from admin and accounts to customer service and marketing. We design and build the website out front too.'));
+check('hero screen opens on the back-office board', /data-scene="run"[^>]*aria-pressed="true"/.test(html) && /data-screen-label[^>]*>Your back office, run by people</.test(html));
 check('hero screen captions', html.includes('aria-label="AI agents trained on your business"') && html.includes('aria-label="Your back office, run by people"'));
 check('board stages', has('Agent drafting') && lacks('AI drafting'));
 check('how we work leads with a person', /A person owns every task\.[\s\S]*One team, answerable for all of it\./.test(text));
 check('old "checks the AI" commitment gone', lacks("A person checks the AI"));
 check('FAQ: people or AI', has('Is it people or AI doing the work?') && lacks("Who checks the AI's work?"));
+check('FAQ: no AI on its own', has("We don't sell AI on its own."));
 check('contact body', has("Tell us what's eating your week"));
 check('no "back end" anywhere visible', lacks('back end') && lacks('back-end'));
 for (const w of ['revolutionary', 'game-changing', 'supercharge', 'seamless', 'cutting-edge', 'unlock', 'guarantee']) check(`no banned word: ${w}`, lacks(w));
@@ -50,8 +52,8 @@ for (const t of [
   'Three suppliers, and nobody owns the whole picture.',
   'An agency for the site, a developer for the systems, a bookkeeper for the rest. When something breaks, everyone points somewhere else.',
   'One team · owned by Me²',
-  'Me² is the team behind all of it.',
-  'Finance, operations and marketing, owned by people and backed by AI agents trained on your business.',
+  'Me² takes all of it off your hands.',
+  "So you, your sales team and your front line can do what you're best at.",
 ]) check(`pain copy: ${t.slice(0, 40)}…`, has(t));
 check('old statement gone', lacks('Most businesses run their digital side through three suppliers'));
 check('pain comes straight after the hero', /id="hero-title"[\s\S]*?<\/section>(?:\s*(?:<script[\s\S]*?<\/script>|<!--[\s\S]*?-->))*\s*<section[^>]*data-pain/.test(html));
@@ -59,11 +61,12 @@ check('pain comes straight after the hero', /id="hero-title"[\s\S]*?<\/section>(
 const offerHtml = html.match(/<section id="services"[\s\S]*?<\/section>(?=\s*(?:<script|<!--|<section))/)?.[0] ?? '';
 const offerText = decode(offerHtml.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ');
 check('offer headline', offerText.includes('Your back office, handled.'));
-check('offer intro', offerText.includes("One team runs your finance, operations and marketing, so you, your sales team and your front line can do what you're best at."));
+check('offer intro', offerText.includes('One team for everything behind your front line. Hand over the lot, or start with an extra set of hands.'));
 check('main panel name and price', offerText.includes('The whole back office') && offerText.includes('$3,000') && offerText.includes('a month'));
-for (const u of ['Finance', 'Operations', 'Marketing']) check(`unit: ${u}`, new RegExp(`<h4[^>]*>${u}</h4>`).test(offerHtml));
-for (const j of ['Debtor follow-up', 'Bill coding', 'Weekly reporting', 'Inbox triage', 'Client intake', 'Quote follow-up', 'Social posts and newsletters', 'Enquiry follow-up', 'Website updates', 'Monthly marketing report']) check(`job: ${j}`, offerText.includes(j));
-check('one job panel', offerText.includes('Start with one job') && offerText.includes('$2,000') && offerText.includes('Not ready to hand over the whole back office?'));
+for (const a of ['Business operations', 'Admin', 'Customer service and support', 'Finance and accounting', 'Marketing', 'Social media', 'Paid ads']) check(`area: ${a}`, new RegExp(`<span class="area"[^>]*>${a}</span>`).test(offerHtml));
+check('coming next line', offerText.includes('Coming next: legal, tech development, consulting and strategy.'));
+check('extra set of hands panel', offerText.includes('An extra set of hands') && offerText.includes('$2,000') && offerText.includes('Not in need of a full team?') && offerText.includes('Ask about an extra set of hands'));
+check('old one-job wording gone', lacks('Start with one job') && lacks('your own team reviews'));
 check('websites panel kept', offerText.includes('Websites and digital products') && offerText.includes('Quoted per project'));
 check('EBU name gone', lacks('Effective Business Unit'));
 check('"AI Roles" heading gone', !/AI Roles/.test(offerText) && !offerText.includes('Ask about this role'));
@@ -71,7 +74,7 @@ check('no dashed checkbox glyphs', !offerHtml.includes('class="glyph'));
 check('one enquiry button for the whole back office', (offerHtml.match(/data-topic="Whole back office"/g) ?? []).length === 1);
 // Task 4: what search engines and AI assistants read
 const services = ld.filter((x) => x['@type'] === 'Service').map((s) => s.name);
-check('JSON-LD services', JSON.stringify(services) === JSON.stringify(['The whole back office', 'Start with one job', 'Websites and digital products']), services.join(' | '));
+check('JSON-LD services', JSON.stringify(services) === JSON.stringify(['The whole back office', 'An extra set of hands', 'Websites and digital products']), services.join(' | '));
 const officeLd = ld.find((x) => x.name === 'The whole back office');
 check('JSON-LD back office price 3000 AUD', officeLd?.offers?.priceSpecification?.minPrice === 3000);
 check('JSON-LD description has Me² filled in', !JSON.stringify(ld).includes('{SITE_NAME}'));
@@ -96,12 +99,14 @@ if (!args.has('--static')) {
       res.writeHead(200, { 'content-type': types[extname(p)] ?? 'application/octet-stream' });
       res.end(body);
     } catch { res.writeHead(404); res.end(); }
-  }).listen(4399);
+  }).listen(0); // any free port, so two checkouts can run this at once
+  await new Promise((r) => server.once('listening', r));
+  const base = `http://localhost:${server.address().port}`;
   const browser = await chromium.launch({ channel: process.env.PW_CHANNEL ?? 'msedge' });
   const open = async (width, opts = {}) => {
     const ctx = await browser.newContext({ viewport: { width, height: 900 }, ...opts });
     const page = await ctx.newPage();
-    await page.goto('http://localhost:4399/', { waitUntil: 'networkidle' });
+    await page.goto(`${base}/`, { waitUntil: 'networkidle' });
     if (opts.javaScriptEnabled !== false) await page.evaluate(() => document.fonts.ready);
     // With motion on, let the hero's entrance (it starts after load, later on phones) finish first, so axe judges what a visitor reads, not a fade.
     if (opts.javaScriptEnabled !== false && opts.reducedMotion !== 'reduce') {
@@ -149,6 +154,13 @@ if (!args.has('--static')) {
   });
   // Task 3: Start here's label, headline, intro and main panel share one left edge (EC: "why is the formatting here so weird?").
   browserChecks.push(async ({ open, check }) => {
+    for (const width of [375, 1280]) {
+      const how = await open(width, { reducedMotion: 'reduce' });
+      await how.evaluate(() => document.documentElement.classList.add('render-all'));
+      const hl = await how.$$eval('#how .kicker, #how h2, #how .items', (els) => els.map((e) => Math.round(e.getBoundingClientRect().left)));
+      check(`How we work: one left edge at ${width}px`, hl.length === 3 && hl.every((l) => Math.abs(l - hl[0]) <= 1), hl.join(','));
+      await how.context().close();
+    }
     for (const width of [375, 1280]) {
       const page = await open(width, { reducedMotion: 'reduce' });
       await page.evaluate(() => document.documentElement.classList.add('render-all'));

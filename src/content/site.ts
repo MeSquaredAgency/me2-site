@@ -32,19 +32,19 @@ export const content = {
     h1: 'We run the back office. You run the business.',
     /** The screen in the mark cycles through the three services, each with its caption. */
     scenes: [
+      { scene: 'run', label: 'Your back office, run by people' },
       { scene: 'design', label: 'Websites and digital products' },
       { scene: 'build', label: 'AI agents trained on your business' },
-      { scene: 'run', label: 'Your back office, run by people' },
     ],
     scenesLabel: 'Show',
     subhead:
-      '{SITE_NAME} is the team behind your business. Our people run your finance, operations and marketing, backed by AI agents trained on how you work, and we design and build the website out front.',
+      '{SITE_NAME} is the team behind your business: trained people, backed by AI agents, running everything from admin and accounts to customer service and marketing. We design and build the website out front too.',
     primary: 'Talk to us',
     /** The hero's second link: to the work, or (while showProof is off) to Start here. */
     secondary: 'See our work',
     secondaryStart: 'See where to start',
     markSummary:
-      'Illustration: the {SITE_NAME} mark, a dark glass square with a small coral square glowing at its corner. The glass is a screen that shows the work: a web page being designed, an AI agent drafting for a person to check, and the Command Centre board of back-office tasks being checked.',
+      'Illustration: the {SITE_NAME} mark, a dark glass square with a small coral square glowing at its corner. The glass is a screen that shows the work: the Command Centre board of back-office tasks being checked, a web page being designed, and an AI agent drafting for a person to check.',
     /** showLocations (approved) */
     location: 'Command Centre teams in Adelaide and Phnom Penh.',
   },
@@ -117,8 +117,8 @@ export const content = {
       },
     ],
     /** Not the hero line again: say each idea once. */
-    turn: '{SITE_NAME} is the team behind all of it.',
-    turnBody: 'Finance, operations and marketing, owned by people and backed by AI agents trained on your business.',
+    turn: '{SITE_NAME} takes all of it off your hands.',
+    turnBody: "So you, your sales team and your front line can do what you're best at.",
     link: 'See where to start',
   },
 
@@ -151,58 +151,43 @@ export const content = {
     note: 'More projects are being added.',
   },
 
-  /** Start here: the whole back office (people backed by AI, one monthly price), one job, or a website. EC, 14 Oct 2026. */
+  /** Start here: the whole back office (people backed by AI, one monthly price), an extra set of hands, or a website. EC, 14 Oct 2026. */
   offer: {
     kicker: 'Start here',
     h2: 'Your back office, handled.',
-    intro: "One team runs your finance, operations and marketing, so you, your sales team and your front line can do what you're best at.",
+    intro: 'One team for everything behind your front line. Hand over the lot, or start with an extra set of hands.',
     office: {
       name: 'The whole back office',
       /** showPricing. EC: "$3,000 per month for your entire business's backend covered"; a guideline for now. */
       price: 'From $3,000 + GST a month',
       body: 'Trained {SITE_NAME} people own the work, backed by AI agents built around your business. They check every output, handle the exceptions and report back to you.',
-      /** Jobs: finance and operations from the v0.15 roles; marketing confirmed by EC on 14 Oct 2026. */
-      units: [
-        {
-          key: 'finance',
-          name: 'Finance',
-          jobs: [
-            { name: 'Debtor follow-up', outcome: 'Overdue invoices chased on schedule, with every amount matched to your accounts.' },
-            { name: 'Bill coding', outcome: 'Supplier bills read, coded and prepared for entry, ready for you to approve.' },
-            { name: 'Weekly reporting', outcome: 'The numbers you check every week, pulled together and written up for you.' },
-          ],
-        },
-        {
-          key: 'operations',
-          name: 'Operations',
-          jobs: [
-            { name: 'Inbox triage', outcome: 'Every incoming email sorted, and a reply drafted in your tone for you to approve.' },
-            { name: 'Client intake', outcome: 'New enquiries turned into client files, with a welcome pack drafted.' },
-            { name: 'Quote follow-up', outcome: 'Every quote without a reply gets a follow-up, drafted from the job notes.' },
-          ],
-        },
-        {
-          key: 'marketing',
-          name: 'Marketing',
-          jobs: [
-            { name: 'Social posts and newsletters', outcome: 'Drafted on schedule in your voice, for you to approve.' },
-            { name: 'Enquiry follow-up', outcome: 'Every new enquiry gets a reply and a follow-up.' },
-            { name: 'Website updates', outcome: 'New pages, offers and news kept current.' },
-            { name: 'Monthly marketing report', outcome: "What ran, what worked and what's next, written up for you." },
-          ],
-        },
+      /**
+       * Everything behind the front line (EC, 14 Oct 2026: "it's everything"). Only what Me² can take on today;
+       * the examples for operations, finance, marketing and social media come from the confirmed jobs, the rest are new (EC to confirm).
+       */
+      areas: [
+        { name: 'Business operations', example: 'Client intake, quote follow-up and the processes that hold it together.' },
+        { name: 'Admin', example: 'Data entry, scheduling, filing and the inbox.' },
+        { name: 'Customer service and support', example: 'Every customer email and message answered in your tone.' },
+        { name: 'Finance and accounting', example: 'Debtor follow-up, bill coding and weekly reporting.' },
+        { name: 'Marketing', example: 'Newsletters, website updates, enquiry follow-up and a monthly report.' },
+        { name: 'Social media', example: 'Posts drafted on schedule in your voice, for you to approve.' },
+        { name: 'Paid ads', example: 'Campaigns set up, watched and reported on.' },
       ],
+      /** EC: "eventually legal, tech dev, consulting, strategy". */
+      coming: 'Coming next: legal, tech development, consulting and strategy.',
       process: 'A written process for every repeat task, so the work never depends on one person.',
       button: 'Talk to us about your back office',
       topic: 'Whole back office',
     },
+    /** EC: "Not in need of a full team, just an extra set of hands to do the admin". A Me² person owns the work; never AI on its own. */
     one: {
-      name: 'Start with one job',
+      name: 'An extra set of hands',
       /** showPricing */
       price: 'From $2,000 + GST to set up',
-      body: "Not ready to hand over the whole back office? We'll set up one AI agent for one job, built around how your team already works. Your team reviews the output and stays in control.",
-      button: 'Ask about one job',
-      topic: 'One job',
+      body: 'Not in need of a full team? A {SITE_NAME} person takes one job off your plate, like the inbox, the invoices or the data entry, backed by an AI agent set up around how you already work. They report back to you, and you stay in control.',
+      button: 'Ask about an extra set of hands',
+      topic: 'Extra set of hands',
     },
     web: {
       name: 'Websites and digital products',
@@ -248,11 +233,11 @@ export const content = {
     items: [
       {
         q: 'What does {SITE_NAME} actually do?',
-        a: 'We run the back office of established businesses: finance, operations and marketing, done by trained people backed by AI agents built for your business. We also design and build websites. You can start with one job and add the rest later.',
+        a: 'We run the back office of established businesses: admin, operations, customer service, finance, marketing, social media and paid ads, done by trained people backed by AI agents built for your business. We also design and build websites. You can start with an extra set of hands and add the rest later.',
       },
       {
         q: 'What does it cost?',
-        a: 'The whole back office starts from $3,000 + GST a month. One job starts from $2,000 + GST to set up. Websites are quoted per project once we understand the job.',
+        a: 'The whole back office starts from $3,000 + GST a month. An extra set of hands starts from $2,000 + GST to set up. Websites are quoted per project once we understand the job.',
         flag: 'showPricing',
       },
       {
@@ -261,7 +246,7 @@ export const content = {
       },
       {
         q: 'Is it people or AI doing the work?',
-        a: 'People, backed by AI. Every task is owned by a trained {SITE_NAME} person. AI agents trained on your business do the drafting and the volume, and that person checks it before it reaches you. If you start with one job, your own team reviews the output.',
+        a: "People, backed by AI. Every task is owned by a trained {SITE_NAME} person. AI agents trained on your business do the drafting and the volume, and that person checks it before it reaches you. We don't sell AI on its own.",
       },
       {
         q: 'Where is the team based?',
