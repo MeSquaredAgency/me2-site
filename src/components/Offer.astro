@@ -51,15 +51,17 @@ const onePrice = price(c.one.price);
         {flags.showPricing && (
           <p class="price">{onePrice.before} <span class="figure">{onePrice.figure}</span> <span class="after">{onePrice.after}</span></p>
         )}
-        <p class="body">{fill(c.one.body)}</p>
+        <div class="panel-main"><p class="body">{fill(c.one.body)}</p></div>
         <div class="panel-foot"><EnquireLink topic={c.one.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.one.button}</EnquireLink></div>
       </article>
 
       <article class="tier-panel web" aria-labelledby="web-title">
         <h3 id="web-title" class="tier tier-sm">{c.web.name}</h3>
         {flags.showPricing && <p class="price"><span class="figure figure-words">{c.web.price}</span></p>}
-        <p class="body">{c.web.body}</p>
-        <ul class="includes">{c.web.includes.map((x) => <li>{x}</li>)}</ul>
+        <div class="panel-main">
+          <p class="body">{c.web.body}</p>
+          <ul class="includes">{c.web.includes.map((x) => <li>{x}</li>)}</ul>
+        </div>
         <div class="panel-foot"><EnquireLink topic={c.web.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.web.button}</EnquireLink></div>
       </article>
     </div>
@@ -103,8 +105,9 @@ const onePrice = price(c.one.price);
   .area-eg { color: var(--color-haze); line-height: 1.5; max-width: 52ch; }
   .coming { margin-top: 18px; color: var(--color-haze); line-height: 1.5; }
   .office-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 32px; margin-top: 32px; }
-  .process { display: inline-flex; align-items: center; gap: 12px; max-width: 48ch; color: var(--color-haze); line-height: 1.5; }
-  .process .sq { width: 8px; height: 8px; flex: none; background: var(--color-coral); }
+  /* Squares that mark a line of text sit on its first line, however many lines it wraps to. */
+  .process { display: inline-flex; align-items: flex-start; gap: 12px; max-width: 48ch; color: var(--color-haze); line-height: 1.5; }
+  .process .sq { width: 8px; height: 8px; flex: none; margin-top: calc(0.75em - 4px); background: var(--color-coral); }
   .office :focus-visible { outline-color: var(--color-mist); }
 
   /* ---- One job and websites ---- */
@@ -112,14 +115,25 @@ const onePrice = price(c.one.price);
   /* The button sits at the foot of each panel, so side-by-side panels end on the same line. */
   .tier-panel { display: flex; flex-direction: column; align-items: flex-start; border-radius: 18px; padding: clamp(28px, 3.4vw, 48px); background: var(--color-paper-2); }
   .panel-foot { margin-top: auto; padding-top: 32px; }
+  .panel-main { width: 100%; }
   .includes { list-style: none; margin: 26px 0 0; padding: 0; width: 100%; max-width: 44ch; border-top: 1px solid var(--color-line); }
-  .includes li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--color-line); font-weight: 500; }
-  .includes li::before { content: ''; width: 6px; height: 6px; background: currentColor; flex: none; }
+  .includes li { display: flex; align-items: flex-start; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--color-line); font-weight: 500; line-height: 1.5; }
+  .includes li::before { content: ''; width: 6px; height: 6px; margin-top: calc(0.75em - 3px); background: currentColor; flex: none; }
   .also { margin-top: clamp(32px, 4vw, 48px); max-width: 60ch; color: var(--color-slate); line-height: 1.6; }
 
+  /* Phones: the panels' buttons run the full width, so their longer labels stay on one line. */
+  @media (max-width: 559px) {
+    .office, .tier-panel { padding: 28px 22px; }
+    .office-foot, .panel-foot { align-self: stretch; }
+    .office-foot :global(.btn), .panel-foot :global(.btn) { width: 100%; padding-inline: 16px; gap: 12px; font-size: 0.9rem; }
+  }
   @media (min-width: 800px) {
     .areas li { grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); column-gap: 32px; align-items: baseline; }
     .pair { grid-template-columns: 1fr 1fr; }
+    /* Side by side, the two panels share rows: names, prices and descriptions line up, and so do the buttons at the foot. */
+    .tier-panel { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; justify-items: start; }
+    .tier-panel .price { align-self: last baseline; }
+    .panel-foot { grid-row: 4; }
   }
   @media (min-width: 1000px) {
     .office-top { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; column-gap: clamp(40px, 5vw, 96px); }

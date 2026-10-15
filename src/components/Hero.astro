@@ -205,12 +205,17 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
   @keyframes rise { from { transform: translateY(105%); } }
   @keyframes fade { from { opacity: 0; } }
 
-  @media (min-width: 1100px) {
+  /* Side by side on laptops, desktops and landscape tablets (the same test as src/lib/mark-gl.ts); stacked otherwise. */
+  @media (min-width: 1100px), (min-width: 900px) and (orientation: landscape) {
     .foot { grid-template-columns: minmax(0, 1fr) auto; }
   }
-  @media (max-width: 1099px) {
-    .screen { --sw: 480px; translate: calc(60vw - 50%) calc(32svh - 50%); scale: 0.6; }
-    .inner { padding-top: 58svh; }
+  @media (min-width: 900px) and (max-width: 1099px) and (orientation: landscape) {
+    .screen { scale: 0.66; }
+  }
+  /* Stacked: room above the words for the mark, little enough that a portrait tablet shows the buttons on the first screen. */
+  @media (max-width: 899px), (max-width: 1099px) and (orientation: portrait) {
+    .screen { --sw: 480px; translate: calc(60vw - 50%) calc(30svh - 50%); scale: 0.6; }
+    .inner { padding-top: 46svh; }
   }
   @media (max-width: 639px) {
     .screen { --sw: 400px; translate: calc(42vw - 50%) calc(27svh - 50%); scale: 0.5; }

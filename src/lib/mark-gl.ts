@@ -256,12 +256,27 @@ function run(gl: WebGLRenderingContext, canvas: HTMLCanvasElement, screen: HTMLE
   let scale = Math.min(devicePixelRatio || 1, innerWidth < 800 ? 1 : 1.5);
   let w = 0, h = 0;
 
-  // Where the big square's centre sits and half its width, by screen shape (CSS pixels, origin top-left).
+  // Where the big square's centre sits and half its width (CSS pixels, origin top-left).
+  // Side by side (laptops, desktops, landscape tablets; the same test as the hero's CSS): the mark to the right of the words.
+  // Stacked (phones, portrait tablets): the mark fills the space between the header and the headline, so it never
+  // crowds either, however tall the words below turn out.
+  const wide = matchMedia('(min-width: 1100px), (min-width: 900px) and (orientation: landscape)');
+  const headline = hero.querySelector('h1');
+  let headTop = 0, gutter = 20;
+  const measure = () => {
+    headTop = headline ? headline.getBoundingClientRect().top - canvas.getBoundingClientRect().top : canvas.clientHeight * 0.5;
+    gutter = parseFloat(getComputedStyle(hero).getPropertyValue('--gutter')) || 20;
+  };
   const layout = () => {
     const cw = canvas.clientWidth, ch = canvas.clientHeight;
-    if (cw >= 1100) return { x: cw * 0.665, y: ch * 0.5, s: Math.min(cw * 0.135, ch * 0.26) };
-    if (cw >= 640) return { x: cw * 0.6, y: ch * 0.32, s: Math.min(cw * 0.2, ch * 0.17) };
-    return { x: cw * 0.42, y: ch * 0.27, s: Math.min(cw * 0.28, ch * 0.13) };
+    if (wide.matches) return { x: cw * 0.665, y: ch * 0.5, s: Math.min(cw * 0.135, ch * 0.26) };
+    // The glass and its ² together are 2.52 half-widths wide (the ² reaches 1.52 right of centre) and 2.31 tall (1.31 above).
+    const phone = cw < 640;
+    const top = phone ? 76 : 112, bottom = headTop - (phone ? 28 : 36);
+    const s = Math.max(40, Math.min(cw * (phone ? 0.31 : 0.23), (bottom - top) / 2.45));
+    // Phones: the pair centred. Tablets: the ² on the right-hand edge of the words, as on wider screens.
+    const x = phone ? cw / 2 - 0.26 * s : cw - gutter - 1.52 * s;
+    return { x, y: (top + bottom) / 2 + 0.155 * s, s };
   };
 
   const resize = () => {
@@ -269,6 +284,7 @@ function run(gl: WebGLRenderingContext, canvas: HTMLCanvasElement, screen: HTMLE
     h = Math.max(1, Math.round(canvas.clientHeight * scale));
     if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
     gl.viewport(0, 0, w, h);
+    measure();
   };
 
   const lean = { x: 0, y: 0, tx: 0, ty: 0 };
@@ -346,7 +362,10 @@ function run(gl: WebGLRenderingContext, canvas: HTMLCanvasElement, screen: HTMLE
   // Place the screen on the glass before switching it over, so it never shows at the top-left for a frame.
   draw(still ? 1 : 0);
   hero.classList.add('is-gl');
-  new ResizeObserver(() => { resize(); if (still || !running) draw(still ? 1 : 1 - Math.pow(1 - ignite, 3)); }).observe(canvas);
+  // The canvas changes size with the hero; the words can change height without it (a font arriving, a rewrap).
+  const ro = new ResizeObserver(() => { resize(); if (still || !running) draw(still ? 1 : 1 - Math.pow(1 - ignite, 3)); });
+  ro.observe(canvas);
+  if (headline?.parentElement) ro.observe(headline.parentElement);
   canvas.classList.add('is-on');
   t0 = performance.now();
   if (still) {
