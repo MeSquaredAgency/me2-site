@@ -11,7 +11,7 @@ const items = visibleFaq();
     <div class="side">
       <p class="kicker">{c.kicker}</p>
       <h2 id="faq-title">{c.h2}</h2>
-      <p class="aside">{c.aside}</p>
+      <p class="aside">{c.aside.split(/(?<=[.?!])\s+/).map((s, i) => <>{i > 0 && ' '}<span>{s}</span></>)}</p>
       <EnquireLink source="questions" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.asideButton}</EnquireLink>
     </div>
     <div class="list">
@@ -30,6 +30,8 @@ const items = visibleFaq();
   .grid { display: grid; gap: 56px; }
   .side { display: grid; gap: 24px; align-content: start; justify-items: start; }
   .aside { color: var(--color-slate); max-width: 30ch; font-size: 1.08rem; }
+  /* Each sentence wraps as a whole where it can ("Ask us directly." never splits after "Ask"). */
+  .aside span { display: inline-block; }
   .list { border-top: 1px solid var(--color-ink); }
   details { border-bottom: 1px solid var(--color-line); }
   summary {
