@@ -74,5 +74,6 @@ Tick only what has been checked.
 - [ ] The pain lines, the back-office areas and their example lines, the service lists and the "What you can count on" commitments confirmed by EC
 - [ ] Privacy policy draft reviewed (EC, Patrick, ideally a lawyer), including the Phnom Penh disclosure
 - [x] Resend account created, mesquaredagency.com verified there, `RESEND_API_KEY` set as a Worker secret, and a test enquiry received in hello@'s inbox (10 Oct 2026)
-- [ ] Site opened to the public (it's private behind Cloudflare Access since 10 Oct 2026; disable the Access application to open it)
+- [x] Site opened to the public (15 Oct 2026: EC removed the Cloudflare Access sign-in that had kept it private since 10 Oct)
+- [ ] `mesquared.co.uk` redirected to `https://mesquaredagency.com` (it shows a Cloudflare 525 error since Access came off; DEPLOY.md)
 - [ ] Rate-limiting rule on /api/enquiry added in Cloudflare (DEPLOY.md)
