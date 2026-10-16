@@ -193,6 +193,28 @@ if (!args.has('--static')) {
       await page.context().close();
     }
   });
+  // EC, 16 Oct 2026: "When you refresh the page, the computer glitches and covers the hero". Until the WebGL mark pins the
+  // screen to the glass (and always, without WebGL), the CSS alone must keep the screen clear of the headline's words.
+  browserChecks.push(async ({ open, check }) => {
+    for (const width of [375, 768, 1024, 1280]) {
+      const page = await open(width, { reducedMotion: 'reduce' });
+      await page.context().addInitScript(() => {
+        const get = HTMLCanvasElement.prototype.getContext;
+        HTMLCanvasElement.prototype.getContext = function (type, ...rest) { return /webgl/.test(type) ? null : get.call(this, type, ...rest); };
+      });
+      await page.reload({ waitUntil: 'networkidle' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(2500);
+      const r = await page.evaluate(() => {
+        const s = document.querySelector('[data-screen]').getBoundingClientRect();
+        const hits = [...document.querySelectorAll('#hero-title .text')].map((t) => t.getBoundingClientRect())
+          .filter((t) => t.left < s.right && t.right > s.left && t.top < s.bottom && t.bottom > s.top);
+        return { gl: document.querySelector('.hero').classList.contains('is-gl'), hits: hits.length, box: [s.left, s.top, s.width, s.height].map(Math.round).join(',') };
+      });
+      check(`hero screen clear of the headline without WebGL at ${width}px`, !r.gl && r.hits === 0, `screen at ${r.box}, over ${r.hits} line(s)`);
+      await page.context().close();
+    }
+  });
   // Final review fixes: a pain row lights as its line reaches the middle of the screen (spec), not earlier;
   // "owned by Me²" never breaks on a phone; Start here's two small panels end on the same line.
   browserChecks.push(async ({ open, check }) => {
