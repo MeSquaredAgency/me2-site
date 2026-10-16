@@ -1,6 +1,6 @@
 # Careers section: design
 
-16 October 2026. Branch `careers` (from `origin/main` 515180f). Status: draft for EC's yes.
+16 October 2026. Branch `careers` (from `origin/main` 515180f). Status: approved by EC, 16 Oct 2026.
 
 ## Why
 
