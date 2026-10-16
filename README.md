@@ -82,4 +82,4 @@ Tick only what has been checked.
 - [x] Site opened to the public (15 Oct 2026: EC removed the Cloudflare Access sign-in that had kept it private since 10 Oct)
 - [ ] `mesquared.co.uk` redirected to `https://mesquaredagency.com` (it shows a Cloudflare 525 error since Access came off; DEPLOY.md)
 - [ ] Rate-limiting rule on /api/enquiry and /api/applications added in Cloudflare (DEPLOY.md)
-- [ ] A preview application reaches people@ with the CV attached and "[Preview]" in the subject (docs/careers.md; EC)
+- [x] A preview application reaches people@ with the CV attached and "[Preview]" in the subject (docs/careers.md; EC confirmed 16 Oct 2026, with a 4.17 MB PDF)
