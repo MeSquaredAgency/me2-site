@@ -26,9 +26,17 @@ const browserChecks = [];
 // Task 1: human first, hero chosen by EC (14 Oct 2026)
 check('hero line', /<h1[^>]*>[\s\S]*<\/h1>/.test(html) && decode(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim() === 'We run the back office. You run the business.');
 check('old hero line gone', lacks('AI does the volume'));
-check('hero subhead leads with people', has('Me² is the team behind your business: trained people, backed by AI agents, running everything from admin and accounts to customer service and marketing. We design and build the website out front too.'));
+check('hero subhead leads with people', has('Me² is the team behind your business: trained people, backed by AI agents, running your admin, accounts, customer service and marketing. We design and build the website out front, too.'));
 check('hero screen opens on the back-office board', /data-scene="run"[^>]*aria-pressed="true"/.test(html) && /data-screen-label[^>]*>Your back office, run by people</.test(html));
-check('hero screen captions', html.includes('aria-label="AI agents trained on your business"') && html.includes('aria-label="Your back office, run by people"'));
+check('hero screen captions', html.includes('aria-label="AI agents that draft, people who check"') && html.includes('aria-label="Your back office, run by people"'));
+// Copy review, 16 Oct 2026: no "trained on your business" (invites "are you training AI on my data?"), no real-estate "tenant", and one sentence said once.
+check('no "trained on your business"', lacks('trained on your business'));
+check('no "tenant" anywhere on the page', lacks('tenant'));
+check('form labels', has('What do you need a hand with?') && />Email<\/label>/.test(html) && lacks('Work email'));
+check('form privacy line matches the policy', has("We use these details to reply to you, and we won't add you to a mailing list.") && lacks('only to reply to you'));
+check('FAQ: software answer not the How we work line', has('Usually not. We set the work up around the tools you already use') && text.split('We start from the tools and processes you already use').length === 2);
+check('one team, as literally true', has('Your website and your back office sit with one team.') && lacks('The people who design your site are the people who build'));
+check('search description fits (≤160 characters)', (html.match(/<meta name="description" content="([^"]*)"/)?.[1].length ?? 999) <= 160);
 check('board stages', has('Agent drafting') && lacks('AI drafting'));
 check('how we work leads with a person', /A person owns every task\.[\s\S]*One team, answerable for all of it\./.test(text));
 check('old "checks the AI" commitment gone', lacks("A person checks the AI"));
@@ -44,7 +52,7 @@ for (const t of [
   "Work you've already done, waiting to be paid for, because nobody had the hour to follow it up.",
   'Finance · owned by Me²',
   'Your best person spent Friday building a report.',
-  'The people who should be selling and looking after customers are doing data entry instead.',
+  'The people who should be selling and looking after customers are stuck in spreadsheets instead.',
   'Operations · owned by Me²',
   'You hired for it. They left, and took the process with them.',
   'Every new hire starts from scratch, and the backlog is back the week they go.',
@@ -52,6 +60,9 @@ for (const t of [
   'Three suppliers, and nobody owns the whole picture.',
   'An agency for the site, a developer for the systems, a bookkeeper for the rest. When something breaks, everyone points somewhere else.',
   'One team · owned by Me²',
+  'That Saturday enquiry got a reply on Tuesday.',
+  "By then they'd booked someone else.",
+  'Customer service · owned by Me²',
   'Me² takes all of it off your hands.',
   "So you, your sales team and your front line can do what you're best at.",
 ]) check(`pain copy: ${t.slice(0, 40)}…`, has(t));
@@ -65,7 +76,7 @@ check('offer intro', offerText.includes('One team for everything behind your fro
 check('main panel name and price', offerText.includes('The whole back office') && offerText.includes('$3,000') && offerText.includes('a month'));
 for (const a of ['Business operations', 'Admin', 'Customer service and support', 'Finance and accounting', 'Marketing', 'Social media', 'Paid ads']) check(`area: ${a}`, new RegExp(`<span class="area"[^>]*>${a}</span>`).test(offerHtml));
 check('coming next line', offerText.includes('Coming next: legal, tech development, consulting and strategy.'));
-check('extra set of hands panel', offerText.includes('An extra set of hands') && offerText.includes('$2,000') && offerText.includes('Not in need of a full team?') && offerText.includes('Ask about an extra set of hands'));
+check('extra set of hands panel', offerText.includes('An extra set of hands') && offerText.includes('$2,000') && offerText.includes("Don't need a whole team?") && offerText.includes('Ask about an extra set of hands'));
 check('old one-job wording gone', lacks('Start with one job') && lacks('your own team reviews'));
 check('websites panel kept', offerText.includes('Websites and digital products') && offerText.includes('Quoted per project'));
 check('EBU name gone', lacks('Effective Business Unit'));
@@ -148,7 +159,7 @@ if (!args.has('--static')) {
     }
     await live.waitForTimeout(2200);
     const lit = await live.$$eval('[data-pain-row]', (rows) => rows.map((r) => r.classList.contains('is-on')));
-    check('pain: every row lit after scrolling through', lit.length === 4 && lit.every(Boolean), lit.join(','));
+    check('pain: every row lit after scrolling through', lit.length === 5 && lit.every(Boolean), lit.join(','));
     check('pain: every stamp shown after scrolling through', await shown(live));
     await live.context().close();
   });

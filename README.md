@@ -73,6 +73,9 @@ Tick only what has been checked.
 - [ ] APN Real Estate confirmed as a Me² project the client is happy to show; other portfolio projects supplied
 - [ ] The pain lines, the back-office areas and their example lines, the service lists and the "What you can count on" commitments confirmed by EC
 - [ ] Privacy policy draft reviewed (EC, Patrick, ideally a lawyer), including the Phnom Penh disclosure
+- [ ] Both Start here prices shown on the same basis (set-up fee and monthly fee for each; BRIEF open decision 3)
+- [ ] Facts from EC for the questions buyers will ask: what happens to their data and who can see it, minimum term, how soon you can start, what happens if the team gets something wrong (copy review, 16 Oct 2026)
+- [ ] Weekend customer-service cover confirmed, or the "Saturday enquiry" pain row reworded (copy review, 16 Oct 2026)
 - [x] Resend account created, mesquaredagency.com verified there, `RESEND_API_KEY` set as a Worker secret, and a test enquiry received in hello@'s inbox (10 Oct 2026)
 - [x] Site opened to the public (15 Oct 2026: EC removed the Cloudflare Access sign-in that had kept it private since 10 Oct)
 - [ ] `mesquared.co.uk` redirected to `https://mesquaredagency.com` (it shows a Cloudflare 525 error since Access came off; DEPLOY.md)

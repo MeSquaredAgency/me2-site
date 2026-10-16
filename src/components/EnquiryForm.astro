@@ -1,6 +1,6 @@
 ---
 /**
- * The enquiry form: name, work email and a short message (BRIEF data rule: contact details and a short
+ * The enquiry form: name, email and a short message (BRIEF data rule: contact details and a short
  * description only). Posts to /api/enquiry (worker/index.ts), which emails the business inbox (FORM_TO_EMAIL).
  * One form on the page: it lives at the foot of the page, and moves into a dialog when someone presses
  * "Talk to us" or "Ask about…" anywhere else, carrying what they clicked as the topic.
@@ -13,7 +13,7 @@ const f = content.form;
 const privacyBefore = f.privacy.slice(0, f.privacy.indexOf(f.privacyLink));
 ---
 <form class="enquiry" method="post" action="/api/enquiry" data-enquiry
-  data-msg={JSON.stringify({ required: f.required, emailError: f.emailError, tooLong: f.tooLong, sending: f.sending, submit: f.submit, success: f.success, failure: fill(f.failure), email: config.CONTACT_EMAIL })}>
+  data-msg={JSON.stringify({ requiredName: f.requiredName, requiredEmail: f.requiredEmail, requiredMessage: f.requiredMessage, emailError: f.emailError, tooLong: f.tooLong, sending: f.sending, submit: f.submit, success: f.success, failure: fill(f.failure), email: config.CONTACT_EMAIL })}>
   <input type="hidden" name="topic" value={f.generalTopic} data-topic />
   <input type="hidden" name="source" value="contact" data-source />
   <input type="hidden" name="started" value="" data-started />
@@ -110,10 +110,10 @@ const privacyBefore = f.privacy.slice(0, f.privacy.indexOf(f.privacyLink));
       let first: HTMLElement | null = null;
       const fail = (el: HTMLInputElement | HTMLTextAreaElement, t: string) => { showError(el, t); first ??= el; };
       for (const el of Object.values(fields)) showError(el, '');
-      if (!fields.name.value.trim()) fail(fields.name, msg.required);
-      if (!fields.email.value.trim()) fail(fields.email, msg.required);
+      if (!fields.name.value.trim()) fail(fields.name, msg.requiredName);
+      if (!fields.email.value.trim()) fail(fields.email, msg.requiredEmail);
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email.value.trim())) fail(fields.email, msg.emailError);
-      if (!fields.message.value.trim()) fail(fields.message, msg.required);
+      if (!fields.message.value.trim()) fail(fields.message, msg.requiredMessage);
       else if (fields.message.value.length > 2000) fail(fields.message, msg.tooLong);
       (first as HTMLElement | null)?.focus();
       return !first;
@@ -160,7 +160,7 @@ const privacyBefore = f.privacy.slice(0, f.privacy.indexOf(f.privacyLink));
   .about strong { font-weight: 600; }
   .about-clear {
     font: inherit; font-size: 0.85rem; color: var(--color-haze); background: none; border: 0; padding: 0 2px; cursor: pointer;
-    text-decoration: underline; text-underline-offset: 0.2em; min-height: 32px;
+    text-decoration: underline; text-underline-offset: 0.2em; min-height: 32px; white-space: nowrap;
   }
   .about-clear:focus-visible { outline: 2px solid var(--color-mist); outline-offset: 2px; }
   .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }

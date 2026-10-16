@@ -166,7 +166,7 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
     display: flex; align-items: center; justify-content: space-between; gap: 16px;
     padding-top: 14px; border-top: 1px solid rgb(232 237 241 / 0.12);
   }
-  .screen-label { font-size: 0.95rem; font-weight: 500; color: var(--color-mist); }
+  .screen-label { font-size: 0.95rem; font-weight: 500; color: var(--color-mist); text-wrap: balance; }
   .tabs { display: flex; gap: 2px; }
   .tab { width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 0; padding: 0; cursor: pointer; }
   .tab-sq { width: 10px; height: 10px; box-sizing: border-box; border: 1px solid rgb(232 237 241 / 0.5); transition: background-color 400ms var(--ease), border-color 400ms var(--ease); }
