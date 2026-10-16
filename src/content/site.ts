@@ -34,11 +34,11 @@ export const content = {
     scenes: [
       { scene: 'run', label: 'Your back office, run by people' },
       { scene: 'design', label: 'Websites and digital products' },
-      { scene: 'build', label: 'AI agents trained on your business' },
+      { scene: 'build', label: 'AI agents that draft, people who check' },
     ],
     scenesLabel: 'Show',
     subhead:
-      '{SITE_NAME} is the team behind your business: trained people, backed by AI agents, running everything from admin and accounts to customer service and marketing. We design and build the website out front too.',
+      '{SITE_NAME} is the team behind your business: trained people, backed by AI agents, running your admin, accounts, customer service and marketing. We design and build the website out front, too.',
     primary: 'Talk to us',
     /** The hero's second link: to the work, or (while showProof is off) to Start here. */
     secondary: 'See our work',
@@ -91,7 +91,7 @@ export const content = {
       'Illustration: a board of sample back-office tasks from different kinds of business. Each task is assigned to an operator, drafted by an AI agent and checked by the operator before it is marked done. Now and then the check catches an error, and it is corrected before the task is done.',
   },
 
-  /** Where your week goes: four pains, each picked up by Me² as it settles on screen (EC, 14 Oct 2026: "a penny drop, oh shit moment"). */
+  /** Where your week goes: five pains, each picked up by Me² as it settles on screen (EC, 14 Oct 2026: "a penny drop, oh shit moment"). */
   pain: {
     label: 'Where your week goes',
     rows: [
@@ -102,7 +102,7 @@ export const content = {
       },
       {
         line: 'Your best person spent Friday building a report.',
-        cost: 'The people who should be selling and looking after customers are doing data entry instead.',
+        cost: 'The people who should be selling and looking after customers are stuck in spreadsheets instead.',
         stamp: 'Operations · owned by {SITE_NAME}',
       },
       {
@@ -115,6 +115,12 @@ export const content = {
         cost: 'An agency for the site, a developer for the systems, a bookkeeper for the rest. When something breaks, everyone points somewhere else.',
         stamp: 'One team · owned by {SITE_NAME}',
       },
+      {
+        /** Copy review, 16 Oct 2026: the offer leads with customer service, which the first four rows didn't cover. Implies weekend replies: EC to confirm. */
+        line: 'That Saturday enquiry got a reply on Tuesday.',
+        cost: "By then they'd booked someone else.",
+        stamp: 'Customer service · owned by {SITE_NAME}',
+      },
     ],
     /** Not the hero line again: say each idea once. */
     turn: '{SITE_NAME} takes all of it off your hands.',
@@ -124,7 +130,8 @@ export const content = {
 
   work: {
     kicker: 'Selected work',
-    h2: 'Work we have designed, built and run.',
+    /** "designed and built", not "and run": the only project (APN Real Estate) is Design and Build. */
+    h2: 'Work we have designed and built.',
     /**
      * Real projects only, each with the client's OK (EC). `confirmed: false` items are for the mock-up
      * and must be confirmed or removed before launch. Never use screenshots that show or name individual people.
@@ -160,7 +167,7 @@ export const content = {
       name: 'The whole back office',
       /** showPricing. EC: "$3,000 per month for your entire business's backend covered"; a guideline for now. */
       price: 'From $3,000 + GST a month',
-      body: 'Trained {SITE_NAME} people own the work, backed by AI agents built around your business. They check every output, handle the exceptions and report back to you.',
+      body: 'Trained {SITE_NAME} people own the work, backed by AI agents built around your business. They check everything before it goes out, deal with anything unusual and report back to you.',
       /**
        * Everything behind the front line (EC, 14 Oct 2026: "it's everything"). Only what Me² can take on today;
        * the examples for operations, finance, marketing and social media come from the confirmed jobs, the rest are new (EC to confirm).
@@ -168,7 +175,7 @@ export const content = {
       areas: [
         { name: 'Business operations', example: 'Client intake, quote follow-up and the processes that hold it together.' },
         { name: 'Admin', example: 'Data entry, scheduling, filing and the inbox.' },
-        { name: 'Customer service and support', example: 'Every customer email and message answered in your tone.' },
+        { name: 'Customer service and support', example: 'Customer emails and messages answered in your voice.' },
         { name: 'Finance and accounting', example: 'Debtor follow-up, bill coding and weekly reporting.' },
         { name: 'Marketing', example: 'Newsletters, website updates, enquiry follow-up and a monthly report.' },
         { name: 'Social media', example: 'Posts drafted on schedule in your voice, for you to approve.' },
@@ -185,7 +192,7 @@ export const content = {
       name: 'An extra set of hands',
       /** showPricing */
       price: 'From $2,000 + GST to set up',
-      body: 'Not in need of a full team? A {SITE_NAME} person takes one job off your plate, like the inbox, the invoices or the data entry, backed by an AI agent set up around how you already work. They report back to you, and you stay in control.',
+      body: "Don't need a whole team? A {SITE_NAME} person takes one job off your plate, like the inbox, the invoices or the data entry, backed by an AI agent set up around how you already work. They report back to you, and you stay in control.",
       button: 'Ask about an extra set of hands',
       topic: 'Extra set of hands',
     },
@@ -207,11 +214,11 @@ export const content = {
     items: [
       {
         title: 'A person owns every task.',
-        body: 'Every task has a trained {SITE_NAME} person responsible for it. AI agents do the drafting; that person checks every name, date and number against the source before anything leaves.',
+        body: 'AI agents do the drafting. A trained {SITE_NAME} person checks every name, date and number against the source before anything leaves.',
       },
       {
         title: 'One team, answerable for all of it.',
-        body: 'The people who design your site are the people who build and run what sits behind it. When something needs fixing, there is one team to ask.',
+        body: 'Your website and your back office sit with one team. When something needs fixing, you know who to ask.',
       },
       {
         title: 'Built around how you already work.',
@@ -242,11 +249,11 @@ export const content = {
       },
       {
         q: 'Do we have to change the software we use?',
-        a: "We start from the tools and processes you already use and set each AI agent up around them. If something would need to change, we'll tell you before we start.",
+        a: "Usually not. We set the work up around the tools you already use, like your accounting software, inbox and CRM. If anything would need to change, we'll say so before we start.",
       },
       {
         q: 'Is it people or AI doing the work?',
-        a: "People, backed by AI. Every task is owned by a trained {SITE_NAME} person. AI agents trained on your business do the drafting and the volume, and that person checks it before it reaches you. We don't sell AI on its own.",
+        a: "People, backed by AI. Every task is owned by a trained {SITE_NAME} person. AI agents set up for your business do the drafting and the volume, and that person checks it before it reaches you. We don't sell AI on its own.",
       },
       {
         q: 'Where is the team based?',
@@ -275,22 +282,26 @@ export const content = {
   form: {
     title: 'Tell us what you need',
     about: 'About',
-    clearAbout: 'Remove',
+    clearAbout: 'Remove topic',
     generalTopic: 'General enquiry',
     name: 'Your name',
-    email: 'Work email',
-    message: 'What would you like to talk about?',
-    hint: "A sentence or two is plenty. Please don't include client, customer or tenant details.",
+    email: 'Email',
+    message: 'What do you need a hand with?',
+    hint: "A sentence or two is plenty. Please don't include client or customer details.",
     submit: 'Send enquiry',
     sending: 'Sending…',
-    required: 'Please fill in this field.',
+    /** One per field: say which field, and what to do. */
+    requiredName: 'Enter your name.',
+    requiredEmail: 'Enter your email address.',
+    requiredMessage: 'Tell us a little about what you need.',
     emailError: 'Enter an email address like name@business.com.au.',
     tooLong: 'Keep this under 2,000 characters.',
     success: "Enquiry sent. We'll reply to the email you gave us.",
-    failure: "Your enquiry didn't send. Email us at {CONTACT_EMAIL} instead.",
-    privacy: 'We use these details only to reply to you. See our privacy policy.',
+    /** The form keeps what they typed when sending fails, so say so. */
+    failure: "Your enquiry didn't send. What you wrote is still here: try again, or email us at {CONTACT_EMAIL}.",
+    privacy: "We use these details to reply to you, and we won't add you to a mailing list. See our privacy policy.",
     privacyLink: 'privacy policy',
-    close: 'Close',
+    close: 'Close form',
   },
 
   /** The page the form lands on without JavaScript. */
@@ -332,7 +343,7 @@ export const content = {
       {
         h: 'What we collect',
         p: [
-          'When you send an enquiry through the form on this site, we collect your name, your work email address, what you write in your message and which part of the site you sent it from. Please don\'t include details about your clients, customers or tenants.',
+          'When you send an enquiry through the form on this site, we collect your name, your email address, what you write in your message and which part of the site you sent it from. Please don\'t include details about your clients or customers.',
           'If you email us, we collect your email address and whatever your email contains.',
           'Our hosting provider, Cloudflare, processes technical information such as your IP address and browser type to deliver this site and protect it from abuse. This site doesn\'t set cookies of its own and doesn\'t use advertising or tracking tools.',
         ],
