@@ -78,6 +78,15 @@ check('main panel name and quote line', offerText.includes('The whole back offic
 check('no price figures on the page', !/\$\s?\d/.test(text) && !JSON.stringify(ld).includes('minPrice'));
 check('FAQ: cost answer says it is quoted', has('Every quote is built around what your business needs.'));
 check('form promises a reply within 2 hours', decode(html).includes("We'll reply to the email you gave us within 2 hours."));
+// EC's terms, 16 Oct 2026 ("Yes, all good terms").
+for (const q of ['How soon can you start?', 'Is there a lock-in contract?', 'What if your team gets something wrong?', 'What happens to our data, and who can see it?']) check(`FAQ: ${q}`, has(q) && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === q)));
+// Facebook and LinkedIn: in the footer, the structured data and llms.txt once set in site.config.ts, and nowhere while empty.
+const { siteConfig } = await import('../src/config/site.config.ts');
+const sameAs = ld.find((x) => x['@type'] === 'Organization')?.sameAs ?? [];
+for (const [label, url] of [['Facebook', siteConfig.FACEBOOK_URL], ['LinkedIn', siteConfig.LINKEDIN_URL]]) {
+  const inFooter = new RegExp(`<a href="${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*>${label}</a>`).test(html);
+  check(`${label} link ${url ? 'in footer, sameAs and llms.txt' : 'left out while its address is empty'}`, url ? inFooter && sameAs.includes(url) && llms.includes(url) : !new RegExp(`>${label}</a>`).test(html));
+}
 for (const a of ['Business operations', 'Admin', 'Customer service and support', 'Finance and accounting', 'Marketing', 'Social media', 'Paid ads']) check(`area: ${a}`, new RegExp(`<span class="area"[^>]*>${a}</span>`).test(offerHtml));
 check('coming next line', offerText.includes('Coming next: legal, tech development, consulting and strategy.'));
 check('extra set of hands panel', offerText.includes('An extra set of hands') && offerText.includes('Quoted per job') && offerText.includes("Don't need a whole team?") && offerText.includes('Ask about an extra set of hands'));

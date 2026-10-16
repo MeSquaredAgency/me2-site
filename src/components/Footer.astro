@@ -3,6 +3,7 @@ import Logo from './Logo.astro';
 import { config, fill, flags, shown } from '../config';
 import { content } from '../content/site';
 const c = content.footer;
+const social = c.social.map((s) => ({ label: s.label, url: config[s.key] })).filter((s) => s.url);
 ---
 <footer class="site-footer on-dark render-later">
   <div class="wrap top">
@@ -10,6 +11,7 @@ const c = content.footer;
     <div class="col">
       <h2 class="col-title">{c.contactHeading}</h2>
       <a href={`mailto:${config.CONTACT_EMAIL}`} class="tlink mail">{config.CONTACT_EMAIL}</a>
+      {social.length > 0 && <ul>{social.map((s) => <li><a href={s.url} rel="me">{s.label}</a></li>)}</ul>}
     </div>
     <nav class="col" aria-label={c.navHeading}>
       <h2 class="col-title">{c.navHeading}</h2>

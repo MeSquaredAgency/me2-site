@@ -47,7 +47,7 @@ ${flagOn('showProof') ? `- [Work](${base}/#work): projects ${name} has designed 
 ${flagOn('showPrivacyPage') ? `- [Privacy](${base}/privacy/): how enquiries are handled\n` : ''}
 ## Contact
 - [Email ${email}](mailto:${email})
-`;
+${fixture ? '' : [['Facebook', siteConfig.FACEBOOK_URL], ['LinkedIn', siteConfig.LINKEDIN_URL]].filter(([, url]) => url).map(([label, url]) => `- [${name} on ${label}](${url})\n`).join('')}`;
 writeFileSync(`${outDir}/llms.txt`, llms);
 
 for (const f of ['index.html', '404.html']) {

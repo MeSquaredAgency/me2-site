@@ -12,6 +12,9 @@ export const siteConfig = {
   FORM_TO_EMAIL: 'hello@mesquaredagency.com',
   /** Empty until EC supplies the Cal.com or Calendly link; empty keeps booking hidden. */
   BOOKING_URL: '',
+  /** Me²'s own Facebook page and LinkedIn company page (EC). Empty leaves the link out of the footer, the structured data and llms.txt. */
+  FACEBOOK_URL: '',
+  LINKEDIN_URL: '',
   LOCALE: 'en-AU',
   /** Footer entity line, shown only with showLegalEntity. */
   LEGAL_ENTITY: '[[TBC: legal entity name and registration number — Patrick + lawyer]]',

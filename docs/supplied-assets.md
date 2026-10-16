@@ -8,6 +8,7 @@ Drop each file or value where shown and the site picks it up on the next build. 
 | Real photos of Me² (Command Centre, team at work, with their permission) | `src/assets/photos/` (see docs/media.md) | No photos on the page since v0.13; the hero board and type carry it |
 | Final brand palette and fonts from the designer | `src/styles/tokens.css` | Ink, ivory and the logo coral; Instrument Serif + Instrument Sans |
 | Booking link (Cal.com or Calendly) | `BOOKING_URL` in `src/config/site.config.ts`, then `enableBooking` | No "Book a call" button |
+| Me²'s Facebook page and LinkedIn company page addresses | `FACEBOOK_URL` and `LINKEDIN_URL` in `src/config/site.config.ts` | No social links in the footer, the structured data (`sameAs`) or llms.txt |
 | Legal entity name and registration number | `LEGAL_ENTITY` in `src/config/site.config.ts`, then `showLegalEntity` | No entity line in the footer |
 | Lawyer-reviewed privacy policy text | `privacy.body` in `src/content/site.ts`, then `showPrivacyPage` | No privacy page; no form, booking or tracking |
 | Billing basis and GST wording for prices | `offers.cards[].price` in `src/content/site.ts`, then `showPricing` | No prices shown |

@@ -4,6 +4,8 @@ import { visibleFaq } from './faq';
 
 /** JSON-LD for the home page: Organization, one Service per offer (the whole back office, one job, websites), and the visible FAQ. */
 export function homeSchema() {
+  // Me²'s own social pages, when set in site.config.ts.
+  const sameAs = [config.FACEBOOK_URL, config.LINKEDIN_URL].filter(Boolean);
   const org = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -13,6 +15,7 @@ export function homeSchema() {
     url: `${siteUrl}/`,
     email: config.CONTACT_EMAIL,
     logo: `${siteUrl}/logo.png`,
+    ...(sameAs.length ? { sameAs } : {}),
   };
   // One Service per offer. An Offer with a price only when showPricing is on and the price line has a figure (since 16 Oct 2026 every offer is quoted, so none do).
   const o = content.offer;

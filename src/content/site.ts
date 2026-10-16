@@ -244,8 +244,17 @@ export const content = {
       },
       {
         q: 'What does it cost?',
-        a: "Every quote is built around what your business needs. The whole back office is one monthly fee. An extra set of hands is quoted per job, and websites per project. You'll know the price before anything starts.",
+        a: "Every quote is built around what your business needs. The whole back office is one monthly fee, billed in advance. An extra set of hands is quoted per job. Websites are quoted per project: half to start, half at launch. You'll know the price before anything starts.",
         flag: 'showPricing',
+      },
+      /** The terms EC agreed on 16 Oct 2026 ("Yes, all good terms"). */
+      {
+        q: 'How soon can you start?',
+        a: 'Within 2 weeks of you saying yes.',
+      },
+      {
+        q: 'Is there a lock-in contract?',
+        a: "No. Our back-office work runs month to month, and either of us can stop with 30 days' notice. Set-up is part of your quote and paid up front. If you leave, you keep everything: your data, your logins and the written processes we built for you. A website and its domain are yours once it's paid for.",
       },
       {
         q: 'Do we have to change the software we use?',
@@ -254,6 +263,14 @@ export const content = {
       {
         q: 'Is it people or AI doing the work?',
         a: "People, backed by AI. Every task is owned by a trained {SITE_NAME} person. AI agents set up for your business do the drafting and the volume, and that person checks it before it reaches you. We don't sell AI on its own.",
+      },
+      {
+        q: 'What if your team gets something wrong?',
+        a: "We fix it at no charge, tell you what happened, and update the written process so it doesn't happen again.",
+      },
+      {
+        q: 'What happens to our data, and who can see it?',
+        a: 'Only the {SITE_NAME} people doing your work. Each has their own login, only to the systems their job needs, and we remove it when the work ends. Your data is never used to train AI models.',
       },
       {
         q: 'Where is the team based?',
@@ -316,6 +333,11 @@ export const content = {
 
   footer: {
     contactHeading: 'Contact',
+    /** Shown only for the pages whose address is set in site.config.ts. */
+    social: [
+      { label: 'Facebook', key: 'FACEBOOK_URL' },
+      { label: 'LinkedIn', key: 'LINKEDIN_URL' },
+    ],
     navHeading: 'On this page',
     copyright: '© {YEAR} {SITE_NAME}',
     /** showPrivacyPage */
