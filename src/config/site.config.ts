@@ -10,6 +10,8 @@ export const siteConfig = {
   PRIVACY_EMAIL: 'privacy@mesquaredagency.com',
   FORM_FROM_EMAIL: 'website@mesquaredagency.com',
   FORM_TO_EMAIL: 'hello@mesquaredagency.com',
+  /** Where job applications go (the careers form), and the address the careers pages give out. */
+  CAREERS_EMAIL: 'people@mesquaredagency.com',
   /** Empty until EC supplies the Cal.com or Calendly link; empty keeps booking hidden. */
   BOOKING_URL: '',
   /** Me²'s own Facebook page and LinkedIn company page (EC). Empty leaves the link out of the footer, the structured data and llms.txt. */

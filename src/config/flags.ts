@@ -22,6 +22,11 @@ export const flags = {
   enableBooking: false,
   /** Any analytics beyond Cloudflare Web Analytics. Needs showPrivacyPage (EC). */
   enableTracking: false,
+  /**
+   * Careers: /careers/, a page per listed role (src/content/careers.ts), the footer link, and the /api/applications route.
+   * The application form also needs showPrivacyPage; without it each role page says to email a CV instead. On since 16 Oct 2026 (EC).
+   */
+  showCareers: true,
 };
 
 export type Flags = typeof flags;

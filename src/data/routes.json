@@ -23,6 +23,57 @@
     "flag": "showPrivacyPage"
   },
   {
+    "path": "/careers/",
+    "title": "Careers | Me²",
+    "description": "Join Me²'s Command Centre in Phnom Penh. Open roles in property management, accounting and marketing, starting at US$600 a month.",
+    "ogImage": "/og-image.png",
+    "noindex": false,
+    "flag": "showCareers"
+  },
+  {
+    "path": "/careers/operations-executive-property-management/",
+    "title": "Operations Executive (Property Management) | Me² careers",
+    "description": "Property management administration for APN Real Estate, an Australian agency, from Me²'s Command Centre in Phnom Penh. From US$600 a month.",
+    "ogImage": "/og-image.png",
+    "noindex": false,
+    "flag": "showCareers",
+    "role": "operations-executive-property-management"
+  },
+  {
+    "path": "/careers/operations-executive-accounting/",
+    "title": "Operations Executive (Accounting & Bookkeeping) | Me² careers",
+    "description": "Bookkeeping and accounting for Australian businesses and Me²'s own Cambodian finances, from our Command Centre in Phnom Penh. From US$600 a month.",
+    "ogImage": "/og-image.png",
+    "noindex": false,
+    "flag": "showCareers",
+    "role": "operations-executive-accounting"
+  },
+  {
+    "path": "/careers/operations-executive-marketing/",
+    "title": "Operations Executive (Marketing) | Me² careers",
+    "description": "Me²'s first dedicated marketing hire: content, campaigns and reporting for Me² and its clients, from Phnom Penh. From US$600 a month.",
+    "ogImage": "/og-image.png",
+    "noindex": false,
+    "flag": "showCareers",
+    "role": "operations-executive-marketing"
+  },
+  {
+    "path": "/careers/thanks/",
+    "title": "Application sent | Me²",
+    "description": "Your application has been sent to Me². If you're shortlisted, we'll email you about the next step.",
+    "ogImage": "/og-image.png",
+    "noindex": true,
+    "flag": "showCareers"
+  },
+  {
+    "path": "/careers/not-sent/",
+    "title": "Application not sent | Me²",
+    "description": "Your application didn't send. Email your CV to Me² instead.",
+    "ogImage": "/og-image.png",
+    "noindex": true,
+    "flag": "showCareers"
+  },
+  {
     "path": "/thanks/",
     "title": "Enquiry sent | Me²",
     "description": "Your enquiry has been sent to Me². We will reply to the email you gave us within 2 hours.",
