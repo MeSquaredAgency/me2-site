@@ -5,7 +5,7 @@ import Footer from '../components/Footer.astro';
 import { fill, fixtureText, flags } from '../config';
 import { content } from '../content/site';
 // The privacy page at /privacy/. A dynamic route so it is only built when showPrivacyPage is on.
-// v0.15: the text in site.ts is a DRAFT for EC, Patrick and ideally a lawyer to review before it goes live.
+// The text is in site.ts (reviewed by EC, 16 Oct 2026).
 export function getStaticPaths() {
   return flags.showPrivacyPage ? [{ params: { page: 'privacy' } }] : [];
 }

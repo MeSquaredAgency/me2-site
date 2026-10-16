@@ -268,7 +268,7 @@ N/A — new build; the domain only shows a parking page.
 |---|---|---|---|---|---|
 | 1 | Launch domain and CTA inbox | `mesquaredagency.com` or `mesquared.co.uk`; confirm `hello@` receives mail | `mesquaredagency.com`; send a test email to `hello@` before launch | EC | Launch (one-file change if switched) |
 | 2 | Service claims | Keep or cut each of the six use-case examples (§6.6), the sample tasks on the hero board, and the "a person checks it" line | Keep only work Me² can deliver within 30 days of signing | EC | Launch |
-| 3 | Billing basis and GST wording | One-off, monthly, setup + monthly; "+ GST" or not | Setup + monthly for AI Roles; monthly with a minimum term for EBUs. GST depends on which entity invoices | Patrick + accountant | `showPricing` |
+| 3 | Billing basis and GST wording | One-off, monthly, setup + monthly; "+ GST" or not | **Settled 16 Oct 2026 (EC):** every offer is quoted to the client's requirements; the page shows how each is quoted, no figures. GST wording now belongs in quotes | Patrick + accountant | `showPricing` |
 | 4 | Contracting entity | Australian, Cambodian, other | Needs Australian and Cambodian legal advice | Patrick + lawyer | `showLegalEntity` |
 | 5 | Disclose Phnom Penh team | Show or don't | Show it; the privacy policy must disclose offshore handling (APP 8) anyway | Patrick | `showLocations` |
 | 6 | Privacy policy | Lawyer-reviewed text covering the APPs incl. APP 8 | Review before any form, booking or tracking goes live | Patrick + lawyer | `showPrivacyPage`, form, booking, tracking |

@@ -4,9 +4,10 @@ import { fill, flags } from '../config';
 import { content } from '../content/site';
 const c = content.offer;
 // "From $3,000 + GST a month" → the figure set large, the words around it small.
+// A price in words ("Quoted per job") is set like the websites panel's.
 const price = (text: string) => {
   const m = text.match(/^(.*?)(\$[\d,]+)(.*)$/);
-  return m ? { before: m[1].trim(), figure: m[2], after: m[3].trim() } : { before: '', figure: '', after: text };
+  return m ? { before: m[1].trim(), figure: m[2], after: m[3].trim(), words: false } : { before: '', figure: text, after: '', words: true };
 };
 // "back office" never splits across lines.
 const keep = (t: string) => t.replace('back office', 'back office');
@@ -28,7 +29,7 @@ const onePrice = price(c.one.price);
         <div>
           <h3 id="office-title" class="tier">{keep(c.office.name)}</h3>
           {flags.showPricing && (
-            <p class="price">{officePrice.before} <span class="figure">{officePrice.figure}</span> <span class="after">{officePrice.after}</span></p>
+            <p class="price">{officePrice.before && <>{officePrice.before} </>}<span class:list={['figure', { 'figure-words': officePrice.words }]}>{officePrice.figure}</span>{officePrice.after && <> <span class="after">{officePrice.after}</span></>}</p>
           )}
         </div>
         <p class="body">{fill(c.office.body)}</p>
@@ -49,7 +50,7 @@ const onePrice = price(c.one.price);
       <article class="tier-panel one" aria-labelledby="one-title">
         <h3 id="one-title" class="tier tier-sm">{c.one.name}</h3>
         {flags.showPricing && (
-          <p class="price">{onePrice.before} <span class="figure">{onePrice.figure}</span> <span class="after">{onePrice.after}</span></p>
+          <p class="price">{onePrice.before && <>{onePrice.before} </>}<span class:list={['figure', { 'figure-words': onePrice.words }]}>{onePrice.figure}</span>{onePrice.after && <> <span class="after">{onePrice.after}</span></>}</p>
         )}
         <div class="panel-main"><p class="body">{fill(c.one.body)}</p></div>
         <div class="panel-foot"><EnquireLink topic={c.one.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.one.button}</EnquireLink></div>
