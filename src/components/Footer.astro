@@ -23,6 +23,7 @@ const social = c.social.map((s) => ({ label: s.label, url: config[s.key] })).fil
   <div class="wrap bottom">
     <p>{fill(c.copyright)}</p>
     {flags.showLegalEntity && <p>{config.LEGAL_ENTITY}</p>}
+    {flags.showCareers && <a href="/careers/">{c.careers}</a>}
     {flags.showPrivacyPage && <a href="/privacy/">{c.privacy}</a>}
   </div>
   <!-- The wordmark, edge to edge, sinking into the bottom of the page. Decorative (the logo above is the link). -->

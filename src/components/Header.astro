@@ -60,6 +60,8 @@ const c = content.header;
     transition: color 300ms var(--ease);
   }
   @media (hover: hover) and (pointer: fine) { .nav a:hover { color: var(--color-mist); } }
+  /* Over a paper section the frosted bar is mid-grey, where haze falls short of 4.5:1; mist reads at 8:1. */
+  .is-scrolled .nav a { color: var(--color-mist); }
   .bar :global(.cta) { min-height: 46px; padding: 0 20px 0 18px; font-size: 0.95rem; }
   .site-header :global(:focus-visible) { outline-color: var(--color-mist); }
   @media (max-width: 899px) { .nav { display: none; } }

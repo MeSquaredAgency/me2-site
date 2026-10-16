@@ -311,6 +311,9 @@ export const roles: Role[] = [
   },
 ];
 
+/** Where every role is based, for Google's job search (JobPosting). */
+export const jobPlace = { locality: 'Phnom Penh', country: 'KH' };
+
 export const listedRoles = (): Role[] => roles.filter((r) => r.listed);
 export const findRole = (slug: string): Role | undefined => listedRoles().find((r) => r.slug === slug);
 
@@ -325,6 +328,7 @@ export const careers = {
   },
   role: {
     kicker: 'Operations Executive',
+    crumb: 'All roles',
     factLabels: { location: 'Location', type: 'Type', hours: 'Hours', salary: 'Salary' },
     hoursShort: '44 hours per week',
     apply: 'Apply now',

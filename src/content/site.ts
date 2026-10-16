@@ -340,6 +340,8 @@ export const content = {
     ],
     navHeading: 'On this page',
     copyright: '© {YEAR} {SITE_NAME}',
+    /** showCareers */
+    careers: 'Careers',
     /** showPrivacyPage */
     privacy: 'Privacy',
   },

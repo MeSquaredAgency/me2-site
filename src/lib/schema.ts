@@ -1,6 +1,34 @@
 import { config, fill, flags, siteUrl } from '../config';
 import { content } from '../content/site';
 import { visibleFaq } from './faq';
+import { jobPlace, type Role } from '../content/careers';
+
+const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+
+/** JSON-LD for a role page: one JobPosting, so the role can show in Google's job search. The description is the posting as simple HTML. */
+export function jobPostingSchema(role: Role) {
+  const sameAs = [config.FACEBOOK_URL, config.LINKEDIN_URL].filter(Boolean);
+  const description = role.sections.map((s) => [
+    `<p><strong>${esc(s.h)}</strong></p>`,
+    ...(s.paras ?? []).map((p) => `<p>${esc(p)}</p>`),
+    ...(s.groups ?? []).map((g) => `${g.h ? `<p>${esc(g.h)}</p>` : ''}<ul>${g.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>`),
+    ...(s.after ?? []).map((p) => `<p>${esc(p)}</p>`),
+    s.link ? `<p>${esc(s.link.before)}<a href="${s.link.href}">${esc(s.link.text)}</a></p>` : '',
+  ].join('')).join('');
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: role.title,
+    description,
+    datePosted: role.datePosted,
+    employmentType: 'FULL_TIME',
+    directApply: true,
+    url: `${siteUrl}/careers/${role.slug}/`,
+    hiringOrganization: { '@type': 'Organization', name: config.SITE_NAME, logo: `${siteUrl}/logo.png`, ...(sameAs.length ? { sameAs } : {}) },
+    jobLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: jobPlace.locality, addressCountry: jobPlace.country } },
+    baseSalary: { '@type': 'MonetaryAmount', currency: role.facts.currency, value: { '@type': 'QuantitativeValue', minValue: role.facts.salaryFrom, unitText: 'MONTH' } },
+  };
+}
 
 /** JSON-LD for the home page: Organization, one Service per offer (the whole back office, one job, websites), and the visible FAQ. */
 export function homeSchema() {

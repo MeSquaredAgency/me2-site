@@ -1,0 +1,79 @@
+---
+/** /careers/: what the Command Centre is, the open roles as one list (each row is the whole link), and how to apply. */
+import { config, fill } from '../../config';
+import { careers, listedRoles } from '../../content/careers';
+const c = careers.index;
+const roles = listedRoles();
+const withMail = (text: string) => fill(text).split(config.CAREERS_EMAIL);
+const [applyBefore, applyAfter] = withMail(c.applying);
+const [noneBefore, noneAfter] = withMail(c.none);
+---
+<main id="main">
+  <section class="head on-dark">
+    <div class="wrap head-inner">
+      <h1>{c.h1}</h1>
+      <p class="lede">{c.intro}</p>
+    </div>
+  </section>
+  <section class="section on-paper" aria-labelledby="roles-title">
+    <div class="wrap open">
+      <h2 class="kicker" id="roles-title">{c.rolesHeading}</h2>
+      {roles.length > 0
+        ? (
+          <ul class="roles">
+            {roles.map((r) => (
+              <li>
+                <a href={`/careers/${r.slug}/`} class="role-row">
+                  <div class="role-name">
+                    <span class="role-kicker">{careers.role.kicker}</span>
+                    <h3 class="role-area">{r.area}</h3>
+                  </div>
+                  <div class="role-about">
+                    <span class="role-summary">{r.summary}</span>
+                    <span class="role-facts">{c.rowFacts}</span>
+                  </div>
+                  <span class="role-go" aria-hidden="true"></span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+        : <p class="none">{noneBefore}<a href={`mailto:${config.CAREERS_EMAIL}`}>{config.CAREERS_EMAIL}</a>{noneAfter}</p>}
+      <p class="applying">{applyBefore}<a href={`mailto:${config.CAREERS_EMAIL}`}>{config.CAREERS_EMAIL}</a>{applyAfter}</p>
+    </div>
+  </section>
+</main>
+
+<style>
+  .head { padding: 170px 0 96px; }
+  .head-inner { display: grid; gap: 32px; }
+  h1 { max-width: 12ch; }
+  .lede { max-width: 52ch; }
+  .open { display: grid; gap: 40px; }
+  h2.kicker { font-stretch: 100%; line-height: 1.4; }
+  .roles { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--color-line); }
+  .role-row {
+    display: grid; gap: 14px; align-items: center; padding: 32px 0; text-decoration: none; color: var(--color-ink);
+    border-top: 1px solid var(--color-line);
+  }
+  @media (min-width: 900px) {
+    .role-row { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) 40px; gap: 48px; padding: 44px 0; }
+  }
+  .role-name { display: grid; gap: 6px; }
+  .role-kicker { font-size: 0.95rem; color: var(--color-slate); }
+  .role-area {
+    font-size: clamp(1.9rem, 3.6vw, 3.4rem); font-weight: 520; font-stretch: var(--display-stretch);
+    line-height: 1; letter-spacing: -0.04em;
+  }
+  .role-about { display: grid; gap: 10px; }
+  .role-summary { color: var(--color-slate); font-size: 1.08rem; line-height: 1.55; max-width: 46ch; }
+  .role-facts { font-size: var(--text-small); font-weight: 500; color: var(--color-ink); }
+  .role-go { width: 12px; height: 12px; background: var(--color-coral-deep); justify-self: end; transition: transform 450ms var(--ease-out); }
+  @media (max-width: 899px) { .role-go { display: none; } }
+  @media (hover: hover) and (pointer: fine) {
+    .role-row:hover .role-go { transform: translateX(-8px) rotate(90deg) scale(1.3); }
+    .role-row:hover .role-area { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; }
+  }
+  .none, .applying { color: var(--color-slate); font-size: 1.08rem; max-width: 60ch; }
+  .none a, .applying a { color: var(--color-ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+</style>
