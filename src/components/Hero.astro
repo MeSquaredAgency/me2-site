@@ -130,11 +130,12 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
 
   /* The screen. Without WebGL it is a glass panel of its own, with the ² at its corner. */
   .screen {
-    --sw: 560px;
-    /* Positioned with transforms only, so moving onto the glass later isn't a layout shift. */
+    /* Its size, and where it sits until the WebGL mark takes it over (always, without WebGL): centre --x, --y at scale --k. */
+    --sw: 560px; --x: 66.5vw; --y: 50svh; --k: 0.82;
+    /* Positioned with transforms only, so moving onto the glass later isn't a layout shift. One transform, not translate and
+       scale beside it: the build's CSS minifier drops those from a rule that sets transform, which left the screen over the headline. */
     position: absolute; left: 0; top: 0; width: var(--sw); height: var(--sw); box-sizing: border-box;
-    translate: calc(66.5vw - 50%) calc(50svh - 50%); scale: 0.82;
-    transform: perspective(1400px) rotateY(-10deg) rotateX(4deg);
+    transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%)) scale(var(--k)) perspective(1400px) rotateY(-10deg) rotateX(4deg);
     pointer-events: auto; overflow: hidden; border-radius: 3%;
     background: radial-gradient(90% 70% at 85% 10%, #13283c 0%, #0a1621 60%);
     box-shadow: inset 0 1px 0 rgb(232 237 241 / 0.16), 0 50px 120px rgb(0 0 0 / 0.5);
@@ -144,9 +145,9 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
     content: ''; position: absolute; right: 18px; top: 18px; width: 10px; height: 10px; background: var(--color-coral);
     box-shadow: 0 0 18px 3px rgb(var(--glow) / 0.6);
   }
-  /* With WebGL, the script pins the screen to the face of the glass (transform-origin top-left). */
+  /* With WebGL, the script pins the screen to the face of the glass (an inline transform, transform-origin top-left). */
   .hero:global(.is-gl) .screen {
-    translate: none; scale: none; transform-origin: 0 0; border-radius: 0;
+    transform-origin: 0 0; border-radius: 0;
     box-shadow: none; will-change: transform;
   }
   .hero:global(.is-gl) .screen::after { display: none; }
@@ -210,15 +211,15 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
     .foot { grid-template-columns: minmax(0, 1fr) auto; }
   }
   @media (min-width: 900px) and (max-width: 1099px) and (orientation: landscape) {
-    .screen { scale: 0.66; }
+    .screen { --k: 0.66; }
   }
   /* Stacked: room above the words for the mark, little enough that a portrait tablet shows the buttons on the first screen. */
   @media (max-width: 899px), (max-width: 1099px) and (orientation: portrait) {
-    .screen { --sw: 480px; translate: calc(60vw - 50%) calc(30svh - 50%); scale: 0.6; }
+    .screen { --sw: 480px; --x: 60vw; --y: 30svh; --k: 0.6; }
     .inner { padding-top: 46svh; }
   }
   @media (max-width: 639px) {
-    .screen { --sw: 400px; translate: calc(42vw - 50%) calc(27svh - 50%); scale: 0.5; }
+    .screen { --sw: 400px; --x: 42vw; --y: 27svh; --k: 0.5; }
     .screen-label { font-size: 1.1rem; }
     .inner { padding-top: 50svh; }
     .lines { font-size: clamp(2.6rem, 13.4vw, 4.2rem); }
