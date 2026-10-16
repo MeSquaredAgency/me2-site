@@ -73,10 +73,23 @@ const offerHtml = html.match(/<section id="services"[\s\S]*?<\/section>(?=\s*(?:
 const offerText = decode(offerHtml.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ');
 check('offer headline', offerText.includes('Your back office, handled.'));
 check('offer intro', offerText.includes('One team for everything behind your front line. Hand over the lot, or start with an extra set of hands.'));
-check('main panel name and price', offerText.includes('The whole back office') && offerText.includes('$3,000') && offerText.includes('a month'));
+check('main panel name and quote line', offerText.includes('The whole back office') && offerText.includes('Quoted for your business'));
+// EC, 16 Oct 2026: every offer is quoted, so no figures anywhere on the page or in its structured data.
+check('no price figures on the page', !/\$\s?\d/.test(text) && !JSON.stringify(ld).includes('minPrice'));
+check('FAQ: cost answer says it is quoted', has('Every quote is built around what your business needs.'));
+check('form promises a reply within 2 hours', decode(html).includes("We'll reply to the email you gave us within 2 hours."));
+// EC's terms, 16 Oct 2026 ("Yes, all good terms").
+for (const q of ['How soon can you start?', 'Is there a lock-in contract?', 'What if your team gets something wrong?', 'What happens to our data, and who can see it?']) check(`FAQ: ${q}`, has(q) && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === q)));
+// Facebook and LinkedIn: in the footer, the structured data and llms.txt once set in site.config.ts, and nowhere while empty.
+const { siteConfig } = await import('../src/config/site.config.ts');
+const sameAs = ld.find((x) => x['@type'] === 'Organization')?.sameAs ?? [];
+for (const [label, url] of [['Facebook', siteConfig.FACEBOOK_URL], ['LinkedIn', siteConfig.LINKEDIN_URL]]) {
+  const inFooter = new RegExp(`<a href="${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*>${label}</a>`).test(html);
+  check(`${label} link ${url ? 'in footer, sameAs and llms.txt' : 'left out while its address is empty'}`, url ? inFooter && sameAs.includes(url) && llms.includes(url) : !new RegExp(`>${label}</a>`).test(html));
+}
 for (const a of ['Business operations', 'Admin', 'Customer service and support', 'Finance and accounting', 'Marketing', 'Social media', 'Paid ads']) check(`area: ${a}`, new RegExp(`<span class="area"[^>]*>${a}</span>`).test(offerHtml));
 check('coming next line', offerText.includes('Coming next: legal, tech development, consulting and strategy.'));
-check('extra set of hands panel', offerText.includes('An extra set of hands') && offerText.includes('$2,000') && offerText.includes("Don't need a whole team?") && offerText.includes('Ask about an extra set of hands'));
+check('extra set of hands panel', offerText.includes('An extra set of hands') && offerText.includes('Quoted per job') && offerText.includes("Don't need a whole team?") && offerText.includes('Ask about an extra set of hands'));
 check('old one-job wording gone', lacks('Start with one job') && lacks('your own team reviews'));
 check('websites panel kept', offerText.includes('Websites and digital products') && offerText.includes('Quoted per project'));
 check('EBU name gone', lacks('Effective Business Unit'));
@@ -87,7 +100,7 @@ check('one enquiry button for the whole back office', (offerHtml.match(/data-top
 const services = ld.filter((x) => x['@type'] === 'Service').map((s) => s.name);
 check('JSON-LD services', JSON.stringify(services) === JSON.stringify(['The whole back office', 'An extra set of hands', 'Websites and digital products']), services.join(' | '));
 const officeLd = ld.find((x) => x.name === 'The whole back office');
-check('JSON-LD back office price 3000 AUD', officeLd?.offers?.priceSpecification?.minPrice === 3000);
+check('JSON-LD back office has no price', officeLd && !officeLd.offers);
 check('JSON-LD description has Me² filled in', !JSON.stringify(ld).includes('{SITE_NAME}'));
 check('llms.txt: back office, no EBU or AI Roles', llms.includes('The whole back office') && !llms.includes('Effective Business') && !llms.includes('AI Roles') && !/back end/i.test(llms));
 check('llms.txt: people first', llms.includes('trained people') && llms.includes('AI agents'));

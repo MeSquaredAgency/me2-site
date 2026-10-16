@@ -116,7 +116,7 @@ export const content = {
         stamp: 'One team · owned by {SITE_NAME}',
       },
       {
-        /** Copy review, 16 Oct 2026: the offer leads with customer service, which the first four rows didn't cover. Implies weekend replies: EC to confirm. */
+        /** Copy review, 16 Oct 2026: the offer leads with customer service, which the first four rows didn't cover. Weekends are worked (EC, 16 Oct 2026). */
         line: 'That Saturday enquiry got a reply on Tuesday.',
         cost: "By then they'd booked someone else.",
         stamp: 'Customer service · owned by {SITE_NAME}',
@@ -165,8 +165,8 @@ export const content = {
     intro: 'One team for everything behind your front line. Hand over the lot, or start with an extra set of hands.',
     office: {
       name: 'The whole back office',
-      /** showPricing. EC: "$3,000 per month for your entire business's backend covered"; a guideline for now. */
-      price: 'From $3,000 + GST a month',
+      /** showPricing. EC, 16 Oct 2026: "prices should be provided upon quotation depending on the clients requirements". One monthly fee (EC, 14 Oct). */
+      price: 'Quoted for your business',
       body: 'Trained {SITE_NAME} people own the work, backed by AI agents built around your business. They check everything before it goes out, deal with anything unusual and report back to you.',
       /**
        * Everything behind the front line (EC, 14 Oct 2026: "it's everything"). Only what Me² can take on today;
@@ -190,8 +190,8 @@ export const content = {
     /** EC: "Not in need of a full team, just an extra set of hands to do the admin". A Me² person owns the work; never AI on its own. */
     one: {
       name: 'An extra set of hands',
-      /** showPricing */
-      price: 'From $2,000 + GST to set up',
+      /** showPricing. Quoted, like the whole back office (EC, 16 Oct 2026). */
+      price: 'Quoted per job',
       body: "Don't need a whole team? A {SITE_NAME} person takes one job off your plate, like the inbox, the invoices or the data entry, backed by an AI agent set up around how you already work. They report back to you, and you stay in control.",
       button: 'Ask about an extra set of hands',
       topic: 'Extra set of hands',
@@ -244,8 +244,17 @@ export const content = {
       },
       {
         q: 'What does it cost?',
-        a: 'The whole back office starts from $3,000 + GST a month. An extra set of hands starts from $2,000 + GST to set up. Websites are quoted per project once we understand the job.',
+        a: "Every quote is built around what your business needs. The whole back office is one monthly fee, billed in advance. An extra set of hands is quoted per job. Websites are quoted per project: half to start, half at launch. You'll know the price before anything starts.",
         flag: 'showPricing',
+      },
+      /** The terms EC agreed on 16 Oct 2026 ("Yes, all good terms"). */
+      {
+        q: 'How soon can you start?',
+        a: 'Within 2 weeks of you saying yes.',
+      },
+      {
+        q: 'Is there a lock-in contract?',
+        a: "No. Our back-office work runs month to month, and either of us can stop with 30 days' notice. Set-up is part of your quote and paid up front. If you leave, you keep everything: your data, your logins and the written processes we built for you. A website and its domain are yours once it's paid for.",
       },
       {
         q: 'Do we have to change the software we use?',
@@ -254,6 +263,14 @@ export const content = {
       {
         q: 'Is it people or AI doing the work?',
         a: "People, backed by AI. Every task is owned by a trained {SITE_NAME} person. AI agents set up for your business do the drafting and the volume, and that person checks it before it reaches you. We don't sell AI on its own.",
+      },
+      {
+        q: 'What if your team gets something wrong?',
+        a: "We fix it at no charge, tell you what happened, and update the written process so it doesn't happen again.",
+      },
+      {
+        q: 'What happens to our data, and who can see it?',
+        a: 'Only the {SITE_NAME} people doing your work. Each has their own login, only to the systems their job needs, and we remove it when the work ends. Your data is never used to train AI models.',
       },
       {
         q: 'Where is the team based?',
@@ -296,7 +313,8 @@ export const content = {
     requiredMessage: 'Tell us a little about what you need.',
     emailError: 'Enter an email address like name@business.com.au.',
     tooLong: 'Keep this under 2,000 characters.',
-    success: "Enquiry sent. We'll reply to the email you gave us.",
+    /** EC, 16 Oct 2026: "Within 2 hours." */
+    success: "Enquiry sent. We'll reply to the email you gave us within 2 hours.",
     /** The form keeps what they typed when sending fails, so say so. */
     failure: "Your enquiry didn't send. What you wrote is still here: try again, or email us at {CONTACT_EMAIL}.",
     privacy: "We use these details to reply to you, and we won't add you to a mailing list. See our privacy policy.",
@@ -307,7 +325,7 @@ export const content = {
   /** The page the form lands on without JavaScript. */
   thanks: {
     h1: 'Enquiry sent.',
-    body: "We'll reply to the email you gave us.",
+    body: "We'll reply to the email you gave us within 2 hours.",
     failH1: "Your enquiry didn't send.",
     failBody: 'Email us at {CONTACT_EMAIL} instead.',
     button: 'Back to the home page',
@@ -315,6 +333,11 @@ export const content = {
 
   footer: {
     contactHeading: 'Contact',
+    /** Shown only for the pages whose address is set in site.config.ts. */
+    social: [
+      { label: 'Facebook', key: 'FACEBOOK_URL' },
+      { label: 'LinkedIn', key: 'LINKEDIN_URL' },
+    ],
     navHeading: 'On this page',
     copyright: '© {YEAR} {SITE_NAME}',
     /** showPrivacyPage */
@@ -328,13 +351,13 @@ export const content = {
   },
 
   /**
-   * DRAFT privacy policy (v0.15) for EC, Patrick and ideally a lawyer to review before it goes live.
+   * Privacy policy, reviewed by EC on 16 Oct 2026 ("Policy is fine."). Change "updated" whenever the text changes.
    * It describes what the site actually does: one enquiry form, no cookies of its own, hosting on Cloudflare,
    * form emails delivered by Resend, email in Google Workspace, and a team in Adelaide and Phnom Penh (overseas disclosure, APP 8).
    */
   privacy: {
     h1: 'Privacy',
-    updated: 'Last updated 9 October 2026',
+    updated: 'Last updated 16 October 2026',
     sections: [
       {
         h: 'Who we are',

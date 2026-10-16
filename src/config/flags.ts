@@ -3,7 +3,7 @@
  * Flipping a flag never needs a code change.
  */
 export const flags = {
-  /** Price lines in Start here and the pricing question. EC, 14 Oct 2026: the whole back office from $3,000 + GST a month (a guideline); an extra set of hands from $2,000 + GST to set up. */
+  /** Price lines in Start here and the pricing question. EC, 16 Oct 2026: every offer is quoted to the client's requirements, so the lines say how each is quoted, with no figures. */
   showPricing: true,
   /**
    * Selected work: the portfolio case studies (and the "Work" link in the menu and footer).
@@ -14,7 +14,7 @@ export const flags = {
   showLocations: false,
   /** Footer entity and registration line, once the contracting entity is confirmed (Patrick + lawyer). */
   showLegalEntity: false,
-  /** /privacy/ page and footer link. v0.15: on in the preview with a DRAFT policy; it must be reviewed (EC, Patrick, ideally a lawyer) before this reaches main. */
+  /** /privacy/ page and footer link. The policy was reviewed by EC on 16 Oct 2026 ("Policy is fine."). */
   showPrivacyPage: true,
   /** The enquiry form (final section, and a dialog from every "Talk to us"). Needs showPrivacyPage, and Resend set up with its key stored as a Worker secret (DEPLOY.md). */
   enableContactForm: true,

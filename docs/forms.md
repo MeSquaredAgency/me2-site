@@ -15,7 +15,7 @@ Two things are added automatically so leads arrive labelled:
 | --- | --- |
 | A "Talk to us" or "Ask about…" button anywhere on the page | The form opens in place (a dialog), with the topic shown at the top |
 | A field missing or the email not an email address | The message under that field, naming the field ("Enter your name.", "Enter your email address.", "Tell us a little about what you need."), and the cursor goes to it |
-| Sent | "Enquiry sent. We'll reply to the email you gave us." |
+| Sent | "Enquiry sent. We'll reply to the email you gave us within 2 hours." (EC's reply time, 16 Oct 2026; the no-JavaScript /thanks/ page says the same) |
 | Couldn't send (not set up yet, Cloudflare error, no connection) | "Your enquiry didn't send. What you wrote is still here: try again, or email us at hello@….", with the address as a link; what they typed stays in the form |
 | No JavaScript | The buttons jump to the form at the foot of the page; it posts normally and lands on `/thanks/` or `/not-sent/` |
 | A bot (fills the hidden field, or submits within 2.5 seconds) | Told it worked; nothing is sent |
