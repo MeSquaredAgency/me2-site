@@ -1,8 +1,9 @@
 // Job applications (POST /api/applications): checks an application from a careers page and emails it, CV attached,
 // to CAREERS_EMAIL through Resend. Spec: docs/superpowers/specs/2026-10-16-careers-design.md; docs/careers.md.
-// The page's script posts JSON with the CV already base64-encoded, so the Worker only checks its first bytes and
-// passes it on (Workers Free allows 10 ms of CPU). Without JavaScript the browser posts the form (multipart) and
-// lands on /careers/thanks/ or /careers/not-sent/. Logs say what happened and for which role, never who.
+// The form is always posted as multipart: by the page's script (with Accept: application/json, answered with
+// { ok, field? }), or by the browser itself without JavaScript (answered with a redirect to /careers/thanks/ or
+// /careers/not-sent/). The CV is encoded with the built-in toBase64(), which keeps a 4 MB CV well inside
+// Workers Free's 10 ms of CPU. Logs say what happened and for which role, never who.
 import { findRole } from '../src/content/careers.ts';
 import { siteConfig } from '../src/config/site.config.ts';
 import { flags } from '../src/config/flags.ts';
@@ -33,9 +34,10 @@ export function applicationWith(on: { showCareers: boolean; showPrivacyPage: boo
     if (!on.showCareers || !on.showPrivacyPage) return new Response('Not found', { status: 404 });
 
     const wantsJson = (request.headers.get('accept') ?? '').includes('application/json');
-    const done = (ok: boolean, status = ok ? 200 : 400) =>
+    // field: 'cv' when the CV itself was refused, so the page can say so under the CV field.
+    const done = (ok: boolean, status = ok ? 200 : 400, field?: 'cv') =>
       wantsJson
-        ? Response.json({ ok }, { status, headers: { 'Cache-Control': 'no-store' } })
+        ? Response.json(field ? { ok, field } : { ok }, { status, headers: { 'Cache-Control': 'no-store' } })
         : Response.redirect(new URL(ok ? '/careers/thanks/' : '/careers/not-sent/', request.url).toString(), 303);
     const log = (result: string, role: string, extra: Record<string, string> = {}) =>
       console.log(JSON.stringify({ event: 'application', result, role, ...extra }));
@@ -45,9 +47,7 @@ export function applicationWith(on: { showCareers: boolean; showPrivacyPage: boo
     let data: Fields;
     let cv: Cv | null;
     try {
-      ({ data, cv } = (request.headers.get('content-type') ?? '').includes('application/json')
-        ? fromJson(await request.json())
-        : await fromForm(await request.formData()));
+      ({ data, cv } = await fromForm(await request.formData()));
     } catch {
       log('invalid', 'unknown');
       return done(false);
@@ -67,8 +67,9 @@ export function applicationWith(on: { showCareers: boolean; showPrivacyPage: boo
     const phone = clean(data.phone, LIMITS.phone);
     const location = clean(data.location, LIMITS.location);
     const linkedin = clean(data.linkedin, LIMITS.linkedin);
-    const workLinks = (data.workLinks ?? '').trim();
-    const why = (data.why ?? '').trim();
+    // Browsers send each line break as two characters; the box counted it as one.
+    const workLinks = (data.workLinks ?? '').replace(/\r\n?/g, '\n').trim();
+    const why = (data.why ?? '').replace(/\r\n?/g, '\n').trim();
     const valid = role && name && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && location &&
       why && why.length <= LIMITS.why && workLinks.length <= LIMITS.workLinks && (!role.needsWorkLinks || workLinks);
     if (!valid) {
@@ -79,11 +80,11 @@ export function applicationWith(on: { showCareers: boolean; showPrivacyPage: boo
     const ext = cvKind(cv);
     if (!cv || !ext) {
       log('invalid', roleSlug, { code: 'cv' });
-      return done(false);
+      return done(false, 400, 'cv');
     }
     if (cv.size > MAX_CV_BYTES) {
       log('invalid', roleSlug, { code: 'cv-too-large' });
-      return done(false, 413);
+      return done(false, 413, 'cv');
     }
 
     if (!env.RESEND_API_KEY) {
@@ -140,32 +141,15 @@ export function applicationWith(on: { showCareers: boolean; showPrivacyPage: boo
 
 export const application = applicationWith(flags);
 
-/** The JSON the careers page posts: every field as a string, and the CV as { name, type, data (base64) }. */
-function fromJson(body: unknown): { data: Fields; cv: Cv | null } {
-  if (!body || typeof body !== 'object' || Array.isArray(body)) throw new Error('invalid');
-  const { cv: rawCv, ...rest } = body as Record<string, unknown>;
-  const data = Object.fromEntries(Object.entries(rest).map(([k, v]) => [k, typeof v === 'string' ? v : String(v ?? '')]));
-  if (!rawCv || typeof rawCv !== 'object') return { data, cv: null };
-  const { name, data: b64 } = rawCv as { name?: unknown; data?: unknown };
-  if (typeof b64 !== 'string' || !b64 || !/^[A-Za-z0-9+/]*={0,2}$/.test(b64.slice(-8))) return { data, cv: null };
-  const padding = b64.endsWith('==') ? 2 : b64.endsWith('=') ? 1 : 0;
-  // Only the first 8 characters are decoded (enough for the file signature); the rest is passed on untouched.
-  const head = Uint8Array.from(atob(b64.slice(0, 8)), (c) => c.charCodeAt(0));
-  return { data, cv: { name: String(name ?? ''), base64: b64, size: Math.floor((b64.length * 3) / 4) - padding, head } };
-}
-
-/** A normal form post (no JavaScript): the CV arrives as a file and is base64-encoded here. */
+/** The posted form: every field as a string, and the CV file base64-encoded (only when it's within the size limit). */
 async function fromForm(form: FormData): Promise<{ data: Fields; cv: Cv | null }> {
   const data: Fields = {};
   let cv: Cv | null = null;
   for (const [k, v] of form.entries()) {
     if (typeof v === 'string') data[k] = v;
     else if (k === 'cv' && v.size > 0) {
-      if (v.size > MAX_CV_BYTES) return { data, cv: { name: v.name, base64: '', size: v.size, head: new Uint8Array(await v.slice(0, 8).arrayBuffer()) } };
-      const bytes = new Uint8Array(await v.arrayBuffer());
-      let binary = '';
-      for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-      cv = { name: v.name, base64: btoa(binary), size: bytes.length, head: bytes.subarray(0, 8) };
+      const head = new Uint8Array(await v.slice(0, 8).arrayBuffer());
+      cv = { name: v.name, base64: v.size > MAX_CV_BYTES ? '' : new Uint8Array(await v.arrayBuffer()).toBase64(), size: v.size, head };
     }
   }
   return { data, cv };

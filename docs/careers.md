@@ -39,13 +39,14 @@ It then emails the application through Resend, from "Me Squared careers" `<websi
 | --- | --- |
 | A field missing or wrong | The message under that field, and the cursor goes to it |
 | Sent | "Application sent. Thanks for applying. If you're shortlisted, we'll email you about the next step." |
+| The CV itself refused by the Worker (its name and contents don't agree, e.g. a ".doc" that is really a web page) | "Your CV needs to be a PDF or Word file." under the CV field, and the cursor goes there |
 | Couldn't send (Resend refused, no key, no connection) | "Your application didn't send…", with people@ as a link; what they typed and the file stay in the form |
 | No JavaScript | A normal form post, then `/careers/thanks/` or `/careers/not-sent/` |
 
 ## Limits to watch
 - **Resend's free plan:** 100 emails a day and 3,000 a month, shared with the enquiry form. If applications get near that, move to a paid Resend plan; once the limit is reached, both forms say "didn't send".
 - **Rate limiting:** Cloudflare's free plan allows one rate-limiting rule. Make it cover every path that starts with `/api/` (DEPLOY.md).
-- **CPU:** the Me² Cloudflare account is on Workers Free, which allows 10 ms of CPU per request. With JavaScript, the browser encodes the CV, so the Worker only passes it on. After a change to the route, send a near-4 MB CV from a preview and read the CPU time in Workers Logs.
+- **CPU:** the Me² Cloudflare account is on Workers Free, which allows 10 ms of CPU per request. The form is always posted as multipart (by the page's script, or by the browser without JavaScript), and the Worker encodes the CV with the built-in `toBase64()`, which takes about 1 ms for 4 MB. `check-applications.mjs` times a 4 MB CV both ways. After a change to the route, send a near-4 MB CV from a preview and read the CPU time in Workers Logs.
 
 ## Testing
 - `node scripts/check-applications.mjs`: the route, with Resend stubbed. It covers every refusal, bots, size limits, previews, no-JavaScript posts and logs.

@@ -30,9 +30,17 @@ const env = { RESEND_API_KEY: 'test' };
 const base = (over = {}) => ({
   role: PM, name: 'Test Person', email: 'test@example.com', phone: '', location: 'Phnom Penh, Cambodia', linkedin: '',
   workLinks: '', why: 'I have run a rent roll for three years.', website: '', started: String(Date.now() - 10_000),
-  cv: { name: 'my cv.pdf', type: 'application/pdf', data: small.toString('base64') }, ...over,
+  cv: { name: 'my cv.pdf', type: 'application/pdf', bytes: small }, ...over,
 });
-const json = (payload, url = LIVE) => new Request(url, { method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify(payload) });
+// The page posts the form as multipart with Accept: application/json; without JavaScript the browser posts the same form without it.
+const json = (payload, url = LIVE, { js = true } = {}) => {
+  const fd = new FormData();
+  for (const [k, v] of Object.entries(payload)) {
+    if (k === 'cv') fd.append('cv', v ? new File([v.bytes], v.name, { type: v.type ?? '' }) : new File([], '', { type: 'application/octet-stream' }));
+    else if (v !== undefined) fd.append(k, v);
+  }
+  return new Request(url, { method: 'POST', headers: js ? { accept: 'application/json' } : {}, body: fd });
+};
 const run = async (req, e = env) => { calls = []; const res = await send(req, e); return { res, body: res.headers.get('content-type')?.includes('json') ? await res.json() : null }; };
 
 // A valid application from the live site.
@@ -69,27 +77,41 @@ const refused = [
   ['missing why', { why: '' }],
   ['why over 1,000 characters', { why: 'x'.repeat(1001) }],
   ['Marketing without work links', { role: 'operations-executive-marketing' }],
-  ['CV that is really a GIF', { cv: { name: 'cv.pdf', type: 'application/pdf', data: Buffer.from('GIF89a......').toString('base64') } }],
-  ['Word name but PDF bytes', { cv: { name: 'cv.docx', type: 'application/pdf', data: small.toString('base64') } }],
-  ['0-byte CV', { cv: { name: 'cv.pdf', type: 'application/pdf', data: '' } }],
+  ['CV that is really a GIF', { cv: { name: 'cv.pdf', type: 'application/pdf', bytes: Buffer.from('GIF89a......') } }],
+  ['Word-named CV with PDF bytes', { cv: { name: 'cv.docx', type: 'application/pdf', bytes: small } }],
+  ['0-byte CV', { cv: { name: 'cv.pdf', type: 'application/pdf', bytes: Buffer.alloc(0) } }],
   ['no CV', { cv: undefined }],
-  ['CV named .exe', { cv: { name: 'cv.exe', type: 'application/pdf', data: small.toString('base64') } }],
+  ['CV named .exe', { cv: { name: 'cv.exe', type: 'application/pdf', bytes: small } }],
 ];
 for (const [name, over] of refused) {
   const { res, body } = await run(json(base(over)));
   check(`refused: ${name}`, res.status === 400 && body?.ok === false && calls.length === 0, `${res.status}`);
+  // A refused CV is named, so the page can say so under the CV field instead of "try again".
+  if (/CV/.test(name)) check(`refused: ${name} says it was the CV`, body?.field === 'cv', JSON.stringify(body));
 }
 // Marketing with work links goes through; Word files go through.
 check('Marketing with work links: ok', (await run(json(base({ role: 'operations-executive-marketing', workLinks: 'https://example.com/a https://example.com/b' })))).res.status === 200 && calls[0]?.body.text.includes('https://example.com/a'));
 const docx = Buffer.concat([Buffer.from([0x50, 0x4b, 0x03, 0x04]), Buffer.alloc(100)]);
 const doc = Buffer.concat([Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]), Buffer.alloc(100)]);
-check('DOCX CV: ok', (await run(json(base({ cv: { name: 'cv.docx', type: '', data: docx.toString('base64') } })))).res.status === 200 && calls[0]?.body.attachments[0].filename.endsWith('.docx'));
-check('DOC CV: ok', (await run(json(base({ cv: { name: 'CV.DOC', type: '', data: doc.toString('base64') } })))).res.status === 200 && calls[0]?.body.attachments[0].filename.endsWith('.doc'));
+check('DOCX CV: ok', (await run(json(base({ cv: { name: 'cv.docx', type: '', bytes: docx } })))).res.status === 200 && calls[0]?.body.attachments[0].filename.endsWith('.docx'));
+check('DOC CV: ok', (await run(json(base({ cv: { name: 'CV.DOC', type: '', bytes: doc } })))).res.status === 200 && calls[0]?.body.attachments[0].filename.endsWith('.doc'));
 // The size limit: exactly 4 MB is fine, one byte more is not.
-check('CV of exactly 4 MB: ok', (await run(json(base({ cv: { name: 'cv.pdf', type: 'application/pdf', data: pdf(MAX_CV_BYTES).toString('base64') } })))).res.status === 200);
+check('CV of exactly 4 MB: ok', (await run(json(base({ cv: { name: 'cv.pdf', type: 'application/pdf', bytes: pdf(MAX_CV_BYTES) } })))).res.status === 200);
 {
-  const { res, body } = await run(json(base({ cv: { name: 'cv.pdf', type: 'application/pdf', data: pdf(MAX_CV_BYTES + 1).toString('base64') } })));
-  check('CV over 4 MB: 413, nothing sent', res.status === 413 && body?.ok === false && calls.length === 0, `${res.status}`);
+  const { res, body } = await run(json(base({ cv: { name: 'cv.pdf', type: 'application/pdf', bytes: pdf(MAX_CV_BYTES + 1) } })));
+  check('CV over 4 MB: 413, nothing sent', res.status === 413 && body?.ok === false && body?.field === 'cv' && calls.length === 0, `${res.status} ${JSON.stringify(body)}`);
+}
+// Line breaks arrive as two characters (CRLF) but the box counts them as one: 1,000 typed characters still go through.
+check('why of 1,000 characters with line breaks: ok', (await run(json(base({ why: 'x'.repeat(495) + '\r\n'.repeat(10) + 'x'.repeat(495) })))).res.status === 200);
+// Workers Free allows 10 ms of CPU a request. Handling a 4 MB CV (parsing the form, encoding the file, building the
+// email) has to stay well inside that; the slow way (spreading bytes into String.fromCharCode) took ~150 ms.
+for (const js of [true, false]) {
+  const req = json(base({ cv: { name: 'cv.pdf', type: 'application/pdf', bytes: pdf(MAX_CV_BYTES) } }), LIVE, { js });
+  const fd = await req.clone().formData(); // warm the parser so the timing is the handler's own work
+  const t = performance.now();
+  const { res } = await run(req);
+  const ms = performance.now() - t;
+  check(`4 MB CV ${js ? 'with' : 'without'} JavaScript: handled in under 40 ms here`, (res.status === 200 || res.status === 303) && ms < 40, `${ms.toFixed(1)} ms, ${res.status}, ${fd.get('cv').size} bytes`);
 }
 // Resend says no, or isn't set up: the applicant is told it didn't send.
 resendStatus = 429;

@@ -188,12 +188,18 @@ if (!args.has('--static')) {
   {
     const page = await open(PM_PATH, 1280);
     let sent = null;
-    await page.route('**/api/applications', async (route) => { sent = JSON.parse(route.request().postData()); await route.fulfill({ json: { ok: true } }); });
+    await page.route('**/api/applications', async (route) => {
+      const r = route.request();
+      sent = { type: r.headers()['content-type'] ?? '', accept: r.headers().accept ?? '', body: r.postDataBuffer()?.toString('latin1') ?? '' };
+      await route.fulfill({ json: { ok: true } });
+    });
     await fill(page);
     await page.click('[data-application] button[type="submit"]');
     await page.waitForSelector('[data-application].is-sent');
     check('sent: the thanks shows in place', (await page.textContent('[data-application] [data-status]'))?.includes('Application sent.'));
-    check('sent: the CV goes as base64', sent?.cv?.data === Buffer.from('%PDF-1.4 test file').toString('base64') && sent.cv.name === 'cv.pdf' && sent.role === SLUGS[0], JSON.stringify(sent)?.slice(0, 160));
+    // The same multipart form the browser would post without JavaScript, the CV as a file (not inflated by base64).
+    check('sent: posted as multipart with the CV file, answered as JSON', sent?.type.startsWith('multipart/form-data') && sent.accept.includes('application/json') &&
+      sent.body.includes('filename="cv.pdf"') && sent.body.includes('%PDF-1.4 test file') && new RegExp(`name="role"\\r\\n\\r\\n${SLUGS[0]}`).test(sent.body), JSON.stringify(sent)?.slice(0, 200));
     await page.context().close();
   }
   {
@@ -204,6 +210,18 @@ if (!args.has('--static')) {
     await page.waitForSelector('[data-application] [data-status] a[href^="mailto:people@"]');
     check('not sent: says so, with the people@ link', (await page.textContent('[data-application] [data-status]'))?.includes("Your application didn't send."));
     check('not sent: what they typed is still there', (await page.inputValue('#app-name')) === 'Test Person' && (await page.$eval('#app-cv', (i) => i.files.length)) === 1);
+    check('not sent: the message takes focus, so screen readers say it', await page.evaluate(() => document.activeElement?.matches('[data-application] [data-status]')));
+    await page.context().close();
+  }
+  {
+    // The Worker refused the CV itself (e.g. a ".doc" that is really a web page): say so under the CV field.
+    const page = await open(PM_PATH, 1280);
+    await page.route('**/api/applications', (route) => route.fulfill({ status: 400, json: { ok: false, field: 'cv' } }));
+    await fill(page);
+    await page.click('[data-application] button[type="submit"]');
+    await page.waitForFunction(() => document.querySelector('#app-cv-err')?.textContent.trim(), null, { timeout: 5000 }).catch(() => {});
+    check('CV refused by the server: said under the CV field, focus on it', (await page.textContent('#app-cv-err'))?.trim() === careers.form.cvType && await page.evaluate(() => document.activeElement?.id === 'app-cv'));
+    check('CV refused by the server: no "try again" message', !(await page.textContent('[data-application] [data-status]'))?.includes("didn't send"));
     await page.context().close();
   }
   {

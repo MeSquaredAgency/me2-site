@@ -3,8 +3,8 @@
  * The application form on each role page: contact details, where they're based, a CV (PDF or Word, up to 4 MB),
  * work links where the role asks for them, and a few lines on why (EC, 16 Oct 2026: the careers form takes a CV;
  * never fields for financial, health or identity information). Posts to /api/applications (worker/applications.ts).
- * With JavaScript: checks each field, base64-encodes the CV, posts JSON and shows the result in place, keeping what
- * was entered if it didn't send. Without JavaScript: native validation, a multipart POST, and /careers/thanks/.
+ * With JavaScript: checks each field, posts the same multipart form asking for a JSON answer, and shows the result in
+ * place, keeping what was entered if it didn't send (and saying so under the CV field if the file itself was refused). Without JavaScript: native validation, a multipart POST, and /careers/thanks/.
  * Needs the privacy page; without it, says to email a CV instead.
  */
 import { config, fill, flags } from '../../config';
@@ -135,14 +135,6 @@ const msg = {
       field.addEventListener('change', () => field.hasAttribute('aria-invalid') && showError(field, ''));
     }
 
-    // The CV as base64, read by the browser, so the Worker only has to pass it on.
-    const base64 = (file: File) => new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result).slice(String(reader.result).indexOf(',') + 1));
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(file);
-    });
-
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       status.textContent = '';
@@ -150,14 +142,15 @@ const msg = {
       submit.disabled = true;
       submitLabel.textContent = msg.sending;
       try {
-        const file = cv.files![0];
-        const fields = Object.fromEntries([...new FormData(form).entries()].filter(([k, v]) => k !== 'cv' && typeof v === 'string'));
-        const res = await fetch(form.action, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ ...fields, cv: { name: file.name, type: file.type, data: await base64(file) } }),
-        });
-        const body = (await res.json().catch(() => ({}))) as { ok?: boolean };
+        // The same multipart form the browser would post on its own (CV as a file), asking for a JSON answer.
+        const res = await fetch(form.action, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) });
+        const body = (await res.json().catch(() => ({}))) as { ok?: boolean; field?: string };
+        if (body.field === 'cv') {
+          // The Worker refused the file itself (e.g. a ".doc" that is really a web page): say so where it can be fixed.
+          showError(cv, res.status === 413 ? msg.cvSize : msg.cvType);
+          cv.focus();
+          return;
+        }
         if (!res.ok || !body.ok) throw new Error(String(res.status));
         form.classList.add('is-sent');
         status.textContent = msg.success;
@@ -167,6 +160,7 @@ const msg = {
         const [before, after] = msg.failure.split(msg.email);
         const link = Object.assign(document.createElement('a'), { href: `mailto:${msg.email}`, textContent: msg.email });
         status.replaceChildren(before ?? '', link, after ?? '');
+        status.focus();
       } finally {
         submit.disabled = false;
         submitLabel.textContent = msg.submit;
