@@ -340,6 +340,8 @@ export const content = {
     ],
     navHeading: 'On this page',
     copyright: '© {YEAR} {SITE_NAME}',
+    /** showCareers */
+    careers: 'Careers',
     /** showPrivacyPage */
     privacy: 'Privacy',
   },
@@ -376,6 +378,15 @@ export const content = {
         p: [
           'We use your details to reply to your enquiry, to discuss and provide our services if you go ahead, and to keep a record of our correspondence.',
           'We don\'t sell personal information and we don\'t add you to a mailing list.',
+        ],
+      },
+      {
+        /** EC, 16 Oct 2026: the careers form takes a CV; applications are kept for 12 months. */
+        h: 'Job applications',
+        p: [
+          'When you apply for a role through our careers pages, we collect your name, your email address, your phone or Telegram number if you give one, where you\'re based, your LinkedIn profile and links to your work if you give them, your CV, and what you tell us about why you want the role. You don\'t need to include a photo or your date of birth.',
+          'We use your application only to consider you for the role you applied for. Resend emails it to the {SITE_NAME} people hiring for that role at {CAREERS_EMAIL}, and it is kept in our business email system, which is provided by Google.',
+          'We keep applications for 12 months, then delete them. Email {PRIVACY_EMAIL} and we\'ll delete yours sooner.',
         ],
       },
       {

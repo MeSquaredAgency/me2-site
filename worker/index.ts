@@ -1,11 +1,13 @@
 // Edge entry point for the Me² site (Cloudflare Workers static assets).
 // Almost everything is a static file from dist/. The worker:
 //  1. sends every visitor to https:// and the bare domain (no www), in a single 301;
-//  2. stores completed assessment submissions in D1 (POST /api/assessments); and
+//  2. stores completed assessment submissions in D1 (POST /api/assessments);
 //  3. handles the enquiry form (POST /api/enquiry): checks it, drops bots, and emails it to
-//     FORM_TO_EMAIL through Resend (its HTTP API; the RESEND_API_KEY secret, set in Cloudflare, see DEPLOY.md).
-// Data rule (BRIEF §6): the form takes contact details and a short message only.
+//     FORM_TO_EMAIL through Resend (its HTTP API; the RESEND_API_KEY secret, set in Cloudflare, see DEPLOY.md); and
+//  4. handles job applications (POST /api/applications, ./applications.ts): emails each one, CV attached, to CAREERS_EMAIL.
+// Data rule (BRIEF §6): the enquiry form takes contact details and a short message only; the careers form also takes a CV.
 import { siteConfig } from '../src/config/site.config';
+import { application } from './applications.ts';
 
 interface AssessmentPreparedStatement {
   bind(...values: unknown[]): AssessmentPreparedStatement;
@@ -41,6 +43,7 @@ export default {
     }
     if (url.pathname === '/api/assessments') return assessment(request, env);
     if (url.pathname === '/api/enquiry') return enquiry(request, env);
+    if (url.pathname === '/api/applications') return application(request, env);
     return env.ASSETS.fetch(request);
   },
 };

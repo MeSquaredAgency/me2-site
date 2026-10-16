@@ -1,0 +1,213 @@
+---
+/**
+ * The application form on each role page: contact details, where they're based, a CV (PDF or Word, up to 4 MB),
+ * work links where the role asks for them, and a few lines on why (EC, 16 Oct 2026: the careers form takes a CV;
+ * never fields for financial, health or identity information). Posts to /api/applications (worker/applications.ts).
+ * With JavaScript: checks each field, posts the same multipart form asking for a JSON answer, and shows the result in
+ * place, keeping what was entered if it didn't send (and saying so under the CV field if the file itself was refused). Without JavaScript: native validation, a multipart POST, and /careers/thanks/.
+ * Needs the privacy page; without it, says to email a CV instead.
+ */
+import { config, fill, flags } from '../../config';
+import { careers, type Role } from '../../content/careers';
+
+interface Props {
+  role: Role;
+}
+const { role } = Astro.props;
+const f = careers.form;
+const privacyBefore = f.privacy.slice(0, f.privacy.indexOf(f.privacyLink));
+const [noFormBefore, noFormAfter] = fill(f.noForm).split(config.CAREERS_EMAIL);
+const accept = '.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+const msg = {
+  requiredName: f.requiredName, requiredEmail: f.requiredEmail, emailError: f.emailError, requiredLocation: f.requiredLocation,
+  requiredCv: f.requiredCv, cvType: f.cvType, cvSize: f.cvSize, requiredWorkLinks: f.requiredWorkLinks, requiredWhy: f.requiredWhy,
+  tooLong: f.tooLong, sending: f.sending, submit: f.submit, success: f.success, failure: fill(f.failure), email: config.CAREERS_EMAIL,
+};
+---
+{flags.showPrivacyPage
+  ? (
+    <form class="application" method="post" action="/api/applications" enctype="multipart/form-data" data-application data-msg={JSON.stringify(msg)}>
+      <input type="hidden" name="role" value={role.slug} />
+      <input type="hidden" name="started" value="" data-started />
+      <!-- Left empty by people (it's hidden); bots fill it in. -->
+      <p class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></p>
+      <div class="fields">
+        <div class="field">
+          <label for="app-name">{f.name}</label>
+          <input id="app-name" name="name" autocomplete="name" required maxlength="100" aria-describedby="app-name-err" />
+          <p class="err" id="app-name-err"></p>
+        </div>
+        <div class="field">
+          <label for="app-email">{f.email}</label>
+          <input id="app-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="254" aria-describedby="app-email-err" />
+          <p class="err" id="app-email-err"></p>
+        </div>
+        <div class="field">
+          <label for="app-phone">{f.phone}</label>
+          <input id="app-phone" name="phone" type="tel" autocomplete="tel" maxlength="60" />
+        </div>
+        <div class="field">
+          <label for="app-location">{f.location}</label>
+          <input id="app-location" name="location" required maxlength="160" aria-describedby="app-location-hint app-location-err" />
+          <p class="hint" id="app-location-hint">{f.locationHint}</p>
+          <p class="err" id="app-location-err"></p>
+        </div>
+        <div class="field wide">
+          <label for="app-cv">{f.cv}</label>
+          <input id="app-cv" name="cv" type="file" accept={accept} required aria-describedby="app-cv-hint app-cv-err" />
+          <p class="hint" id="app-cv-hint">{f.cvHint}</p>
+          <p class="err" id="app-cv-err"></p>
+        </div>
+        <div class="field wide">
+          <label for="app-linkedin">{f.linkedin}</label>
+          <input id="app-linkedin" name="linkedin" inputmode="url" autocomplete="url" maxlength="300" />
+        </div>
+        {role.needsWorkLinks && (
+          <div class="field wide">
+            <label for="app-worklinks">{f.workLinks}</label>
+            <textarea id="app-worklinks" name="workLinks" rows="3" required maxlength="1000" aria-describedby="app-worklinks-err"></textarea>
+            <p class="err" id="app-worklinks-err"></p>
+          </div>
+        )}
+        <div class="field wide">
+          <label for="app-why">{f.why}</label>
+          <textarea id="app-why" name="why" rows="5" required maxlength="1000" aria-describedby="app-why-hint app-why-err"></textarea>
+          <p class="hint" id="app-why-hint">{f.whyHint}</p>
+          <p class="err" id="app-why-err"></p>
+        </div>
+        <div class="send wide">
+          <button type="submit" class="btn btn-light btn-lg" data-submit><span class="dot" aria-hidden="true"></span><span data-submit-label>{f.submit}</span></button>
+          <p class="privacy">{privacyBefore}<a href="/privacy/">{f.privacyLink}</a>.</p>
+        </div>
+      </div>
+      <p class="status" role="status" aria-live="polite" tabindex="-1" data-status></p>
+    </form>
+  )
+  : <p class="no-form">{noFormBefore}<a href={`mailto:${config.CAREERS_EMAIL}?subject=${encodeURIComponent(role.title)}`} >{config.CAREERS_EMAIL}</a>{noFormAfter}</p>}
+
+<script>
+  const MAX_CV_BYTES = 4 * 1024 * 1024;
+  const form = document.querySelector<HTMLFormElement>('[data-application]');
+  if (form) {
+    const msg = JSON.parse(form.dataset.msg!) as Record<string, string>;
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]')!;
+    form.querySelector<HTMLInputElement>('[data-started]')!.value = String(Date.now());
+    form.noValidate = true;
+
+    const el = <T extends HTMLElement>(id: string) => form.querySelector<T>(`#${id}`);
+    const name = el<HTMLInputElement>('app-name')!;
+    const email = el<HTMLInputElement>('app-email')!;
+    const location = el<HTMLInputElement>('app-location')!;
+    const cv = el<HTMLInputElement>('app-cv')!;
+    const workLinks = el<HTMLTextAreaElement>('app-worklinks');
+    const why = el<HTMLTextAreaElement>('app-why')!;
+    const checked = [name, email, location, cv, ...(workLinks ? [workLinks] : []), why];
+
+    const showError = (field: HTMLInputElement | HTMLTextAreaElement, text: string) => {
+      el<HTMLElement>(`${field.id}-err`)!.textContent = text;
+      field.toggleAttribute('aria-invalid', !!text);
+    };
+    const check = () => {
+      let first: HTMLElement | null = null;
+      const fail = (field: HTMLInputElement | HTMLTextAreaElement, t: string) => { showError(field, t); first ??= field; };
+      for (const field of checked) showError(field, '');
+      if (!name.value.trim()) fail(name, msg.requiredName);
+      if (!email.value.trim()) fail(email, msg.requiredEmail);
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) fail(email, msg.emailError);
+      if (!location.value.trim()) fail(location, msg.requiredLocation);
+      const file = cv.files?.[0];
+      if (!file || file.size === 0) fail(cv, msg.requiredCv);
+      else if (!/\.(pdf|docx?)$/i.test(file.name)) fail(cv, msg.cvType);
+      else if (file.size > MAX_CV_BYTES) fail(cv, msg.cvSize);
+      if (workLinks) {
+        if (!workLinks.value.trim()) fail(workLinks, msg.requiredWorkLinks);
+        else if (workLinks.value.length > 1000) fail(workLinks, msg.tooLong);
+      }
+      if (!why.value.trim()) fail(why, msg.requiredWhy);
+      else if (why.value.length > 1000) fail(why, msg.tooLong);
+      (first as HTMLElement | null)?.focus();
+      return !first;
+    };
+    for (const field of checked) {
+      field.addEventListener('input', () => field.hasAttribute('aria-invalid') && showError(field, ''));
+      field.addEventListener('change', () => field.hasAttribute('aria-invalid') && showError(field, ''));
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = '';
+      if (!check()) return;
+      submit.disabled = true;
+      submitLabel.textContent = msg.sending;
+      try {
+        // The same multipart form the browser would post on its own (CV as a file), asking for a JSON answer.
+        const res = await fetch(form.action, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) });
+        const body = (await res.json().catch(() => ({}))) as { ok?: boolean; field?: string };
+        if (body.field === 'cv') {
+          // The Worker refused the file itself (e.g. a ".doc" that is really a web page): say so where it can be fixed.
+          showError(cv, res.status === 413 ? msg.cvSize : msg.cvType);
+          cv.focus();
+          return;
+        }
+        if (!res.ok || !body.ok) throw new Error(String(res.status));
+        form.classList.add('is-sent');
+        status.textContent = msg.success;
+        status.focus();
+      } catch {
+        // Say what happened and give the way round it: the email address, as a link. What they entered stays put.
+        const [before, after] = msg.failure.split(msg.email);
+        const link = Object.assign(document.createElement('a'), { href: `mailto:${msg.email}`, textContent: msg.email });
+        status.replaceChildren(before ?? '', link, after ?? '');
+        status.focus();
+      } finally {
+        submit.disabled = false;
+        submitLabel.textContent = msg.submit;
+      }
+    });
+  }
+</script>
+
+<style>
+  .application { display: grid; gap: 22px; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .fields { display: grid; gap: 22px 28px; }
+  @media (min-width: 760px) { .fields { grid-template-columns: 1fr 1fr; } .wide { grid-column: 1 / -1; } }
+  .field { display: grid; gap: 8px; align-content: start; }
+  label { font-size: 0.95rem; font-weight: 500; color: var(--color-mist); }
+  input:not([type='hidden']), textarea {
+    width: 100%; box-sizing: border-box; font: inherit; font-size: 1.05rem; color: var(--color-mist);
+    background: rgb(232 237 241 / 0.04); border: 1px solid rgb(232 237 241 / 0.24); border-radius: 10px;
+    padding: 14px 16px; transition: border-color 300ms var(--ease), background-color 300ms var(--ease);
+  }
+  input[type='file'] { padding: 10px 12px; font-size: 0.98rem; color: var(--color-haze); cursor: pointer; }
+  input[type='file']::file-selector-button {
+    font: inherit; font-weight: 560; font-size: 0.95rem; color: var(--color-mist); background: transparent;
+    border: 1px solid rgb(232 237 241 / 0.3); border-radius: 999px; padding: 8px 16px; margin-right: 14px; cursor: pointer;
+    transition: border-color 300ms var(--ease);
+  }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.5; }
+  @media (hover: hover) and (pointer: fine) {
+    input:hover, textarea:hover { border-color: rgb(232 237 241 / 0.45); }
+    input[type='file']:hover::file-selector-button { border-color: var(--color-mist); }
+  }
+  input:focus-visible, textarea:focus-visible { outline: 2px solid var(--color-coral); outline-offset: 2px; background: rgb(232 237 241 / 0.07); }
+  [aria-invalid] { border-color: var(--color-coral); }
+  .hint { font-size: 0.85rem; color: var(--color-haze); }
+  .err { font-size: 0.9rem; color: var(--color-coral); }
+  .err:empty { display: none; }
+  .send { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 4px; }
+  .send .btn[disabled] { opacity: 0.7; cursor: progress; }
+  .privacy { font-size: 0.85rem; color: var(--color-haze); }
+  .privacy a { color: var(--color-mist); text-decoration: underline; text-underline-offset: 0.2em; }
+  .status { font-size: 1.05rem; color: var(--color-mist); }
+  .status:empty { display: none; }
+  .status:focus { outline: none; }
+  .status :global(a) { color: var(--color-mist); text-decoration: underline; text-underline-offset: 0.2em; }
+  .is-sent .fields { display: none; }
+  .is-sent .status { font-size: clamp(1.3rem, 2vw, 1.7rem); font-weight: 520; letter-spacing: -0.02em; line-height: 1.3; padding-block: 16px; max-width: 34ch; }
+  .is-sent .status::before { content: ''; display: block; width: 12px; height: 12px; background: var(--color-coral); margin-bottom: 18px; box-shadow: 0 0 24px 4px rgb(var(--glow) / 0.5); }
+  .no-form { font-size: 1.2rem; color: var(--color-haze); max-width: 44ch; }
+  .no-form a { color: var(--color-mist); text-decoration: underline; text-underline-offset: 0.2em; }
+</style>

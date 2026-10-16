@@ -115,4 +115,4 @@ Saving a secret (or variable) in the Cloudflare dashboard with **Deploy** makes 
 ## Phase 2 (the enquiry form): what will be needed
 - A Resend account with mesquaredagency.com verified. Add its SPF include to the existing SPF record (one merged record) and its DKIM records.
 - Cloudflare Turnstile site and secret keys.
-- A rate-limiting rule on `/api/enquiry`: 5 requests per minute per IP.
+- A rate-limiting rule on `/api/enquiry` and `/api/applications` (one rule, matching any path that starts with `/api/`). The free plan allows one rule and counts requests over a 10-second period, so set it to about 3 requests per 10 seconds per IP, blocking for 10 seconds; check what the dashboard offers when adding it. Until it exists, a script could use up Resend's 100 emails a day, which both forms share.

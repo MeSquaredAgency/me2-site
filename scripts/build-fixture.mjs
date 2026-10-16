@@ -23,6 +23,7 @@ export const config = {
   PRIVACY_EMAIL: 'test@example.com',
   FORM_FROM_EMAIL: 'test@example.com',
   FORM_TO_EMAIL: 'test@example.com',
+  CAREERS_EMAIL: 'test@example.com',
   BOOKING_URL: 'https://example.com/book',
   LEGAL_ENTITY: 'Test Entity Pty Ltd, ABN 00 000 000 000',
 };

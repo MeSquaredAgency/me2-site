@@ -46,6 +46,7 @@ export function fill(text: string): string {
     .replaceAll('{SITE_NAME}', config.SITE_NAME)
     .replaceAll('{CONTACT_EMAIL}', config.CONTACT_EMAIL)
     .replaceAll('{PRIVACY_EMAIL}', config.PRIVACY_EMAIL)
+    .replaceAll('{CAREERS_EMAIL}', config.CAREERS_EMAIL)
     .replaceAll('{YEAR}', String(new Date().getFullYear()));
 }
 

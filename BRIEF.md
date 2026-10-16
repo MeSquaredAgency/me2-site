@@ -167,7 +167,7 @@ Section order (v0.14): header, hero (ink), the squares story with the problem¹ 
 - Copy: A.10. Layout: header, centred H1 + body + button back to `/`, footer. Ink background. `noindex`.
 
 ### Data rule (applies to every form and every future change)
-- Forms ask for contact details and a short task description only. The hint tells people not to include client, customer or tenant personal details. Never add fields for financial, health or identity information. Write this rule into `CLAUDE.md`.
+- Sales forms ask for contact details and a short task description only. The hint tells people not to include client, customer or tenant personal details. The careers form (job applications) also takes a CV, work links and a short note (EC, 16 Oct 2026). Never add fields for financial, health or identity information. Write this rule into `CLAUDE.md`.
 
 ## 6b. Fixture build (for testing only)
 - A second build config in git-ignored `.verify/fixture/` that overrides `site.config.ts` and `flags.ts` and fills every `[[TBC]]` with reserved fake values. Select it with `SITE_FIXTURE=1`, output to `.verify/fixture/dist`. It must never be deployed, carries `noindex`, and is exempt from the Lighthouse SEO score.
@@ -255,7 +255,7 @@ N/A — new build; the domain only shows a parking page.
 - Client identity lives only in `src/config/site.config.ts`; copy and section order only in `src/content/site.ts`; titles/descriptions only in `src/data/routes.json`; tokens only in `src/styles/tokens.css`; flags only in `src/config/flags.ts`. Never hardcode; never remove a fallback; the site must look complete with all flags off.
 - Brand rules (§2): visible name `Me²`; banned words; Australian English; sentence case. Grep before committing copy.
 - Never invent names, testimonials, statistics, results, logos or prices. Never name individuals. No industry is presented as "our market" or a client list; kinds of business appear only as clearly labelled use-case examples.
-- Forms collect contact details and a short task description only; never fields for financial, health or identity information.
+- Sales forms collect contact details and a short task description only. The careers form also takes a CV, work links and a short note (EC, 16 Oct 2026). No form ever has fields for financial, health or identity information.
 - Design: keep the approved identity (§5). Refine within it; mock up one page and get a yes before any wider restyle.
 - Allowed dependencies and out-of-scope list: BRIEF §3, in full.
 - Git: branch + PR for every change; run `git branch --show-current` right before every commit and push; never push to `main` once connected to Cloudflare; plain-English commit messages.

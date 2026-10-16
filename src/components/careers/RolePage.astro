@@ -1,0 +1,126 @@
+---
+/**
+ * One role: the facts and the two ways to apply up top, the posting itself on paper (with a panel alongside on wide
+ * screens that keeps "Apply now" in reach), and the application form at the foot.
+ */
+import ApplicationForm from './ApplicationForm.astro';
+import { careers, type Role } from '../../content/careers';
+
+interface Props {
+  role: Role;
+}
+const { role } = Astro.props;
+const c = careers.role;
+const facts = [
+  [c.factLabels.location, role.facts.location],
+  [c.factLabels.type, role.facts.type],
+  [c.factLabels.hours, c.hoursShort],
+  [c.factLabels.salary, role.facts.salary],
+];
+---
+<main id="main">
+  <section class="head on-dark">
+    <div class="wrap head-inner">
+      <p class="crumb"><a href="/careers/" class="tlink">{c.crumb}</a></p>
+      <p class="kicker">{c.kicker}</p>
+      <h1>{role.area}</h1>
+      <dl class="facts">
+        {facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+      </dl>
+      <div class="actions">
+        <a href="#apply" class="btn btn-light btn-lg"><span class="dot" aria-hidden="true"></span>{c.apply}</a>
+        {role.linkedinUrl && <a href={role.linkedinUrl} class="btn btn-line btn-lg" target="_blank" rel="noopener">{c.linkedin}</a>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-paper posting">
+    <div class="wrap layout">
+      <article class="copy" aria-label={role.title}>
+        {role.sections.map((s) => (
+          <section class="part">
+            <h2>{s.h}</h2>
+            {s.paras?.map((p) => <p>{p}</p>)}
+            {s.groups?.map((g) => (
+              <div class="list-block">
+                {g.h && <h3>{g.h}</h3>}
+                <ul class="items">{g.items.map((i) => <li>{i}</li>)}</ul>
+              </div>
+            ))}
+            {s.after?.map((p) => <p>{p}</p>)}
+            {s.link && <p>{s.link.before}<a href={s.link.href} class="inline-link" rel="noopener">{s.link.text}</a>.</p>}
+          </section>
+        ))}
+      </article>
+      <aside class="apply-panel" aria-label={c.apply}>
+        <p class="panel-title">{role.title}</p>
+        <dl class="panel-facts">
+          {facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+        </dl>
+        <a href="#apply" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.apply}</a>
+      </aside>
+    </div>
+  </section>
+
+  <section id="apply" class="section on-dark apply-section" aria-labelledby="apply-title">
+    <div class="wrap">
+      <div class="apply-inner">
+      <div class="apply-head">
+        <span class="sq" aria-hidden="true"></span>
+        <h2 id="apply-title">{careers.form.heading}</h2>
+        <p class="apply-role">{role.title}</p>
+      </div>
+      <ApplicationForm role={role} />
+      <p class="back"><a href="/careers/" class="tlink">{c.back}</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<style>
+  .head { padding: 170px 0 80px; }
+  .head-inner { display: grid; gap: 22px; justify-items: start; }
+  .crumb { font-size: 0.95rem; color: var(--color-haze); }
+  .crumb a { color: var(--color-mist); }
+  h1 { font-size: clamp(3rem, 8vw, 8.5rem); line-height: 0.92; letter-spacing: -0.05em; max-width: 14ch; }
+  .facts { display: grid; gap: 18px 40px; margin: 18px 0 0; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; max-width: 980px; }
+  @media (min-width: 900px) { .facts { grid-template-columns: repeat(4, max-content); } }
+  .facts div { display: grid; gap: 4px; align-content: start; padding-top: 14px; border-top: 1px solid var(--color-line-dark); }
+  dt { font-size: 0.85rem; color: var(--color-haze); }
+  dd { margin: 0; font-weight: 520; color: var(--color-mist); max-width: 26ch; }
+  .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px; }
+
+  .layout { display: grid; gap: 56px; }
+  @media (min-width: 1000px) { .layout { grid-template-columns: minmax(0, 68ch) 300px; justify-content: space-between; gap: clamp(48px, 8vw, 140px); } }
+  .copy { display: grid; gap: 56px; }
+  .part { display: grid; gap: 16px; }
+  .part h2 { font-size: clamp(1.6rem, 2.4vw, 2.2rem); line-height: 1.1; letter-spacing: -0.03em; }
+  .part p { color: var(--color-slate); font-size: 1.08rem; line-height: 1.65; }
+  .inline-link { color: var(--color-ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+  .list-block { display: grid; gap: 10px; margin-top: 4px; }
+  .list-block h3 { font-size: 1.1rem; color: var(--color-ink); }
+  .items { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .items li { position: relative; padding-left: 24px; color: var(--color-slate); font-size: 1.05rem; line-height: 1.6; }
+  .items li::before { content: ''; position: absolute; left: 2px; top: 0.66em; width: 7px; height: 7px; background: var(--color-coral-deep); }
+
+  .apply-panel { display: none; }
+  @media (min-width: 1000px) {
+    .apply-panel {
+      display: grid; gap: 22px; align-content: start; align-self: start; position: sticky; top: 104px;
+      padding-top: 20px; border-top: 1px solid var(--color-ink);
+    }
+  }
+  .panel-title { font-weight: 560; font-size: 1.15rem; line-height: 1.3; letter-spacing: -0.015em; color: var(--color-ink); }
+  .panel-facts { display: grid; gap: 14px; margin: 0; }
+  .panel-facts dt { color: var(--color-slate); }
+  .panel-facts dd { color: var(--color-ink); font-weight: 500; }
+  .apply-panel .btn { justify-self: start; }
+
+  .apply-inner { display: grid; gap: 48px; max-width: 980px; }
+  .apply-head { display: grid; gap: 18px; justify-items: start; }
+  .apply-head h2 { font-size: clamp(2.4rem, 5vw, 4.5rem); }
+  .apply-role { color: var(--color-haze); font-size: 1.1rem; }
+  .sq { width: 14px; height: 14px; background: var(--color-coral); box-shadow: 0 0 30px 6px rgb(var(--glow) / 0.45); }
+  .back { font-size: 1rem; }
+  .back a { color: var(--color-mist); }
+</style>
