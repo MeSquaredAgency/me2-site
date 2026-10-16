@@ -14,6 +14,7 @@ Built with Astro + TypeScript and Tailwind CSS v4. The marketing site is static;
 | `/` | The sales page: hero with the Command Centre board, the squares story (the problem, AI drafts, people check, the Me² mark), what we take on (six use-case examples), the demo, how we work, why Me², two services, questions, call to action |
 | `/404.html` | "Page not found" (noindex) |
 | `/privacy/` | Privacy policy; only built when `showPrivacyPage` is on |
+| `/careers/` | Careers: the open roles (from `src/content/careers.ts`), one page per role at `/careers/<role>/` with an application form that emails people@ with the CV attached (see [docs/careers.md](docs/careers.md)); `/careers/thanks/` and `/careers/not-sent/` are noindex. Only built when `showCareers` is on |
 | `/cco/assessment/` | Noindex pre-interview assessment; completed submissions are stored in Cloudflare D1 (see [response storage](docs/assessment-responses.md)) |
 
 ## Run it
@@ -80,4 +81,5 @@ Tick only what has been checked.
 - [x] Resend account created, mesquaredagency.com verified there, `RESEND_API_KEY` set as a Worker secret, and a test enquiry received in hello@'s inbox (10 Oct 2026)
 - [x] Site opened to the public (15 Oct 2026: EC removed the Cloudflare Access sign-in that had kept it private since 10 Oct)
 - [ ] `mesquared.co.uk` redirected to `https://mesquaredagency.com` (it shows a Cloudflare 525 error since Access came off; DEPLOY.md)
-- [ ] Rate-limiting rule on /api/enquiry added in Cloudflare (DEPLOY.md)
+- [ ] Rate-limiting rule on /api/enquiry and /api/applications added in Cloudflare (DEPLOY.md)
+- [ ] A preview application reaches people@ with the CV attached and "[Preview]" in the subject (docs/careers.md; EC)

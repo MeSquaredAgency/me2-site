@@ -96,7 +96,23 @@ check('home: footer links to careers', /<a href="\/careers\/"[^>]*>Careers<\/a>/
 const sitemap = read('dist/sitemap.xml');
 check('sitemap: careers pages in', ['/careers/', ...SLUGS.map((s) => `/careers/${s}/`)].every((p) => sitemap.includes(`https://mesquaredagency.com${p}<`)));
 check('sitemap: thanks and not-sent out', !sitemap.includes('/careers/thanks/') && !sitemap.includes('/careers/not-sent/'));
+check('llms.txt: careers line', read('dist/llms.txt').includes('[Careers](https://mesquaredagency.com/careers/)'));
+const privacyText = textOf(read('dist/privacy/index.html'));
+check('privacy: job applications section', privacyText.includes('Job applications') && privacyText.includes('12 months') && privacyText.includes('people@mesquaredagency.com'));
 // ---- end built pages ----
+
+// ---- careers switched off (a fixture build with showCareers false) ----
+if (args.has('--flag-off')) {
+  const { execSync } = await import('node:child_process');
+  const { existsSync } = await import('node:fs');
+  const dir = '.verify/careers-off/dist';
+  execSync(`node scripts/build-fixture.mjs ${dir} "{\\"showCareers\\":false}"`, { stdio: 'ignore' });
+  check('flag off: no careers pages', existsSync(`${dir}/index.html`) && !existsSync(`${dir}/careers`));
+  check('flag off: no footer link', !read(`${dir}/index.html`).includes('href="/careers/"'));
+  check('flag off: not in llms.txt', !read(`${dir}/llms.txt`).includes('/careers/'));
+  check('flag off: not in sitemap', !read(`${dir}/sitemap.xml`).includes('/careers/'));
+}
+// ---- end careers switched off ----
 
 if (!args.has('--static')) {
   const { createServer } = await import('node:http');

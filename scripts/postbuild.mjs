@@ -7,7 +7,11 @@ const outDir = process.env.OUT_DIR ?? (fixture ? '.verify/fixture/dist' : 'dist'
 
 const { siteConfig } = await import('../src/config/site.config.ts');
 const { flags } = await import('../src/config/flags.ts');
-const flagOn = (key) => flags[key] === true;
+const { listedRoles } = await import('../src/content/careers.ts');
+// A fixture variant's flags (FIXTURE_FLAGS) apply here too, as they do to the pages (src/config/index.ts).
+const variant = fixture && process.env.FIXTURE_FLAGS ? JSON.parse(process.env.FIXTURE_FLAGS) : {};
+const flagOn = (key) => ({ ...flags, ...variant })[key] === true;
+const listed = new Set(listedRoles().map((r) => r.slug));
 
 const domain = fixture ? 'example.com' : siteConfig.SITE_DOMAIN;
 const email = fixture ? 'test@example.com' : siteConfig.CONTACT_EMAIL;
@@ -16,7 +20,8 @@ const plain = siteConfig.SITE_NAME_PLAIN;
 const base = `https://${domain}`;
 
 const routes = JSON.parse(readFileSync('src/data/routes.json', 'utf8'));
-const indexable = routes.filter((r) => !r.noindex && (!r.flag || flagOn(r.flag)) && !fixture);
+// A role page is only built (and only in the sitemap) while its role is listed in src/content/careers.ts.
+const indexable = routes.filter((r) => !r.noindex && (!r.flag || flagOn(r.flag)) && (!r.role || listed.has(r.role)) && !fixture);
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -44,7 +49,7 @@ const llms = `# ${name}
 - [Home](${base}/): what ${name} does, the offer and common questions
 ${flagOn('showProof') ? `- [Work](${base}/#work): projects ${name} has designed and built\n` : ''}- [Start here](${base}/#services): the whole back office, an extra set of hands and websites, and how each is quoted
 - [How we work](${base}/#how): a person owns every task; one accountable team
-${flagOn('showPrivacyPage') ? `- [Privacy](${base}/privacy/): how enquiries are handled\n` : ''}
+${flagOn('showCareers') && listed.size ? `- [Careers](${base}/careers/): open roles in ${name}'s Command Centre in Phnom Penh, and how to apply\n` : ''}${flagOn('showPrivacyPage') ? `- [Privacy](${base}/privacy/): how enquiries and job applications are handled\n` : ''}
 ## Contact
 - [Email ${email}](mailto:${email})
 ${fixture ? '' : [['Facebook', siteConfig.FACEBOOK_URL], ['LinkedIn', siteConfig.LINKEDIN_URL]].filter(([, url]) => url).map(([label, url]) => `- [${name} on ${label}](${url})\n`).join('')}`;

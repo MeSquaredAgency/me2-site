@@ -115,4 +115,4 @@ Saving a secret (or variable) in the Cloudflare dashboard with **Deploy** makes 
 ## Phase 2 (the enquiry form): what will be needed
 - A Resend account with mesquaredagency.com verified. Add its SPF include to the existing SPF record (one merged record) and its DKIM records.
 - Cloudflare Turnstile site and secret keys.
-- A rate-limiting rule on `/api/enquiry`: 5 requests per minute per IP.
+- A rate-limiting rule on `/api/enquiry` and `/api/applications` (one rule, matching any path that starts with `/api/`): 5 requests per minute per IP. The free plan allows one rule, so cover both routes with it.
