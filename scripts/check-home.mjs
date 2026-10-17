@@ -104,6 +104,9 @@ check('JSON-LD back office has no price', officeLd && !officeLd.offers);
 check('JSON-LD description has Me² filled in', !JSON.stringify(ld).includes('{SITE_NAME}'));
 check('llms.txt: back office, no EBU or AI Roles', llms.includes('The whole back office') && !llms.includes('Effective Business') && !llms.includes('AI Roles') && !/back end/i.test(llms));
 check('llms.txt: people first', llms.includes('trained people') && llms.includes('AI agents'));
+const siteLd = ld.find((x) => x['@type'] === 'WebSite');
+check('JSON-LD WebSite names the site Me²', siteLd?.name === 'Me²' && siteLd?.alternateName === 'Me Squared');
+check('llms.txt: the FAQ terms, as on the page', llms.includes('## Common questions') && llms.includes("either of us can stop with 30 days' notice") && !llms.includes('{SITE_NAME}'));
 check('og:title is the hero', html.includes('<meta property="og:title" content="We run the back office. You run the business."'));
 check('page title', /<title>Me²: back-office teams and websites for established businesses<\/title>/.test(html));
 // Final review fixes

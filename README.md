@@ -68,6 +68,8 @@ Tick only what has been checked.
 - [x] Email links not rewritten by Cloudflare Email Obfuscation (checked on the live page)
 - [ ] Cloudflare Web Analytics turned on
 - [ ] Sitemap submitted in Google Search Console; `npm run indexnow` run
+- [ ] Site added in Bing Webmaster Tools (import it from Search Console); Bing's index feeds ChatGPT search and Copilot
+- [ ] Cloudflare's "Block AI bots" setting checked for mesquaredagency.com, and left off if Me² wants AI assistants to read the site (robots.txt already allows them; [docs/search-and-ai.md](docs/search-and-ai.md))
 - [ ] Vector logo master from the designer swapped in (optional; the traced one works)
 - [x] v0.15 redesign live, by EC's choice (10 Oct 2026; it went live when the Resend key was saved, and EC kept it)
 - [ ] `npm run verify` rewritten for the v0.15 sections

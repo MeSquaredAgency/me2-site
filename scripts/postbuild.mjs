@@ -8,6 +8,7 @@ const outDir = process.env.OUT_DIR ?? (fixture ? '.verify/fixture/dist' : 'dist'
 const { siteConfig } = await import('../src/config/site.config.ts');
 const { flags } = await import('../src/config/flags.ts');
 const { listedRoles } = await import('../src/content/careers.ts');
+const { content } = await import('../src/content/site.ts');
 // A fixture variant's flags (FIXTURE_FLAGS) apply here too, as they do to the pages (src/config/index.ts).
 const variant = fixture && process.env.FIXTURE_FLAGS ? JSON.parse(process.env.FIXTURE_FLAGS) : {};
 const flagOn = (key) => ({ ...flags, ...variant })[key] === true;
@@ -36,6 +37,9 @@ const robots = fixture
 writeFileSync(`${outDir}/robots.txt`, robots);
 
 const price = (text) => (flagOn('showPricing') ? ` ${text}` : '');
+// The FAQ exactly as the page shows it (same flags as src/lib/faq.ts), so assistants can quote the terms without them drifting from the page.
+const fillCopy = (text) => text.replaceAll('{SITE_NAME}', name).replaceAll('{CONTACT_EMAIL}', email);
+const faq = content.faq.items.filter((item) => !item.flag || flagOn(item.flag)).map((item) => `- ${fillCopy(item.q)} ${fillCopy(item.a)}`).join('\n');
 const llms = `# ${name}
 
 > ${name} (also known as ${plain}) runs the back office of established businesses, everything behind the front line from admin and accounts to customer service and marketing, done by trained people backed by AI agents built for each business (never AI on its own), so the owner, the sales team and the front line can do what they're best at. ${name} also designs and builds websites and digital products.
@@ -44,6 +48,9 @@ const llms = `# ${name}
 - The whole back office: trained ${name} people own the work, backed by AI agents built around the business; they check everything before it goes out, deal with anything unusual and report back.${price('Quoted for each business, as one monthly fee.')} Areas: business operations, admin, customer service and support, finance and accounting, marketing, social media, paid ads. Coming next: legal, tech development, consulting and strategy.
 - An extra set of hands: a ${name} person takes one job off the team's plate (the inbox, the invoices, the data entry), backed by an AI agent set up around how the business already works.${price('Quoted per job.')}
 - Websites and digital products: websites and landing pages, interface design for portals and apps, copy and content structure, search and performance foundations;${flagOn('showPricing') ? ' quoted per project.' : ' designed and built to brief.'}
+
+## Common questions
+${faq}
 
 ## Key pages
 - [Home](${base}/): what ${name} does, the offer and common questions

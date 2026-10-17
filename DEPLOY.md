@@ -69,7 +69,7 @@ npx wrangler whoami
 ## Cloudflare Access (10–15 Oct 2026, now off)
 From 10 to 15 Oct 2026 EC kept the site behind **Cloudflare Access** (Zero Trust → Access controls → Applications, One-time PIN) while the privacy page, prices and wording were confirmed. It covered `mesquaredagency.com`, `www.mesquaredagency.com`, `mesquared.co.uk`, `www.mesquared.co.uk` and the `mesquared` Worker's production and preview URLs. **EC removed it on 15 Oct 2026**, so:
 
-- The live site, `robots.txt` (allow all), the sitemap (home and `/privacy/`) and `llms.txt` are public, and search engines can crawl them. The privacy page is still the unreviewed draft (README checklist).
+- The live site, `robots.txt` (allow all), the sitemap and `llms.txt` are public, and search engines and AI assistants can crawl them (what's in place, and what's still to do: [docs/search-and-ai.md](docs/search-and-ai.md)).
 - Preview links (`*-mesquared.mesquared-site.workers.dev`) open without a sign-in too. They send `X-Robots-Tag: noindex`, so search engines leave them out, but anyone with a link can see a branch before it's live.
 - `/cco/assessment/` is public but marked `noindex, nofollow` and isn't in the sitemap.
 - `mesquared.co.uk` and `www.mesquared.co.uk` now show a Cloudflare **525** error (checked 15 Oct 2026): the Worker has no route for them and nothing redirects them. To fix, add a redirect to `https://mesquaredagency.com` in that zone (EC's call; a DNS/zone change).
