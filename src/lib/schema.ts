@@ -30,7 +30,7 @@ export function jobPostingSchema(role: Role) {
   };
 }
 
-/** JSON-LD for the home page: Organization, one Service per offer (the whole back office, one job, websites), and the visible FAQ. */
+/** JSON-LD for the home page: Organization, WebSite, one Service per offer (the whole back office, one job, websites), and the visible FAQ. */
 export function homeSchema() {
   // Me²'s own social pages, when set in site.config.ts.
   const sameAs = [config.FACEBOOK_URL, config.LINKEDIN_URL].filter(Boolean);
@@ -41,9 +41,22 @@ export function homeSchema() {
     name: config.SITE_NAME,
     alternateName: config.SITE_NAME_PLAIN,
     url: `${siteUrl}/`,
+    description: fill(content.hero.subhead),
     email: config.CONTACT_EMAIL,
+    contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: config.CONTACT_EMAIL, availableLanguage: 'English' },
     logo: `${siteUrl}/logo.png`,
     ...(sameAs.length ? { sameAs } : {}),
+  };
+  // The site itself, so search engines show "Me²" as the site name rather than the domain (and know "Me Squared" is the same site).
+  const website = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
+    name: config.SITE_NAME,
+    alternateName: config.SITE_NAME_PLAIN,
+    url: `${siteUrl}/`,
+    inLanguage: config.LOCALE,
+    publisher: { '@id': `${siteUrl}/#organization` },
   };
   // One Service per offer. An Offer with a price only when showPricing is on and the price line has a figure (since 16 Oct 2026 every offer is quoted, so none do).
   const o = content.offer;
@@ -67,5 +80,5 @@ export function homeSchema() {
       acceptedAnswer: { '@type': 'Answer', text: fill(item.a) },
     })),
   };
-  return [org, ...services, faq];
+  return [org, website, ...services, faq];
 }
