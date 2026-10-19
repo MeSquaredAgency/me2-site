@@ -72,7 +72,7 @@ From 10 to 15 Oct 2026 EC kept the site behind **Cloudflare Access** (Zero Trust
 - The live site, `robots.txt` (allow all), the sitemap and `llms.txt` are public, and search engines and AI assistants can crawl them (what's in place, and what's still to do: [docs/search-and-ai.md](docs/search-and-ai.md)).
 - Preview links (`*-mesquared.mesquared-site.workers.dev`) open without a sign-in too. They send `X-Robots-Tag: noindex`, so search engines leave them out, but anyone with a link can see a branch before it's live.
 - `/cco/assessment/` is public but marked `noindex, nofollow` and isn't in the sitemap.
-- `mesquared.co.uk` and `www.mesquared.co.uk` now show a Cloudflare **525** error (checked 15 Oct 2026): the Worker has no route for them and nothing redirects them. To fix, add a redirect to `https://mesquaredagency.com` in that zone (EC's call; a DNS/zone change).
+- `mesquared.co.uk` and `www.mesquared.co.uk` redirect to `https://mesquaredagency.com` (since 20 Oct 2026; before that they showed a Cloudflare 525 error). EC added a **Redirect Rule** in the mesquared.co.uk zone (Rules → Overview, named "UK domain to mesquaredagency.com"): when `http.host in {"mesquared.co.uk" "www.mesquared.co.uk"}`, a dynamic 301 to `concat("https://mesquaredagency.com", http.request.uri.path)` with the query string kept. Both hostnames' DNS records are proxied, and the zone's Google MX record is untouched. Checked 20 Oct 2026: http and https, both hostnames, paths and query strings all go there in one 301.
 - Checks can run against the live site and previews again, as well as locally.
 - **To make it private again:** recreate the Access application. No code change or deploy is needed.
 
