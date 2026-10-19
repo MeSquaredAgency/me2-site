@@ -83,6 +83,6 @@ Tick only what has been checked.
 - [x] Weekend customer-service cover confirmed, so the "Saturday enquiry" pain row stands (EC, 16 Oct 2026: "Weekends are worked")
 - [x] Resend account created, mesquaredagency.com verified there, `RESEND_API_KEY` set as a Worker secret, and a test enquiry received in hello@'s inbox (10 Oct 2026)
 - [x] Site opened to the public (15 Oct 2026: EC removed the Cloudflare Access sign-in that had kept it private since 10 Oct)
-- [ ] `mesquared.co.uk` redirected to `https://mesquaredagency.com` (it shows a Cloudflare 525 error since Access came off; DEPLOY.md)
+- [x] `mesquared.co.uk` redirected to `https://mesquaredagency.com` (EC's Redirect Rule, checked 20 Oct 2026; DEPLOY.md)
 - [ ] Rate-limiting rule on /api/enquiry and /api/applications added in Cloudflare (DEPLOY.md)
 - [x] A preview application reaches people@ with the CV attached and "[Preview]" in the subject (docs/careers.md; EC confirmed 16 Oct 2026, with a 4.17 MB PDF)
