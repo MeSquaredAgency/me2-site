@@ -78,6 +78,9 @@ check('main panel name and quote line', offerText.includes('The whole back offic
 check('no price figures on the page', !/\$\s?\d/.test(text) && !JSON.stringify(ld).includes('minPrice'));
 check('FAQ: cost answer says it is quoted', has('Every quote is built around what your business needs.'));
 check('form promises a reply within 2 hours', decode(html).includes("We'll reply to the email you gave us within 2 hours."));
+// EC, 19 Oct 2026: based in Phnom Penh; the 2-hour reply holds at weekends and overnight.
+check('FAQ: reply time, in the page, FAQ schema and llms.txt', has('Within 2 hours of your enquiry, day or night, weekends included.') && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === 'How quickly will you reply?')) && llms.includes('How quickly will you reply?'));
+check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide', has('Our Command Centre team is based in Phnom Penh, Cambodia.') && has('In Phnom Penh, Cambodia, at our Command Centre.') && ld.find((x) => x['@type'] === 'Organization')?.address?.addressLocality === 'Phnom Penh' && llms.includes('Where is the team based?') && lacks('Adelaide'));
 // EC's terms, 16 Oct 2026 ("Yes, all good terms").
 for (const q of ['How soon can you start?', 'Is there a lock-in contract?', 'What if your team gets something wrong?', 'What happens to our data, and who can see it?']) check(`FAQ: ${q}`, has(q) && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === q)));
 // Facebook and LinkedIn: in the footer, the structured data and llms.txt once set in site.config.ts, and nowhere while empty.

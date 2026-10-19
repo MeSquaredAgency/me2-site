@@ -10,8 +10,8 @@ export const flags = {
    * Off since 10 Oct 2026 (EC: "get rid of the proof section for now"). On once each project is confirmed with the client's OK.
    */
   showProof: false,
-  /** Hero location line and the "Where is the team based?" FAQ item (Patrick). */
-  showLocations: false,
+  /** Hero location line, the "Where is the team based?" FAQ item and the city in the structured data. On since 19 Oct 2026 (EC: "Based in Phnom Penh"). */
+  showLocations: true,
   /** Footer entity and registration line, once the contracting entity is confirmed (Patrick + lawyer). */
   showLegalEntity: false,
   /** /privacy/ page and footer link. The policy was reviewed by EC on 16 Oct 2026 ("Policy is fine."). */

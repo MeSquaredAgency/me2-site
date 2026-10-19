@@ -45,8 +45,8 @@ export const content = {
     secondaryStart: 'See where to start',
     markSummary:
       'Illustration: the {SITE_NAME} mark, a dark glass square with a small coral square glowing at its corner. The glass is a screen that shows the work: the Command Centre board of back-office tasks being checked, a web page being designed, and an AI agent drafting for a person to check.',
-    /** showLocations (approved) */
-    location: 'Command Centre teams in Adelaide and Phnom Penh.',
+    /** showLocations. EC, 19 Oct 2026: "Based in Phnom Penh". */
+    location: 'Our Command Centre team is based in Phnom Penh, Cambodia.',
   },
 
   /** Illustrations on the hero screen (decorative; described for screen readers). */
@@ -274,8 +274,13 @@ export const content = {
       },
       {
         q: 'Where is the team based?',
-        a: 'Our Command Centre runs across Adelaide and Phnom Penh, Cambodia.',
+        a: 'In Phnom Penh, Cambodia, at our Command Centre.',
         flag: 'showLocations',
+      },
+      /** EC, 16 Oct 2026: replies "within 2 hours"; 19 Oct 2026: that holds at weekends and overnight. */
+      {
+        q: 'How quickly will you reply?',
+        a: 'Within 2 hours of your enquiry, day or night, weekends included.',
       },
       {
         q: 'How do we get started?',
