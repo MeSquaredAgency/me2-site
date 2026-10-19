@@ -81,6 +81,9 @@ check('form promises a reply within 2 hours', decode(html).includes("We'll reply
 // EC, 19 Oct 2026: based in Phnom Penh; the 2-hour reply holds at weekends and overnight.
 check('FAQ: reply time, in the page, FAQ schema and llms.txt', has('Within 2 hours of your enquiry, day or night, weekends included.') && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === 'How quickly will you reply?')) && llms.includes('How quickly will you reply?'));
 check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide', has('Our Command Centre team is based in Phnom Penh, Cambodia.') && has('In Phnom Penh, Cambodia, at our Command Centre.') && ld.find((x) => x['@type'] === 'Organization')?.address?.addressLocality === 'Phnom Penh' && llms.includes('Where is the team based?') && lacks('Adelaide'));
+// EC, 19 Oct 2026: the team is only in Phnom Penh, so the privacy page's overseas disclosure says so.
+const privacyHtml = decode(readFileSync('dist/privacy/index.html', 'utf8'));
+check('privacy: team in Phnom Penh only', privacyHtml.includes('Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia.') && !/Adelaide/.test(privacyHtml));
 // EC's terms, 16 Oct 2026 ("Yes, all good terms").
 for (const q of ['How soon can you start?', 'Is there a lock-in contract?', 'What if your team gets something wrong?', 'What happens to our data, and who can see it?']) check(`FAQ: ${q}`, has(q) && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === q)));
 // Facebook and LinkedIn: in the footer, the structured data and llms.txt once set in site.config.ts, and nowhere while empty.

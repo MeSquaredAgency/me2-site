@@ -360,11 +360,12 @@ export const content = {
   /**
    * Privacy policy, reviewed by EC on 16 Oct 2026 ("Policy is fine."). Change "updated" whenever the text changes.
    * It describes what the site actually does: one enquiry form, no cookies of its own, hosting on Cloudflare,
-   * form emails delivered by Resend, email in Google Workspace, and a team in Adelaide and Phnom Penh (overseas disclosure, APP 8).
+   * form emails delivered by Resend, email in Google Workspace, and a team in Phnom Penh (overseas disclosure, APP 8).
+   * EC, 19 Oct 2026: "the Me² team is only in Phnom Penh", so Adelaide was taken out.
    */
   privacy: {
     h1: 'Privacy',
-    updated: 'Last updated 16 October 2026',
+    updated: 'Last updated 19 October 2026',
     sections: [
       {
         h: 'Who we are',
@@ -398,7 +399,7 @@ export const content = {
         h: 'Where it is kept and who can see it',
         p: [
           'Enquiries are emailed to our team by Resend, an email delivery service, and kept in our business email system, which is provided by Google.',
-          'Our team works from Adelaide and from Phnom Penh, Cambodia, so people in Cambodia may see your enquiry when they help us respond. Our service providers, Cloudflare, Resend and Google, may store or process information on servers outside Australia.',
+          'Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia. Our service providers, Cloudflare, Resend and Google, may store or process information on servers outside Australia.',
         ],
       },
       {
