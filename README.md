@@ -67,9 +67,10 @@ Tick only what has been checked.
 - [x] Google email DNS records (MX, SPF, DKIM, DMARC, verification) unchanged after the switch (checked 9 Oct 2026)
 - [x] Email links not rewritten by Cloudflare Email Obfuscation (checked on the live page)
 - [ ] Cloudflare Web Analytics turned on
-- [ ] Sitemap submitted in Google Search Console; `npm run indexnow` run
-- [ ] Site added in Bing Webmaster Tools (import it from Search Console); Bing's index feeds ChatGPT search and Copilot
-- [ ] Cloudflare's "Block AI bots" setting checked for mesquaredagency.com, and left off if Me² wants AI assistants to read the site (robots.txt already allows them; [docs/search-and-ai.md](docs/search-and-ai.md))
+- [x] Sitemap submitted in Google Search Console; `npm run indexnow` run (19 Oct 2026)
+- [x] Site added in Bing Webmaster Tools (import it from Search Console); Bing's index feeds ChatGPT search and Copilot (EC, 19 Oct 2026)
+- [x] Cloudflare's "Block AI bots" setting checked for mesquaredagency.com (EC, 19 Oct 2026; [docs/search-and-ai.md](docs/search-and-ai.md))
+- [x] Where the team is based shown on the page: Phnom Penh (EC, 19 Oct 2026, `showLocations`)
 - [ ] Vector logo master from the designer swapped in (optional; the traced one works)
 - [x] v0.15 redesign live, by EC's choice (10 Oct 2026; it went live when the Resend key was saved, and EC kept it)
 - [ ] `npm run verify` rewritten for the v0.15 sections

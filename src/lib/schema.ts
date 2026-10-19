@@ -45,6 +45,8 @@ export function homeSchema() {
     email: config.CONTACT_EMAIL,
     contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: config.CONTACT_EMAIL, availableLanguage: 'English' },
     logo: `${siteUrl}/logo.png`,
+    // Where the team is, only while the page says so (showLocations): the same city as the job postings.
+    ...(flags.showLocations ? { address: { '@type': 'PostalAddress', addressLocality: jobPlace.locality, addressCountry: jobPlace.country } } : {}),
     ...(sameAs.length ? { sameAs } : {}),
   };
   // The site itself, so search engines show "Me²" as the site name rather than the domain (and know "Me Squared" is the same site).
