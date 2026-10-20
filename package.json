@@ -15,7 +15,8 @@
     "indexnow": "node scripts/indexnow.mjs",
     "build:fixture": "node scripts/build-fixture.mjs",
     "verify": "node scripts/verify.mjs",
-    "check:home": "node scripts/check-home.mjs"
+    "check:home": "node scripts/check-home.mjs",
+    "check:markdown": "node scripts/check-markdown.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",

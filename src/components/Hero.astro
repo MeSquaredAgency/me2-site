@@ -18,8 +18,9 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
     glowing at its corner, drawn live in WebGL (src/lib/mark-gl.ts). Its face is a screen: the HTML below is
     pinned to the glass and shows the three services in turn. Without WebGL the screen stands alone
     as a glass panel with the ² at its corner.
+    data-markdown="skip": the markdown version for AI agents (scripts/markdown.mjs) leaves out these illustration summaries.
   -->
-  <div class="stage">
+  <div class="stage" data-markdown="skip">
     <div class="screen" data-stage data-active="still" data-screen>
       <p class="sr-only">{fill(c.markSummary)}</p>
       <div class="vis" data-for="design"><DesignVisual /></div>

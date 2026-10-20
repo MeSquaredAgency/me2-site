@@ -52,7 +52,8 @@ const facts = [
           </section>
         ))}
       </article>
-      <aside class="apply-panel" aria-label={c.apply}>
+      <!-- Repeats the facts above, so the markdown version for AI agents (scripts/markdown.mjs) leaves it out. -->
+      <aside class="apply-panel" aria-label={c.apply} data-markdown="skip">
         <p class="panel-title">{role.title}</p>
         <dl class="panel-facts">
           {facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
