@@ -63,7 +63,20 @@ ${flagOn('showCareers') && listed.size ? `- [Careers](${base}/careers/): open ro
 ${fixture || !siteConfig.WHATSAPP_NUMBER ? '' : `- [WhatsApp ${siteConfig.WHATSAPP_NUMBER}](https://wa.me/${siteConfig.WHATSAPP_NUMBER.replace(/\D/g, '')})\n`}${fixture ? '' : [['Facebook', siteConfig.FACEBOOK_URL], ['LinkedIn', siteConfig.LINKEDIN_URL]].filter(([, url]) => url).map(([label, url]) => `- [${name} on ${label}](${url})\n`).join('')}`;
 writeFileSync(`${outDir}/llms.txt`, llms);
 
+// A markdown version of each listed page, for AI agents that ask for text/markdown (worker/index.ts serves it in
+// place of the HTML). Made from the built page, so it always says what the page says. It sits beside the page as
+// index.html.md, the llms.txt convention for a page's markdown copy.
+const { htmlToMarkdown } = await import('./markdown.mjs');
+const withMarkdown = routes.filter((r) => !r.noindex && (!r.flag || flagOn(r.flag)) && (!r.role || listed.has(r.role)));
+let markdownPages = 0;
+for (const r of withMarkdown) {
+  const page = `${outDir}${r.path}index.html`;
+  if (!existsSync(page)) { console.warn(`[postbuild] missing ${page}`); continue; }
+  writeFileSync(`${page}.md`, htmlToMarkdown(readFileSync(page, 'utf8')));
+  markdownPages++;
+}
+
 for (const f of ['index.html', '404.html']) {
   if (!existsSync(`${outDir}/${f}`)) console.warn(`[postbuild] missing ${outDir}/${f}`);
 }
-console.log(`[postbuild] ${outDir}: sitemap (${indexable.length} url), robots.txt, llms.txt`);
+console.log(`[postbuild] ${outDir}: sitemap (${indexable.length} url), robots.txt, llms.txt, markdown for ${markdownPages} page(s)`);
