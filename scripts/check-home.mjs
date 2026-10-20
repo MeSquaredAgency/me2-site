@@ -77,13 +77,24 @@ check('main panel name and quote line', offerText.includes('The whole back offic
 // EC, 16 Oct 2026: every offer is quoted, so no figures anywhere on the page or in its structured data.
 check('no price figures on the page', !/\$\s?\d/.test(text) && !JSON.stringify(ld).includes('minPrice'));
 check('FAQ: cost answer says it is quoted', has('Every quote is built around what your business needs.'));
-check('form promises a reply within 2 hours', decode(html).includes("We'll reply to the email you gave us within 2 hours."));
-// EC, 19 Oct 2026: based in Phnom Penh; the 2-hour reply holds at weekends and overnight.
-check('FAQ: reply time, in the page, FAQ schema and llms.txt', has('Within 2 hours of your enquiry, day or night, weekends included.') && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === 'How quickly will you reply?')) && llms.includes('How quickly will you reply?'));
+// EC, 20 Oct 2026: nobody is on shift overnight ("No - but we are often awake"), so the reply time is "usually within 2 hours".
+check('form promises a reply, usually within 2 hours', decode(html).includes("We'll reply to the email you gave us, usually within 2 hours."));
+check('FAQ: reply time, in the page, FAQ schema and llms.txt', has('Usually within 2 hours, evenings and weekends included.') && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === 'How quickly will you reply?' && e.acceptedAnswer?.text === 'Usually within 2 hours, evenings and weekends included.')) && llms.includes('How quickly will you reply? Usually within 2 hours, evenings and weekends included.'));
+check('no "day or night" promise left (page, structured data, llms.txt)', lacks('day or night') && !JSON.stringify(ld).includes('day or night') && !llms.includes('day or night'));
+const thanksHtml = decode(readFileSync('dist/thanks/index.html', 'utf8'));
+check('/thanks/: usually within 2 hours, on the page and in its description', thanksHtml.includes("We'll reply to the email you gave us, usually within 2 hours.") && thanksHtml.includes('We will reply to the email you gave us, usually within 2 hours.'));
 check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide', has('Our Command Centre team is based in Phnom Penh, Cambodia.') && has('In Phnom Penh, Cambodia, at our Command Centre.') && ld.find((x) => x['@type'] === 'Organization')?.address?.addressLocality === 'Phnom Penh' && llms.includes('Where is the team based?') && lacks('Adelaide'));
 // EC, 19 Oct 2026: the team is only in Phnom Penh, so the privacy page's overseas disclosure says so.
 const privacyHtml = decode(readFileSync('dist/privacy/index.html', 'utf8'));
 check('privacy: team in Phnom Penh only', privacyHtml.includes('Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia.') && !/Adelaide/.test(privacyHtml));
+// EC, 20 Oct 2026: WhatsApp on +855 69 713 244, automatic first replies, call backs (spec: docs/superpowers/specs/2026-10-19-reply-bots.md).
+check('privacy: WhatsApp, call backs, automatic replies, Meta, dated 20 Oct', ['If you message us on WhatsApp, we collect your phone number', 'If you ask us to call you back', 'we email you an automatic confirmation', 'Cloudflare, Resend, Google and Meta (for WhatsApp)', 'Last updated 20 October 2026'].every((t) => privacyHtml.includes(t)));
+const { siteConfig: idConfig } = await import('../src/config/site.config.ts');
+const waNumber = idConfig.WHATSAPP_NUMBER;
+const waUrl = `https://wa.me/${waNumber.replace(/\D/g, '')}`;
+check(waNumber ? 'WhatsApp: linked in the contact section and footer, and in llms.txt' : 'WhatsApp: left out while the number is empty',
+  waNumber ? html.split(`href="${waUrl}"`).length - 1 === 2 && has(`Or message us on WhatsApp: ${waNumber}`) && llms.includes(waUrl) : !html.includes('wa.me/') && !llms.includes('wa.me/'));
+check('no chat widget or WhatsApp script on the page', !/<script[^>]+src="https?:\/\//.test(html) && !/<iframe/.test(html));
 // EC's terms, 16 Oct 2026 ("Yes, all good terms").
 for (const q of ['How soon can you start?', 'Is there a lock-in contract?', 'What if your team gets something wrong?', 'What happens to our data, and who can see it?']) check(`FAQ: ${q}`, has(q) && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === q)));
 // Facebook and LinkedIn: in the footer, the structured data and llms.txt once set in site.config.ts, and nowhere while empty.

@@ -47,7 +47,11 @@ export function fill(text: string): string {
     .replaceAll('{CONTACT_EMAIL}', config.CONTACT_EMAIL)
     .replaceAll('{PRIVACY_EMAIL}', config.PRIVACY_EMAIL)
     .replaceAll('{CAREERS_EMAIL}', config.CAREERS_EMAIL)
+    .replaceAll('{WHATSAPP_NUMBER}', config.WHATSAPP_NUMBER)
     .replaceAll('{YEAR}', String(new Date().getFullYear()));
 }
 
 export const siteUrl = `https://${config.SITE_DOMAIN}`;
+
+/** Opens a WhatsApp chat with Me² (a plain link, no script). Empty while WHATSAPP_NUMBER is. */
+export const whatsappUrl = config.WHATSAPP_NUMBER ? `https://wa.me/${config.WHATSAPP_NUMBER.replace(/\D/g, '')}` : '';

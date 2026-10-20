@@ -3,10 +3,13 @@
 //  1. sends every visitor to https:// and the bare domain (no www), in a single 301;
 //  2. stores completed assessment submissions in D1 (POST /api/assessments);
 //  3. handles the enquiry form (POST /api/enquiry): checks it, drops bots, and emails it to
-//     FORM_TO_EMAIL through Resend (its HTTP API; the RESEND_API_KEY secret, set in Cloudflare, see DEPLOY.md); and
+//     FORM_TO_EMAIL through Resend (its HTTP API; the RESEND_API_KEY secret, set in Cloudflare, see DEPLOY.md), then,
+//     on the live site, emails the visitor a fixed-text automatic confirmation (sendEnquiryConfirmation); and
 //  4. handles job applications (POST /api/applications, ./applications.ts): emails each one, CV attached, to CAREERS_EMAIL.
 // Data rule (BRIEF §6): the enquiry form takes contact details and a short message only; the careers form also takes a CV.
-import { siteConfig } from '../src/config/site.config';
+import { siteConfig } from '../src/config/site.config.ts';
+import { flags } from '../src/config/flags.ts';
+import { content } from '../src/content/site.ts';
 import { application } from './applications.ts';
 
 interface AssessmentPreparedStatement {
@@ -26,12 +29,17 @@ interface Env {
   RESEND_API_KEY?: string;
 }
 
+/** The part of the Workers execution context the enquiry route uses: work that carries on after the response. */
+interface Ctx {
+  waitUntil(promise: Promise<unknown>): void;
+}
+
 const LIMITS = { name: 100, email: 254, message: 2000, topic: 120, source: 60 };
 // Real people take longer than this to type a message; most form bots don't.
 const MIN_FILL_MS = 2500;
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: Ctx): Promise<Response> {
     const url = new URL(request.url);
     const isWww = url.hostname.startsWith('www.');
     // workers.dev and local previews are left alone; only real domains are redirected.
@@ -42,7 +50,7 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
     if (url.pathname === '/api/assessments') return assessment(request, env);
-    if (url.pathname === '/api/enquiry') return enquiry(request, env);
+    if (url.pathname === '/api/enquiry') return enquiry(request, env, ctx);
     if (url.pathname === '/api/applications') return application(request, env);
     return env.ASSETS.fetch(request);
   },
@@ -123,7 +131,7 @@ async function assessment(request: Request, env: Env): Promise<Response> {
   }
 }
 
-async function enquiry(request: Request, env: Env): Promise<Response> {
+export async function enquiry(request: Request, env: Env, ctx: Ctx): Promise<Response> {
   if (request.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: { Allow: 'POST' } });
   // The page's script posts JSON and shows the result in place; without JavaScript the browser posts the form
   // and lands on a thank-you (or not-sent) page.
@@ -193,7 +201,44 @@ async function enquiry(request: Request, env: Env): Promise<Response> {
     return done(false, 502);
   }
   console.log(JSON.stringify({ event: 'enquiry', result: 'sent', topic, source }));
+  // The enquiry is with the team, so the visitor hears "sent" whatever happens next. The confirmation goes after the
+  // response, from the live site only (previews share this Worker and must never email the people who test them).
+  if (flags.sendEnquiryConfirmation && new URL(request.url).hostname === siteConfig.SITE_DOMAIN) {
+    ctx.waitUntil(confirmEnquiry(email, env.RESEND_API_KEY));
+  }
   return done(true);
+}
+
+// The automatic confirmation (copy in content.enquiryConfirmation). Fixed text: never the visitor's name, message or
+// topic, since anyone can type someone else's address, and the form must not become a way to send words from our domain.
+// Marked as an automatic reply so other autoresponders don't answer it; replies go to hello@.
+async function confirmEnquiry(to: string, apiKey: string): Promise<void> {
+  const c = content.enquiryConfirmation;
+  const paragraphs = c.paragraphs.map((p) => p.replaceAll('{SITE_NAME}', siteConfig.SITE_NAME));
+  const site = `https://${siteConfig.SITE_DOMAIN}`;
+  const text = [...paragraphs, `${siteConfig.SITE_NAME}\n${site}`].join('\n\n');
+  const html = `${paragraphs.map((p) => `<p>${esc(p)}</p>`).join('')}<p>${esc(siteConfig.SITE_NAME)}<br><a href="${site}">${esc(site)}</a></p>`;
+  let failed = '';
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: `${siteConfig.SITE_NAME_PLAIN} <${siteConfig.CONTACT_EMAIL}>`,
+        to: [to],
+        reply_to: siteConfig.CONTACT_EMAIL,
+        subject: c.subject,
+        text,
+        html,
+        headers: { 'Auto-Submitted': 'auto-replied', 'X-Auto-Response-Suppress': 'All' },
+      }),
+    });
+    if (!res.ok) failed = `http-${res.status} ${((await res.json().catch(() => ({}))) as { name?: string }).name ?? ''}`.trim();
+  } catch (e) {
+    failed = String(e);
+  }
+  // No personal details in logs: just what happened.
+  console.log(JSON.stringify(failed ? { event: 'enquiry-confirmation', result: 'send-failed', code: failed } : { event: 'enquiry-confirmation', result: 'sent' }));
 }
 
 function esc(s: string) {

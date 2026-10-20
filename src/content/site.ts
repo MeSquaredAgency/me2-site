@@ -277,10 +277,10 @@ export const content = {
         a: 'In Phnom Penh, Cambodia, at our Command Centre.',
         flag: 'showLocations',
       },
-      /** EC, 16 Oct 2026: replies "within 2 hours"; 19 Oct 2026: that holds at weekends and overnight. */
+      /** EC, 20 Oct 2026: nobody is on shift overnight ("No - but we are often awake"), so "usually", not "day or night". */
       {
         q: 'How quickly will you reply?',
-        a: 'Within 2 hours of your enquiry, day or night, weekends included.',
+        a: 'Usually within 2 hours, evenings and weekends included.',
       },
       {
         q: 'How do we get started?',
@@ -296,6 +296,8 @@ export const content = {
     /** enableBooking */
     booking: 'Book a call',
     emailLine: 'Prefer email? Write to {CONTACT_EMAIL}',
+    /** Shown while WHATSAPP_NUMBER is set in site.config.ts (EC, 20 Oct 2026). A plain link, never a chat widget. */
+    whatsappLine: 'Or message us on WhatsApp: {WHATSAPP_NUMBER}',
     /** Shown instead of the form when enableContactForm is off. */
     button: 'Talk to us',
   },
@@ -318,8 +320,8 @@ export const content = {
     requiredMessage: 'Tell us a little about what you need.',
     emailError: 'Enter an email address like name@business.com.au.',
     tooLong: 'Keep this under 2,000 characters.',
-    /** EC, 16 Oct 2026: "Within 2 hours." */
-    success: "Enquiry sent. We'll reply to the email you gave us within 2 hours.",
+    /** EC, 16 Oct 2026: "Within 2 hours."; 20 Oct 2026: "usually", since nobody is on shift overnight. */
+    success: "Enquiry sent. We'll reply to the email you gave us, usually within 2 hours.",
     /** The form keeps what they typed when sending fails, so say so. */
     failure: "Your enquiry didn't send. What you wrote is still here: try again, or email us at {CONTACT_EMAIL}.",
     privacy: "We use these details to reply to you, and we won't add you to a mailing list. See our privacy policy.",
@@ -330,14 +332,30 @@ export const content = {
   /** The page the form lands on without JavaScript. */
   thanks: {
     h1: 'Enquiry sent.',
-    body: "We'll reply to the email you gave us within 2 hours.",
+    body: "We'll reply to the email you gave us, usually within 2 hours.",
     failH1: "Your enquiry didn't send.",
     failBody: 'Email us at {CONTACT_EMAIL} instead.',
     button: 'Back to the home page',
   },
 
+  /**
+   * The automatic confirmation /api/enquiry emails to the visitor once their enquiry reaches hello@ (live site only).
+   * EC, 20 Oct 2026: a receptionist that gathers the basics and arranges a call back from a person.
+   * Fixed text only: it never repeats what the visitor typed, because anyone can type someone else's address.
+   */
+  enquiryConfirmation: {
+    subject: "We've received your enquiry",
+    paragraphs: [
+      'Thanks for getting in touch with {SITE_NAME}.',
+      'This is an automatic reply to confirm your enquiry reached us. A person from our team will reply to this email, usually within 2 hours.',
+      "If you'd rather talk, reply with a good time and the number to call, and we'll ring you then.",
+    ],
+  },
+
   footer: {
     contactHeading: 'Contact',
+    /** Shown while WHATSAPP_NUMBER is set in site.config.ts. */
+    whatsapp: 'WhatsApp',
     /** Shown only for the pages whose address is set in site.config.ts. */
     social: [
       { label: 'Facebook', key: 'FACEBOOK_URL' },
@@ -362,10 +380,11 @@ export const content = {
    * It describes what the site actually does: one enquiry form, no cookies of its own, hosting on Cloudflare,
    * form emails delivered by Resend, email in Google Workspace, and a team in Phnom Penh (overseas disclosure, APP 8).
    * EC, 19 Oct 2026: "the Me² team is only in Phnom Penh", so Adelaide was taken out.
+   * EC, 20 Oct 2026: WhatsApp, call backs and automatic first replies added (EC signs off privacy changes).
    */
   privacy: {
     h1: 'Privacy',
-    updated: 'Last updated 19 October 2026',
+    updated: 'Last updated 20 October 2026',
     sections: [
       {
         h: 'Who we are',
@@ -376,6 +395,8 @@ export const content = {
         p: [
           'When you send an enquiry through the form on this site, we collect your name, your email address, what you write in your message and which part of the site you sent it from. Please don\'t include details about your clients or customers.',
           'If you email us, we collect your email address and whatever your email contains.',
+          'If you message us on WhatsApp, we collect your phone number, your WhatsApp profile name and what you send us.',
+          'If you ask us to call you back, we collect the number and the time you give us, and use them only to call you about your enquiry.',
           'Our hosting provider, Cloudflare, processes technical information such as your IP address and browser type to deliver this site and protect it from abuse. This site doesn\'t set cookies of its own and doesn\'t use advertising or tracking tools.',
         ],
       },
@@ -383,6 +404,7 @@ export const content = {
         h: 'How we use it',
         p: [
           'We use your details to reply to your enquiry, to discuss and provide our services if you go ahead, and to keep a record of our correspondence.',
+          'When you send an enquiry through the form, we email you an automatic confirmation. The first reply to a WhatsApp message or an email may also be automatic, and it says so. A person from our team then follows up.',
           'We don\'t sell personal information and we don\'t add you to a mailing list.',
         ],
       },
@@ -399,7 +421,8 @@ export const content = {
         h: 'Where it is kept and who can see it',
         p: [
           'Enquiries are emailed to our team by Resend, an email delivery service, and kept in our business email system, which is provided by Google.',
-          'Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia. Our service providers, Cloudflare, Resend and Google, may store or process information on servers outside Australia.',
+          'WhatsApp messages are kept in WhatsApp, which is provided by Meta, and on the phone and computers our team uses to reply.',
+          'Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia. Our service providers, Cloudflare, Resend, Google and Meta (for WhatsApp), may store or process information on servers outside Australia.',
         ],
       },
       {

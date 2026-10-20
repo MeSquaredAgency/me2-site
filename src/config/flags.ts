@@ -18,6 +18,11 @@ export const flags = {
   showPrivacyPage: true,
   /** The enquiry form (final section, and a dialog from every "Talk to us"). Needs showPrivacyPage, and Resend set up with its key stored as a Worker secret (DEPLOY.md). */
   enableContactForm: true,
+  /**
+   * The automatic confirmation email /api/enquiry sends to the visitor once their enquiry reaches hello@ (live site only, fixed text).
+   * On since 20 Oct 2026 (EC: the first reply is a receptionist; a person follows up). Off: enquiries still reach hello@, with no confirmation.
+   */
+  sendEnquiryConfirmation: true,
   /** "Book a call" button. Needs BOOKING_URL and showPrivacyPage (EC). */
   enableBooking: false,
   /** Any analytics beyond Cloudflare Web Analytics. Needs showPrivacyPage (EC). */

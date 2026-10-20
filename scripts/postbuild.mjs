@@ -59,7 +59,7 @@ ${flagOn('showProof') ? `- [Work](${base}/#work): projects ${name} has designed 
 ${flagOn('showCareers') && listed.size ? `- [Careers](${base}/careers/): open roles in ${name}'s Command Centre in Phnom Penh, and how to apply\n` : ''}${flagOn('showPrivacyPage') ? `- [Privacy](${base}/privacy/): how enquiries and job applications are handled\n` : ''}
 ## Contact
 - [Email ${email}](mailto:${email})
-${fixture ? '' : [['Facebook', siteConfig.FACEBOOK_URL], ['LinkedIn', siteConfig.LINKEDIN_URL]].filter(([, url]) => url).map(([label, url]) => `- [${name} on ${label}](${url})\n`).join('')}`;
+${fixture || !siteConfig.WHATSAPP_NUMBER ? '' : `- [WhatsApp ${siteConfig.WHATSAPP_NUMBER}](https://wa.me/${siteConfig.WHATSAPP_NUMBER.replace(/\D/g, '')})\n`}${fixture ? '' : [['Facebook', siteConfig.FACEBOOK_URL], ['LinkedIn', siteConfig.LINKEDIN_URL]].filter(([, url]) => url).map(([label, url]) => `- [${name} on ${label}](${url})\n`).join('')}`;
 writeFileSync(`${outDir}/llms.txt`, llms);
 
 for (const f of ['index.html', '404.html']) {
