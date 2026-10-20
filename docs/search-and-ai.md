@@ -18,6 +18,7 @@ Audited 17 Oct 2026 (two days after the site went public). Recheck on **17 Nov 2
 - **IndexNow**: `npm run indexnow` tells Bing and others the pages changed (key file in `public/`).
 
 ## Done
+- **Agent-readiness check** (isitagentready.com, 20 Oct 2026, after PR #24 went live): level 3, "Agent-Readable". robots.txt, sitemap, markdown for agents, AI rules in robots.txt and Content Signals all pass. The checks that still fail (Link headers, DNS-AID, API catalog, OAuth, MCP and A2A cards, agent skills, WebMCP) are for sites with an API or tools for agents to call, which a sales site doesn't have.
 - **Google Search Console and Bing Webmaster Tools** set up, with the sitemap submitted (EC, 19 Oct 2026). `npm run indexnow` run the same day (202 for 6 URLs). Run it again after each live change.
 - **Cloudflare's "Block AI bots" setting** checked by EC (19 Oct 2026). Cloudflare can block AI crawlers by their verified addresses, which robots.txt and an outside check can't show, so check it again if assistants stop finding the site.
 - **Where Me² is:** "Based in Phnom Penh" (EC, 19 Oct 2026), on the page through `showLocations`.
