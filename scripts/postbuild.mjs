@@ -31,9 +31,10 @@ ${indexable.map((r) => `  <url><loc>${base}${r.path}</loc></url>`).join('\n')}
 `;
 writeFileSync(`${outDir}/sitemap.xml`, sitemap);
 
+// Content Signals (contentsignals.org): yes to search, AI answers and AI training (EC, 20 Oct 2026), so assistants can find and recommend the site.
 const robots = fixture
   ? 'User-agent: *\nDisallow: /\n'
-  : `User-agent: *\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`;
+  : `# Content Signals (https://contentsignals.org/): yes to search, AI answers and AI training.\nUser-agent: *\nContent-Signal: search=yes, ai-input=yes, ai-train=yes\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`;
 writeFileSync(`${outDir}/robots.txt`, robots);
 
 const price = (text) => (flagOn('showPricing') ? ` ${text}` : '');

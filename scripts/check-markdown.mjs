@@ -67,9 +67,10 @@ for (const path of pages) {
   check(`${path}: served as markdown to agents`,
     res.status === 200 && res.headers.get('content-type') === 'text/markdown; charset=utf-8' && body === text,
     `${res.status} ${res.headers.get('content-type')}`);
-  check(`${path}: markdown headers (Vary, token estimate, canonical, security)`,
+  check(`${path}: markdown headers (Vary, token estimate, canonical, Content Signals, security)`,
     res.headers.get('vary') === 'Accept' && Number(res.headers.get('x-markdown-tokens')) === Math.ceil(text.length / 4) &&
-      res.headers.get('link') === `<${origin}${path}>; rel="canonical"` && res.headers.has('strict-transport-security'),
+      res.headers.get('link') === `<${origin}${path}>; rel="canonical"` &&
+      res.headers.get('content-signal') === 'search=yes, ai-input=yes, ai-train=yes' && res.headers.has('strict-transport-security'),
     [...res.headers].map((h) => h.join(': ')).join('; '));
 
   const html = await get(path, BROWSER);

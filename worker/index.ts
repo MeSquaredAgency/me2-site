@@ -99,6 +99,8 @@ async function markdown(request: Request, env: Env, path: string): Promise<Respo
   headers.set('Vary', 'Accept');
   headers.set('x-markdown-tokens', String(Math.ceil(text.length / 4)));
   headers.set('Link', `<${url.origin}${path.slice(0, -'index.html.md'.length)}>; rel="canonical"`);
+  // The same Content Signals as robots.txt (EC chose all yes, 20 Oct 2026).
+  headers.set('Content-Signal', 'search=yes, ai-input=yes, ai-train=yes');
   // The body is re-sent as plain text, so the stored file's length and encoding no longer apply.
   headers.delete('Content-Length');
   headers.delete('Content-Encoding');
