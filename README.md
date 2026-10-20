@@ -70,6 +70,7 @@ Tick only what has been checked.
 - [x] Sitemap submitted in Google Search Console; `npm run indexnow` run (19 Oct 2026)
 - [x] Site added in Bing Webmaster Tools (import it from Search Console); Bing's index feeds ChatGPT search and Copilot (EC, 19 Oct 2026)
 - [x] Cloudflare's "Block AI bots" setting checked for mesquaredagency.com (EC, 19 Oct 2026; [docs/search-and-ai.md](docs/search-and-ai.md))
+- [ ] Content Signals live in robots.txt (search, AI answers and AI training all yes; EC, 20 Oct 2026) and passing the check at isitagentready.com
 - [x] Where the team is based shown on the page: Phnom Penh (EC, 19 Oct 2026, `showLocations`)
 - [ ] Vector logo master from the designer swapped in (optional; the traced one works)
 - [x] v0.15 redesign live, by EC's choice (10 Oct 2026; it went live when the Resend key was saved, and EC kept it)

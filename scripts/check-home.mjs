@@ -124,6 +124,8 @@ check('llms.txt: people first', llms.includes('trained people') && llms.includes
 const siteLd = ld.find((x) => x['@type'] === 'WebSite');
 check('JSON-LD WebSite names the site Me²', siteLd?.name === 'Me²' && siteLd?.alternateName === 'Me Squared');
 check('llms.txt: the FAQ terms, as on the page', llms.includes('## Common questions') && llms.includes("either of us can stop with 30 days' notice") && !llms.includes('{SITE_NAME}'));
+const robots = readFileSync('dist/robots.txt', 'utf8');
+check('robots.txt: Content Signals yes to search, AI answers and AI training (EC, 20 Oct 2026)', /^User-agent: \*\nContent-Signal: search=yes, ai-input=yes, ai-train=yes\nAllow: \/$/m.test(robots) && /^Sitemap: https:\/\/\S+\/sitemap\.xml$/m.test(robots), robots);
 check('og:title is the hero', html.includes('<meta property="og:title" content="We run the back office. You run the business."'));
 check('page title', /<title>Me²: back-office teams and websites for established businesses<\/title>/.test(html));
 // Final review fixes
