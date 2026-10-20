@@ -2,13 +2,14 @@
 import EnquiryForm from './EnquiryForm.astro';
 import EnquiryDialog from './EnquiryDialog.astro';
 import EnquireLink from './EnquireLink.astro';
-import { config, fill, flags } from '../config';
+import { config, fill, flags, whatsappUrl } from '../config';
 import { content } from '../content/site';
 const c = content.contact;
 // The ² square sits on the last word, so it stays tight to the full stop however the line wraps.
 const words = c.h2.split(' ');
 const last = words.pop();
 const [emailBefore, emailAfter] = fill(c.emailLine).split(config.CONTACT_EMAIL);
+const [waBefore, waAfter] = fill(c.whatsappLine).split(config.WHATSAPP_NUMBER);
 ---
 <!-- The close: the promise in the brand's own word, the ² lit at its corner, and the form beside it. -->
 <section id="contact" class="contact on-dark render-later" aria-labelledby="contact-title">
@@ -17,7 +18,10 @@ const [emailBefore, emailAfter] = fill(c.emailLine).split(config.CONTACT_EMAIL);
     <div class="ask">
       <h2 id="contact-title">{words.join(' ')} <span class="last">{last}<span class="sq" aria-hidden="true"></span></span></h2>
       <p class="lede">{c.body}</p>
-      <p class="mail">{emailBefore}<a href={`mailto:${config.CONTACT_EMAIL}`} class="tlink">{config.CONTACT_EMAIL}</a>{emailAfter}</p>
+      <div class="reach">
+        <p class="mail">{emailBefore}<a href={`mailto:${config.CONTACT_EMAIL}`} class="tlink">{config.CONTACT_EMAIL}</a>{emailAfter}</p>
+        {whatsappUrl && <p class="mail">{waBefore}<a href={whatsappUrl} class="tlink">{config.WHATSAPP_NUMBER}</a>{waAfter}</p>}
+      </div>
       {flags.enableBooking && <a href={config.BOOKING_URL} class="btn btn-line" target="_blank" rel="noopener">{c.booking}</a>}
     </div>
     {flags.enableContactForm
@@ -44,6 +48,9 @@ const [emailBefore, emailAfter] = fill(c.emailLine).split(config.CONTACT_EMAIL);
   }
   .ask { display: grid; gap: 32px; justify-items: start; }
   .ask .lede { max-width: 40ch; }
+  /* The other ways in (email, WhatsApp) read as one group. */
+  .reach { display: grid; gap: 10px; }
+  .reach a { white-space: nowrap; } /* never "+855 69 / 713 244" */
   .mail { color: var(--color-haze); }
   .mail a { color: var(--color-mist); }
   /* The form sits on a pane of the same dark glass as the mark. */

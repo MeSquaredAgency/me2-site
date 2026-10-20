@@ -76,7 +76,7 @@
   {
     "path": "/thanks/",
     "title": "Enquiry sent | Me²",
-    "description": "Your enquiry has been sent to Me². We will reply to the email you gave us within 2 hours.",
+    "description": "Your enquiry has been sent to Me². We will reply to the email you gave us, usually within 2 hours.",
     "ogImage": "/og-image.png",
     "noindex": true
   },

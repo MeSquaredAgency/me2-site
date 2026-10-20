@@ -1,6 +1,6 @@
 # Automatic first replies on WhatsApp and email: plan
 
-19 October 2026, revised 20 October 2026 with EC's answers. Branch `reply-bots-plan` (from `origin/main` c3d81c3). Status: **plan; nothing built, nothing sent, no accounts made.** One wording decision is open (the reply-time promise, below); after that, step 1 can be built on a branch.
+19 October 2026, revised 20 October 2026 with EC's answers. Branch `reply-bots-plan` (from `origin/main` c3d81c3). Status: **step 1 built on branch `reply-bots` (20 Oct 2026), not merged.** EC chose option A for the reply time ("usually within 2 hours, evenings and weekends included") and said to build step 1. The WhatsApp greeting and the hello@ group auto-reply are EC's to set up by hand: [docs/auto-replies.md](../../auto-replies.md).
 
 ## Why
 

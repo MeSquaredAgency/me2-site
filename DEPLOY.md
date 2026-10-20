@@ -83,7 +83,7 @@ From 10 to 15 Oct 2026 EC kept the site behind **Cloudflare Access** (Zero Trust
 - The DNS records for `mesquaredagency.com` and `www` are now managed by the Workers project. Don't edit or delete them in the DNS page; change domains in `wrangler.jsonc` instead.
 
 ## Enquiry form email
-The enquiry form posts to `/api/enquiry` (in `worker/index.ts`), which emails each enquiry to `hello@mesquaredagency.com` through **Resend**, from `website@mesquaredagency.com`, with the visitor's address as Reply-To. Resend's free plan allows 3,000 emails a month (100 a day), far more than the form needs. (Cloudflare's own Email Sending needs the Workers Paid plan, so it isn't used.) Until the steps below are done, the form shows "Your enquiry didn't send. Email us at hello@… instead." with the address as a link, so nobody is left stuck.
+The enquiry form posts to `/api/enquiry` (in `worker/index.ts`), which emails each enquiry to `hello@mesquaredagency.com` through **Resend**, from `website@mesquaredagency.com`, with the visitor's address as Reply-To. Since 20 Oct 2026 the live site also emails the visitor an automatic confirmation from hello@ (previews don't; [docs/forms.md](docs/forms.md)), so each enquiry uses two emails. Resend's free plan allows 3,000 emails a month (100 a day), far more than the form needs. (Cloudflare's own Email Sending needs the Workers Paid plan, so it isn't used.) Until the steps below are done, the form shows "Your enquiry didn't send. Email us at hello@… instead." with the address as a link, so nobody is left stuck.
 
 One-time setup:
 
@@ -95,7 +95,7 @@ One-time setup:
 6. **Test:** send an enquiry on the site. It should arrive in hello@ within a minute, subject "Website enquiry: …"; replying should go to the sender. Then send and receive an ordinary email at hello@ to confirm Google mail still works.
 7. **Rate limit:** Cloudflare → Security → WAF → **Rate limiting rules** → create: URI path equals `/api/enquiry`, 5 requests per 10 minutes per IP, action Block. (The form also drops obvious bots itself: a hidden field and a minimum time to fill.)
 
-**Seeing enquiries come in:** Workers & Pages → `mesquared` → Logs (one line per enquiry: `sent`, `dropped` for a bot, `send-failed` with Resend's reason, or `not-configured`, plus its topic; never names, emails or messages). Resend's dashboard also lists every email it delivered.
+**Seeing enquiries come in:** Workers & Pages → `mesquared` → Logs (one line per enquiry: `sent`, `dropped` for a bot, `send-failed` with Resend's reason, or `not-configured`, plus its topic; then `enquiry-confirmation` `sent` or `send-failed` for the visitor's confirmation; never names, emails or messages). Resend's dashboard also lists every email it delivered.
 
 **Changing the key:** create a new key in Resend, replace the secret with `npx wrangler versions secret put RESEND_API_KEY` and push `main` (or follow the warning below), then delete the old key in Resend.
 

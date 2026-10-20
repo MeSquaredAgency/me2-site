@@ -84,5 +84,6 @@ Tick only what has been checked.
 - [x] Resend account created, mesquaredagency.com verified there, `RESEND_API_KEY` set as a Worker secret, and a test enquiry received in hello@'s inbox (10 Oct 2026)
 - [x] Site opened to the public (15 Oct 2026: EC removed the Cloudflare Access sign-in that had kept it private since 10 Oct)
 - [x] `mesquared.co.uk` redirected to `https://mesquaredagency.com` (EC's Redirect Rule, checked 20 Oct 2026; DEPLOY.md)
-- [ ] Rate-limiting rule on /api/enquiry and /api/applications added in Cloudflare (DEPLOY.md)
+- [ ] Rate-limiting rule on /api/enquiry and /api/applications added in Cloudflare (DEPLOY.md); it matters more now each enquiry also emails the visitor a confirmation
+- [ ] Automatic first replies (docs/auto-replies.md): WhatsApp Business greeting on +855 69 713 244 set up; hello@ group auto-reply on for people outside Me²; a live test enquiry from EC's own address gets exactly one confirmation
 - [x] A preview application reaches people@ with the CV attached and "[Preview]" in the subject (docs/careers.md; EC confirmed 16 Oct 2026, with a 4.17 MB PDF)

@@ -17,6 +17,8 @@ export const siteConfig = {
   /** Me²'s own Facebook page and LinkedIn company page (EC). Empty leaves the link out of the footer, the structured data and llms.txt. */
   FACEBOOK_URL: 'https://www.facebook.com/profile.php?id=61595133354911',
   LINKEDIN_URL: 'https://www.linkedin.com/company/mesquaredagency',
+  /** Me²'s WhatsApp Business number (EC, 20 Oct 2026), written as shown on the page; the wa.me link is made from its digits. Empty hides every WhatsApp link. */
+  WHATSAPP_NUMBER: '+855 69 713 244',
   LOCALE: 'en-AU',
   /** Footer entity line, shown only with showLegalEntity. */
   LEGAL_ENTITY: '[[TBC: legal entity name and registration number — Patrick + lawyer]]',

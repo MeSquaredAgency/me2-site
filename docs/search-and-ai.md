@@ -19,7 +19,7 @@ Audited 17 Oct 2026 (two days after the site went public). Recheck on **17 Nov 2
 - **Google Search Console and Bing Webmaster Tools** set up, with the sitemap submitted (EC, 19 Oct 2026). `npm run indexnow` run the same day (202 for 6 URLs). Run it again after each live change.
 - **Cloudflare's "Block AI bots" setting** checked by EC (19 Oct 2026). Cloudflare can block AI crawlers by their verified addresses, which robots.txt and an outside check can't show, so check it again if assistants stop finding the site.
 - **Where Me² is:** "Based in Phnom Penh" (EC, 19 Oct 2026), on the page through `showLocations`.
-- **Reply time on the page:** "Within 2 hours", day or night, weekends included (EC, 16 and 19 Oct 2026), as a FAQ answer.
+- **Reply time on the page:** "Usually within 2 hours, evenings and weekends included." (EC, 20 Oct 2026; before that "within 2 hours, day or night"), as a FAQ answer.
 - **LinkedIn company page:** links to mesquaredagency.com, uses a description that matches the site and lists Phnom Penh (checked 19 Oct 2026).
 
 ## Still to do (owners)
