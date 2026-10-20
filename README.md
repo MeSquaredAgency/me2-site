@@ -32,7 +32,8 @@ Then open http://localhost:4321.
 
 | Command | Does |
 | --- | --- |
-| `npm run build` | Builds the site into `dist/` (plus sitemap, robots.txt, llms.txt) |
+| `npm run build` | Builds the site into `dist/` (plus sitemap, robots.txt, llms.txt, and a markdown version of each page for AI agents) |
+| `npm run check:markdown` | After `npm run build`: checks each page's markdown version reads cleanly and only goes to requests that ask for `text/markdown` ([docs/search-and-ai.md](docs/search-and-ai.md)) |
 | `npm run preview` | Serves `dist/` at http://localhost:4321 |
 | `npm run verify` | Builds the real and test versions and runs every check (copy, links, accessibility, speed, search tags). Report in `.verify/report.md`; screenshots in `screenshots/` |
 | `node scripts/check-hero-clicks.mjs` | After `npm run build`: checks the hero's buttons take a mouse click at phone to wide-screen sizes, with the mark moving and still |
@@ -70,6 +71,7 @@ Tick only what has been checked.
 - [x] Sitemap submitted in Google Search Console; `npm run indexnow` run (19 Oct 2026)
 - [x] Site added in Bing Webmaster Tools (import it from Search Console); Bing's index feeds ChatGPT search and Copilot (EC, 19 Oct 2026)
 - [x] Cloudflare's "Block AI bots" setting checked for mesquaredagency.com (EC, 19 Oct 2026; [docs/search-and-ai.md](docs/search-and-ai.md))
+- [ ] Markdown for agents: the live site answers `Accept: text/markdown` with markdown (checked locally 20 Oct 2026; check live once published)
 - [x] Where the team is based shown on the page: Phnom Penh (EC, 19 Oct 2026, `showLocations`)
 - [ ] Vector logo master from the designer swapped in (optional; the traced one works)
 - [x] v0.15 redesign live, by EC's choice (10 Oct 2026; it went live when the Resend key was saved, and EC kept it)

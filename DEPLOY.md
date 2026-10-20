@@ -6,7 +6,7 @@
 | --- | --- |
 | Cloudflare account | **Me²** (ID `813537406785f2957804689d03560623`), signed in as elliot.crabb@mesquaredagency.com |
 | What it runs on | A Cloudflare **Workers** project called `mesquared`, serving the static files in `dist/` ("Pages, now part of Workers") |
-| Config | `wrangler.jsonc` (project, account, domains) and `worker/index.ts` (redirects) |
+| Config | `wrangler.jsonc` (project, account, domains) and `worker/index.ts` (redirects, the forms, and markdown for AI agents that ask for it: [docs/search-and-ai.md](docs/search-and-ai.md)) |
 | Domains | `mesquaredagency.com` (the site) and `www.mesquaredagency.com` (redirects to it). Cloudflare manages their DNS records and HTTPS certificates |
 | Redirects | Every `http://` and `www.` address goes to `https://mesquaredagency.com` in one 301 (done in `worker/index.ts`, because the zone's "Always Use HTTPS" setting is off) |
 | Email | Google Workspace. MX, SPF, DKIM, DMARC and verification records are separate from the site's records; connecting the site didn't touch them |

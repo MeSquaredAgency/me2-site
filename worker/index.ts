@@ -5,7 +5,9 @@
 //  3. handles the enquiry form (POST /api/enquiry): checks it, drops bots, and emails it to
 //     FORM_TO_EMAIL through Resend (its HTTP API; the RESEND_API_KEY secret, set in Cloudflare, see DEPLOY.md), then,
 //     on the live site, emails the visitor a fixed-text automatic confirmation (sendEnquiryConfirmation); and
-//  4. handles job applications (POST /api/applications, ./applications.ts): emails each one, CV attached, to CAREERS_EMAIL.
+//  4. handles job applications (POST /api/applications, ./applications.ts): emails each one, CV attached, to CAREERS_EMAIL; and
+//  5. answers AI agents that ask for markdown (Accept: text/markdown) with the page's markdown version, built beside
+//     it as index.html.md by scripts/postbuild.mjs. Browsers never ask for it, so they get the HTML as before.
 // Data rule (BRIEF §6): the enquiry form takes contact details and a short message only; the careers form also takes a CV.
 import { siteConfig } from '../src/config/site.config.ts';
 import { flags } from '../src/config/flags.ts';
@@ -52,9 +54,56 @@ export default {
     if (url.pathname === '/api/assessments') return assessment(request, env);
     if (url.pathname === '/api/enquiry') return enquiry(request, env, ctx);
     if (url.pathname === '/api/applications') return application(request, env);
-    return env.ASSETS.fetch(request);
+    if (request.method === 'GET' || request.method === 'HEAD') {
+      const md = url.pathname.endsWith('/index.html.md') ? url.pathname
+        : url.pathname.endsWith('/') && prefersMarkdown(request.headers.get('accept')) ? `${url.pathname}index.html.md` : '';
+      const page = md && (await markdown(request, env, md));
+      if (page) return page;
+    }
+    const res = await env.ASSETS.fetch(request);
+    // Pages now come in two versions at one address, so caches must keep them apart by the Accept header.
+    if (!(res.headers.get('content-type') ?? '').startsWith('text/html')) return res;
+    const html = new Response(res.body, res);
+    html.headers.append('Vary', 'Accept');
+    return html;
   },
 };
+
+/** True when the Accept header ranks text/markdown at least as high as text/html (q-values; a bare type is q=1). */
+export function prefersMarkdown(accept: string | null): boolean {
+  if (!accept) return false;
+  let markdown = 0;
+  let html = 0;
+  for (const part of accept.toLowerCase().split(',')) {
+    const [type, ...params] = part.split(';').map((s) => s.trim());
+    const q = Number(params.find((p) => p.startsWith('q='))?.slice(2) ?? 1);
+    if (Number.isNaN(q)) continue;
+    if (type === 'text/markdown' || type === 'text/x-markdown') markdown = Math.max(markdown, q);
+    if (type === 'text/html') html = Math.max(html, q);
+  }
+  return markdown > 0 && markdown >= html;
+}
+
+/**
+ * A page's markdown version, or null when it has none (the HTML, or its 404, answers instead). Keeps the security
+ * headers from public/_headers, names the HTML page as canonical so search engines index that, and estimates its
+ * length in tokens (about four characters each) for agents budgeting their context.
+ */
+async function markdown(request: Request, env: Env, path: string): Promise<Response | null> {
+  const url = new URL(request.url);
+  const res = await env.ASSETS.fetch(new Request(new URL(path, url)));
+  if (!res.ok) return null;
+  const text = await res.text();
+  const headers = new Headers(res.headers);
+  headers.set('Content-Type', 'text/markdown; charset=utf-8');
+  headers.set('Vary', 'Accept');
+  headers.set('x-markdown-tokens', String(Math.ceil(text.length / 4)));
+  headers.set('Link', `<${url.origin}${path.slice(0, -'index.html.md'.length)}>; rel="canonical"`);
+  // The body is re-sent as plain text, so the stored file's length and encoding no longer apply.
+  headers.delete('Content-Length');
+  headers.delete('Content-Encoding');
+  return new Response(request.method === 'HEAD' ? null : text, { status: 200, headers });
+}
 
 
 async function assessment(request: Request, env: Env): Promise<Response> {
