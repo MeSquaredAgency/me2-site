@@ -10,13 +10,13 @@
   --color-navy: #1b3853;       /* the logo navy: glass, rules, the mark */
   --color-mist: #e8edf1;       /* text on abyss */
   --color-haze: #93a3b3;       /* secondary text on abyss and abyss-2 */
-  --color-paper: #eef1f4;      /* light sections */
-  --color-paper-2: #e2e7ec;    /* raised surfaces on paper */
-  --color-ink: #08121c;        /* text on paper */
-  --color-slate: #4e5c6a;      /* secondary text on paper */
+  --color-paper: #f7f2ea;      /* light sections: warm paper (EC, 21 Oct 2026: a warmer look) */
+  --color-paper-2: #eee6da;    /* raised surfaces on paper, and alternate light sections */
+  --color-ink: #1b232c;        /* text on paper: a soft ink, not black */
+  --color-slate: #5b5650;      /* secondary text on paper: a warm grey */
   --color-coral: #e7785c;      /* the logo coral: light, and the ² mark; text only on abyss */
   --color-coral-deep: #a6412a; /* coral as text on paper */
-  --color-line: rgb(8 18 28 / 0.14);
+  --color-line: rgb(27 35 44 / 0.14);
   --color-line-dark: rgb(232 237 241 / 0.13);
 
   --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

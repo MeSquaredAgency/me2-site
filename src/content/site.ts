@@ -30,69 +30,33 @@ export const content = {
   hero: {
     /** EC's choice (14 Oct 2026): the approved v0.13 hero, people first. Two sentences, each set on two lines. */
     h1: 'We run the back office. You run the business.',
-    /** The screen in the mark cycles through the three services, each with its caption. */
-    scenes: [
-      { scene: 'run', label: 'Run by your own person' },
-      { scene: 'design', label: 'Websites and digital products' },
-      { scene: 'build', label: 'AI agents that draft, people who check' },
-    ],
-    scenesLabel: 'Show',
+    /** EC, 21 Oct 2026: every client gets one person working exclusively for them, and no AI at the top of the page. */
     subhead:
-      /** EC, 21 Oct 2026: every client gets one person working exclusively for them. Say "working exclusively", never "works for nobody else". */
-      '{SITE_NAME} gives your business its own trained person, working exclusively on your admin, accounts, customer service and marketing. AI agents take the heavy lifting off their hands. We design and build the website out front, too.',
+      '{SITE_NAME} gives your business its own trained person, working exclusively on your admin, accounts, customer service and marketing, and reporting back to you like part of your team. We design and build the website out front, too.',
     primary: 'Talk to us',
     /** The hero's second link: to the work, or (while showProof is off) to Start here. */
     secondary: 'See our work',
     secondaryStart: 'See where to start',
-    markSummary:
-      'Illustration: the {SITE_NAME} mark, a dark glass square with a small coral square glowing at its corner. The glass is a screen that shows the work: the Command Centre board of back-office tasks being checked, a web page being designed, and an AI agent drafting for a person to check.',
     /** showLocations. EC, 19 Oct 2026: "Based in Phnom Penh". */
-    location: 'Our Command Centre team is based in Phnom Penh, Cambodia.',
-  },
-
-  /** Illustrations on the hero screen (decorative; described for screen readers). */
-  visuals: {
-    design: {
-      srSummary: 'Illustration: a web page assembling itself, block by block, inside a browser window.',
-      url: 'yourbusiness.com.au',
+    location: 'Our team is based in Phnom Penh, Cambodia.',
+    /**
+     * The hero picture (EC, 21 Oct 2026: "It still looks entirely AI / computer based"): a sample conversation between
+     * a business owner and their Me² person. Sample messages, labelled as such; no names, no faces, no real client.
+     */
+    chat: {
+      label: 'Illustration: a sample conversation with your {SITE_NAME} person',
+      who: 'Your {SITE_NAME} person',
+      role: 'Looking after your back office',
+      messages: [
+        { from: 'them', time: '8:02 am', text: 'Morning! Your supplier bills are coded and ready for you to approve.' },
+        { from: 'them', time: '8:03 am', text: 'I chased the two overdue invoices. One has promised to pay on Friday.' },
+        { from: 'them', time: '8:05 am', text: 'One for you: a customer wants a refund on a late order. Are you happy for me to sort it?' },
+        { from: 'you', time: '8:21 am', text: 'Yes please. Thank you!' },
+        { from: 'them', time: '8:24 am', text: "Done. I've let them know, and it's in this week's report." },
+      ],
+      youLabel: 'You',
+      note: 'Illustration with sample messages.',
     },
-    build: {
-      srSummary: 'Illustration: emails, invoices and forms flow into an AI agent, are checked by a person, and go out to your accounts, your CRM and your reports.',
-      inputs: ['Emails', 'Invoices', 'Forms'],
-      core: 'AI agent',
-      check: 'Checked',
-      outputs: ['Accounts', 'CRM', 'Reports'],
-    },
-  },
-
-  /**
-   * The Run scene: a live board of one business's sample back-office tasks (illustration, never a client).
-   * One business, not many (EC, 21 Oct 2026): its own person works on it alone.
-   */
-  board: {
-    title: 'Your back office',
-    live: 'Live',
-    stages: {
-      queued: 'Assigned',
-      drafting: 'Agent drafting',
-      checking: 'Your person checking',
-      caught: 'Error caught',
-      done: 'Checked, done',
-      fixed: 'Corrected, done',
-    },
-    tasks: [
-      { task: 'Supplier bills coded', for: 'Finance', fix: true },
-      { task: 'Overdue invoice reminders', for: 'Finance', fix: false },
-      { task: 'Customer email replies', for: 'Customer service', fix: false },
-      { task: 'New client intake', for: 'Operations', fix: false },
-      { task: 'Weekly sales report', for: 'Finance', fix: true },
-      { task: 'Social posts for approval', for: 'Social media', fix: false },
-      { task: 'Quote follow-ups', for: 'Operations', fix: false },
-      { task: 'Timesheets for payroll', for: 'Admin', fix: false },
-    ],
-    note: 'Illustration with sample tasks.',
-    srSummary:
-      "Illustration: a board of one business's sample back-office tasks, from finance to customer service. Each task is drafted by an AI agent and checked by the business's own person before it is marked done. Now and then the check catches an error, and it is corrected before the task is done.",
   },
 
   /** Where your week goes: five pains, each picked up by Me² as it settles on screen (EC, 14 Oct 2026: "a penny drop, oh shit moment"). */

@@ -1,228 +1,170 @@
 ---
 import EnquireLink from './EnquireLink.astro';
-import DesignVisual from './DesignVisual.astro';
-import BuildVisual from './BuildVisual.astro';
-import RunBoard from './RunBoard.astro';
 import { fill, flags } from '../config';
 import { content } from '../content/site';
 const c = content.hero;
+const chat = c.chat;
 // "We run the back office. You run the business." → each sentence on two lines, its first two words on the first.
 const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
   const words = sentence.split(' ');
   return [words.slice(0, 2).join(' '), words.slice(2).join(' ')].map((text) => ({ text, s }));
 });
 ---
-<section class="hero on-dark" aria-labelledby="hero-title">
-  <!--
-    The Me² mark in light, as a window onto the work: a dark glass square with the small coral square (the ²)
-    glowing at its corner, drawn live in WebGL (src/lib/mark-gl.ts). Its face is a screen: the HTML below is
-    pinned to the glass and shows the three services in turn. Without WebGL the screen stands alone
-    as a glass panel with the ² at its corner.
-    data-markdown="skip": the markdown version for AI agents (scripts/markdown.mjs) leaves out these illustration summaries.
-  -->
-  <div class="stage" data-markdown="skip">
-    <div class="screen" data-stage data-active="still" data-screen>
-      <p class="sr-only">{fill(c.markSummary)}</p>
-      <div class="vis" data-for="design"><DesignVisual /></div>
-      <div class="vis" data-for="build"><BuildVisual /></div>
-      <div class="vis vis-run" data-for="run"><RunBoard /></div>
-      <div class="screen-foot">
-        <span class="screen-label" aria-hidden="true" data-screen-label>{c.scenes[0].label}</span>
-        <div class="tabs" role="group" aria-label={c.scenesLabel}>
-          {c.scenes.map((l, i) => (
-            <button type="button" class="tab" data-scene={l.scene} aria-pressed={i === 0 ? 'true' : 'false'} aria-label={l.label}>
-              <span class="tab-sq" aria-hidden="true"></span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-    <canvas class="gl" aria-hidden="true" data-mark></canvas>
-  </div>
-
+<section class="hero on-paper" aria-labelledby="hero-title">
   <div class="wrap inner">
-    <h1 id="hero-title" class="lines">
-      {lines.map((l, i) => (
-        <span class:list={['line', `s${l.s}`]} style={`--i:${i}`}>
-          <span class="mask"><span class="text">{l.text}{' '}</span></span>
-        </span>
-      ))}
-    </h1>
-    <div class="foot">
+    <div class="words">
+      <h1 id="hero-title" class="lines">
+        {lines.map((l, i) => (
+          <span class:list={['line', `s${l.s}`]} style={`--i:${i}`}>
+            <span class="mask"><span class="text">{l.text}{' '}</span></span>
+          </span>
+        ))}
+      </h1>
       <p class="subhead">{fill(c.subhead)}</p>
       <div class="actions">
-        <EnquireLink source="hero" class="btn btn-light btn-lg"><span class="dot" aria-hidden="true"></span>{c.primary}</EnquireLink>
+        <EnquireLink source="hero" class="btn btn-dark btn-lg"><span class="dot" aria-hidden="true"></span>{c.primary}</EnquireLink>
         {flags.showProof
           ? <a href="#work" class="tlink see">{c.secondary}</a>
           : <a href="#services" class="tlink see">{c.secondaryStart}</a>}
       </div>
       {flags.showLocations && <p class="location">{c.location}</p>}
     </div>
+
+    <!--
+      The hero picture: a sample conversation between a business owner and their Me² person. The messages
+      arrive one at a time, each of theirs after a moment of typing. Without JavaScript, or with reduced
+      motion, the whole conversation is simply there.
+    -->
+    <figure class="chat" aria-label={fill(chat.label)} data-chat>
+      <div class="chat-top">
+        <span class="avatar" aria-hidden="true"><span class="sq"></span></span>
+        <span class="who"><span class="who-name">{fill(chat.who)}</span><span class="who-role">{chat.role}</span></span>
+      </div>
+      <ol class="msgs">
+        {chat.messages.map((m) => (
+          <li class:list={['msg', m.from]} data-chat-msg={m.from}>
+            {m.from === 'you' && <span class="sr-only">{chat.youLabel}: </span>}
+            <span class="bubble">{m.text}</span>
+            <span class="time">{m.time}</span>
+            {m.from === 'them' && <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>}
+          </li>
+        ))}
+      </ol>
+      <figcaption class="chat-note">{chat.note}</figcaption>
+    </figure>
   </div>
 </section>
 
 <script>
-  import { startMark } from '../lib/mark-gl';
-
-  const hero = document.querySelector<HTMLElement>('.hero');
-  const screen = document.querySelector<HTMLElement>('[data-screen]');
-  const canvas = document.querySelector<HTMLCanvasElement>('[data-mark]');
-  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (hero && screen) {
-    // ---- Scenes: the three services in turn, on the screen ----
-    const scenes = ['run', 'design', 'build'];
-    const hold: Record<string, number> = { design: 8000, build: 7200, run: 9600 };
-    const tabs = [...screen.querySelectorAll<HTMLButtonElement>('[data-scene]')];
-    const label = screen.querySelector<HTMLElement>('[data-screen-label]')!;
-    const svg = screen.querySelector<SVGSVGElement>('[data-build-svg]');
-    let current = 'run', timer = 0, pausedUntil = 0, onScreen = true;
-
-    const show = (scene: string) => {
-      current = scene;
-      screen.dataset.active = scene;
-      tabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.scene === scene)));
-      label.textContent = tabs.find((t) => t.dataset.scene === scene)?.getAttribute('aria-label') ?? '';
-      // The Build diagram is SMIL: run it only while it's on show.
-      if (svg) scene === 'build' && !still ? svg.unpauseAnimations() : svg.pauseAnimations();
-    };
-    const next = () => {
-      clearTimeout(timer);
-      if (still) return;
-      timer = window.setTimeout(() => {
-        if (onScreen && !document.hidden && performance.now() > pausedUntil) show(scenes[(scenes.indexOf(current) + 1) % scenes.length]);
-        next();
-      }, hold[current]);
-    };
-    // Pick a scene with the tabs on the screen.
-    const pick = (scene: string) => { pausedUntil = performance.now() + 12000; show(scene); next(); };
-    tabs.forEach((t) => t.addEventListener('click', () => { start(); pick(t.dataset.scene!); }));
-    new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }).observe(hero);
-
-    // The first screen paints still (the Run scene, the back-office board, unmoving); the motion and the mark start once the page has
-    // loaded and gone quiet, a little later on phones, where the scenes' SVG animation competes with loading.
-    let started = false;
-    const start = () => {
-      if (started) return;
-      started = true;
-      show('run');
-      if (svg && still) svg.setCurrentTime(2.2);
-      next();
-      if (canvas) startMark(canvas, screen);
-    };
-    const later = matchMedia('(max-width: 899px)').matches ? 1800 : 0;
-    const idle = () => setTimeout(() => ('requestIdleCallback' in window ? requestIdleCallback(start, { timeout: 1500 }) : start()), later);
-    document.readyState === 'complete' ? idle() : addEventListener('load', idle, { once: true });
+  // The conversation plays once, a message at a time, starting just after the headline has risen.
+  const chat = document.querySelector<HTMLElement>('[data-chat]');
+  if (chat && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const msgs = [...chat.querySelectorAll<HTMLElement>('[data-chat-msg]')];
+    chat.classList.add('is-live');
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    (async () => {
+      await wait(1100);
+      for (const m of msgs) {
+        if (m.dataset.chatMsg === 'them') {
+          m.classList.add('is-typing');
+          await wait(900 + Math.min(1100, (m.textContent ?? '').length * 12));
+          m.classList.remove('is-typing');
+        } else {
+          await wait(900);
+        }
+        m.classList.add('is-on');
+        await wait(500);
+      }
+    })();
   }
 </script>
 
 <style>
-  .hero {
-    position: relative; overflow: hidden; isolation: isolate;
-    min-height: max(700px, 100svh);
-    display: flex; align-items: flex-end;
-    background: radial-gradient(55% 75% at 68% 48%, #0e1f2f 0%, var(--color-abyss) 70%);
+  .hero { position: relative; overflow: clip; }
+  .inner {
+    display: grid; gap: clamp(48px, 7vw, 96px); align-items: center;
+    min-height: 100svh; box-sizing: border-box;
+    padding-top: clamp(120px, 16vh, 168px); padding-bottom: clamp(56px, 9vh, 112px);
   }
-
-  /* ---- The mark and its screen ---- */
-  .stage { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-  .gl { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1600ms var(--ease-out); }
-  .gl:global(.is-on) { opacity: 1; }
-
-  /* The screen. Without WebGL it is a glass panel of its own, with the ² at its corner. */
-  .screen {
-    /* Its size, and where it sits until the WebGL mark takes it over (always, without WebGL): centre --x, --y at scale --k. */
-    --sw: 560px; --x: 66.5vw; --y: 50svh; --k: 0.82;
-    /* Positioned with transforms only, so moving onto the glass later isn't a layout shift. One transform, not translate and
-       scale beside it: the build's CSS minifier drops those from a rule that sets transform, which left the screen over the headline. */
-    position: absolute; left: 0; top: 0; width: var(--sw); height: var(--sw); box-sizing: border-box;
-    transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%)) scale(var(--k)) perspective(1400px) rotateY(-10deg) rotateX(4deg);
-    pointer-events: auto; overflow: hidden; border-radius: 3%;
-    background: radial-gradient(90% 70% at 85% 10%, #13283c 0%, #0a1621 60%);
-    box-shadow: inset 0 1px 0 rgb(232 237 241 / 0.16), 0 50px 120px rgb(0 0 0 / 0.5);
-    color: var(--color-mist);
-  }
-  .screen::after {
-    content: ''; position: absolute; right: 18px; top: 18px; width: 10px; height: 10px; background: var(--color-coral);
-    box-shadow: 0 0 18px 3px rgb(var(--glow) / 0.6);
-  }
-  /* With WebGL, the script pins the screen to the face of the glass (an inline transform, transform-origin top-left). */
-  .hero:global(.is-gl) .screen {
-    transform-origin: 0 0; border-radius: 0;
-    box-shadow: none; will-change: transform;
-  }
-  .hero:global(.is-gl) .screen::after { display: none; }
-
-  .vis {
-    position: absolute; inset: 8% 7% 17%; display: grid; place-items: center;
-    opacity: 0; transform: translateY(12px) scale(0.985);
-    transition: opacity 700ms var(--ease-out), transform 900ms var(--ease-out);
-  }
-  .vis-run { inset: 10% 8% 17%; place-items: stretch; align-content: center; }
-  .screen[data-active='still'] [data-for='run'],
-  .screen[data-active='design'] [data-for='design'],
-  .screen[data-active='build'] [data-for='build'],
-  .screen[data-active='run'] [data-for='run'] { opacity: 1; transform: none; }
-  .screen-foot {
-    position: absolute; left: 7%; right: 7%; bottom: 5%;
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    padding-top: 14px; border-top: 1px solid rgb(232 237 241 / 0.12);
-  }
-  .screen-label { font-size: 0.95rem; font-weight: 500; color: var(--color-mist); text-wrap: balance; }
-  .tabs { display: flex; gap: 2px; }
-  .tab { width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 0; padding: 0; cursor: pointer; }
-  .tab-sq { width: 10px; height: 10px; box-sizing: border-box; border: 1px solid rgb(232 237 241 / 0.5); transition: background-color 400ms var(--ease), border-color 400ms var(--ease); }
-  .tab[aria-pressed='true'] .tab-sq { background: var(--color-coral); border-color: var(--color-coral); }
-  .tab:focus-visible { outline: 2px solid var(--color-mist); outline-offset: -6px; }
-  @media (hover: hover) and (pointer: fine) { .tab:hover .tab-sq { border-color: var(--color-mist); } }
 
   /* ---- The words ---- */
-  .inner { position: relative; z-index: 1; padding-top: 140px; padding-bottom: clamp(40px, 6vh, 72px); pointer-events: none; }
-  /* The h1's box spans the hero and sits over the screen's tabs, so only the words themselves take the pointer.
-     Links are :global because Talk to us comes from a child component, which doesn't get this component's scope. */
-  .inner :is(.text, p), .inner :global(a) { pointer-events: auto; }
-  .lines { display: grid; row-gap: 0.02em; font-size: clamp(3rem, min(7.6vw, 11.6svh), 8.8rem); max-width: none; justify-items: start; }
+  .lines { display: grid; row-gap: 0.02em; font-size: clamp(3rem, min(6.4vw, 11svh), 7.4rem); max-width: none; justify-items: start; }
   .line { display: block; }
-  /* The volume, a shade back; the outcome, full strength. */
-  .line.s0 { color: var(--color-haze); }
-  .line.s1 { color: var(--color-mist); }
+  /* What we do, a shade back; what you get to do, full strength. */
+  .line.s0 { color: var(--color-slate); }
+  .line.s1 { color: var(--color-ink); }
   .mask { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
   .text { display: block; white-space: nowrap; }
+  .subhead { margin-top: clamp(28px, 4vh, 44px); max-width: 48ch; font-size: clamp(1.05rem, 1.25vw, 1.25rem); line-height: 1.55; color: var(--color-slate); }
+  .actions { margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 18px 32px; }
+  .see { font-weight: 560; color: var(--color-ink); }
+  .location { margin-top: 28px; font-size: var(--text-small); color: var(--color-slate); }
 
-  .foot {
-    margin-top: clamp(36px, 6vh, 72px); padding-top: 28px; border-top: 1px solid var(--color-line-dark);
-    display: grid; gap: 28px 56px; align-items: end;
+  /* ---- The conversation: a warm white card, like a phone held out to you ---- */
+  .chat {
+    margin: 0; justify-self: center; width: 100%; max-width: 440px; box-sizing: border-box;
+    background: #fffdf9; color: var(--color-ink); border-radius: 28px; padding: 22px 22px 18px;
+    box-shadow: 0 1px 0 rgb(27 35 44 / 0.04), 0 30px 80px -24px rgb(91 64 40 / 0.28), 0 12px 28px -18px rgb(27 35 44 / 0.2);
   }
-  .subhead { max-width: 52ch; font-size: clamp(1.05rem, 1.25vw, 1.25rem); line-height: 1.55; color: var(--color-haze); }
-  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 32px; }
-  .see { font-weight: 560; color: var(--color-mist); }
-  .location { font-size: var(--text-small); color: var(--color-haze); }
+  .chat-top { display: flex; align-items: center; gap: 14px; padding: 4px 4px 18px; border-bottom: 1px solid var(--color-line); }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--color-navy); display: grid; place-items: center; flex: none; }
+  .avatar .sq { width: 12px; height: 12px; background: var(--color-coral); }
+  .who { display: grid; gap: 2px; }
+  .who-name { font-weight: 600; font-size: 1rem; }
+  .who-role { font-size: var(--text-small); color: var(--color-slate); }
+  .msgs { list-style: none; margin: 0; padding: 18px 0 6px; display: grid; gap: 10px; }
+  .msg { position: relative; display: grid; gap: 4px; justify-items: start; max-width: 86%; }
+  .msg.you { justify-self: end; justify-items: end; }
+  .bubble {
+    padding: 11px 15px; border-radius: 20px 20px 20px 6px; background: var(--color-paper-2);
+    font-size: 0.98rem; line-height: 1.42;
+  }
+  .you .bubble { border-radius: 20px 20px 6px 20px; background: var(--color-navy); color: #fffdf9; }
+  .time { font-size: 0.75rem; color: var(--color-slate); padding-inline: 6px; }
+  .chat-note { margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--color-line); font-size: 0.8rem; color: var(--color-slate); }
 
-  /* One orchestrated entrance: the lines rise out of their masks; the mark ignites behind. */
+  /* Playing: each message waits its turn; theirs shows a moment of typing first. Space is kept, so nothing jumps. */
+  .dots { display: none; }
+  .chat:global(.is-live) .msg { opacity: 0; transform: translateY(8px); transition: opacity 450ms var(--ease-out), transform 600ms var(--ease-out); }
+  .chat:global(.is-live) .msg:global(.is-typing) { opacity: 1; transform: none; }
+  .chat:global(.is-live) .msg:global(.is-typing) :is(.bubble, .time) { visibility: hidden; }
+  .chat:global(.is-live) .msg:global(.is-typing) .dots {
+    display: flex; gap: 5px; position: absolute; left: 0; top: 0;
+    padding: 15px 16px; border-radius: 20px 20px 20px 6px; background: var(--color-paper-2);
+  }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--color-slate); animation: blink 1100ms infinite; }
+  .dots i:nth-child(2) { animation-delay: 160ms; }
+  .dots i:nth-child(3) { animation-delay: 320ms; }
+  @keyframes blink { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
+  .chat:global(.is-live) .msg:global(.is-on) { opacity: 1; transform: none; }
+
+  /* One entrance: the lines rise out of their masks, then the rest settles in. */
   @media (prefers-reduced-motion: no-preference) {
     .text { animation: rise 1300ms var(--ease-out) both; animation-delay: calc(120ms + var(--i) * 130ms); }
-    .foot { animation: fade 1100ms var(--ease-out) 900ms both; }
-    .screen { animation: fade 1600ms var(--ease-out) 500ms both; }
+    .subhead, .actions, .location { animation: fade 1100ms var(--ease-out) 800ms both; }
+    .chat { animation: lift 1200ms var(--ease-out) 500ms both; }
   }
   @keyframes rise { from { transform: translateY(105%); } }
   @keyframes fade { from { opacity: 0; } }
+  @keyframes lift { from { opacity: 0; transform: translateY(24px); } }
 
-  /* Side by side on laptops, desktops and landscape tablets (the same test as src/lib/mark-gl.ts); stacked otherwise. */
-  @media (min-width: 1100px), (min-width: 900px) and (orientation: landscape) {
-    .foot { grid-template-columns: minmax(0, 1fr) auto; }
+  @media (min-width: 1000px) {
+    .inner { grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr); }
+    .chat { justify-self: end; }
   }
-  @media (min-width: 900px) and (max-width: 1099px) and (orientation: landscape) {
-    .screen { --k: 0.66; }
-  }
-  /* Stacked: room above the words for the mark, little enough that a portrait tablet shows the buttons on the first screen. */
-  @media (max-width: 899px), (max-width: 1099px) and (orientation: portrait) {
-    .screen { --sw: 480px; --x: 60vw; --y: 30svh; --k: 0.6; }
-    .inner { padding-top: 46svh; }
+  /* Stacked, the conversation comes straight after the headline, so the first screen shows a person; the header keeps "Talk to us" in reach. */
+  @media (max-width: 999px) {
+    .inner { min-height: 0; gap: 0; }
+    .words { display: contents; }
+    .lines { order: 1; font-size: clamp(3rem, 9vw, 5.6rem); }
+    .chat { order: 2; justify-self: start; margin-top: clamp(32px, 5vw, 48px); }
+    .subhead { order: 3; margin-top: 40px; }
+    .actions { order: 4; }
+    .location { order: 5; }
   }
   @media (max-width: 639px) {
-    .screen { --sw: 400px; --x: 42vw; --y: 27svh; --k: 0.5; }
-    .screen-label { font-size: 1.1rem; }
-    .inner { padding-top: 50svh; }
     .lines { font-size: clamp(2.6rem, 13.4vw, 4.2rem); }
+    .chat { padding: 18px 16px 14px; border-radius: 24px; }
+    .bubble { font-size: 0.95rem; }
   }
 </style>
