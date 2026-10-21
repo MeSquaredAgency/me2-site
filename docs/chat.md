@@ -3,7 +3,7 @@
 EC, 21 Oct 2026, asked for "an AI chat bot agent" and chose an **AI receptionist on Claude Haiku**, with its button appearing **after the hero**. That overrides two earlier calls on purpose (DECISIONS.md, 21 Oct 2026): chat widgets were out of scope (BRIEF §3), and the 20 Oct reply bots were "no AI replies".
 
 ## What the visitor sees
-- On the home page only. Once the hero has scrolled away, a dark launcher sits bottom right: the assistant's avatar (the navy circle with the ² lit, as in the hero conversation) and "Ask Me²". It steps aside while the contact section or the footer is on screen, where the form and the other ways in already are.
+- On the home page only. Once the hero has scrolled away, a dark launcher sits bottom right: a plain chat mark (a speech bubble) and "Ask Me²". The assistant never uses the lit ² avatar the hero gives "Your Me² person": that mark is for people, and the AI shouldn't look like a teammate. It steps aside while the contact section or the footer is on screen, where the form and the other ways in already are.
 - Once per visit, about 1.5 seconds after the launcher first shows, a small greeting pops out of it, labelled "Me² assistant (AI)": "Hi! Wondering what we'd take off your plate? Ask me anything about Me²." Tapping it opens the chat; the × dismisses it. It isn't shown again that visit (kept in sessionStorage; if storage is blocked it may show again on reload).
 - Under the intro, four suggested questions wait on the visitor's side as outlined bubbles (`content.chat.suggestions`). One tap sends it; they go after the first message.
 - Motion: the panel grows out of the launcher's corner, new messages rise in, and the send button lights up navy when there's text. None of it plays with reduced motion.

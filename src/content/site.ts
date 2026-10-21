@@ -33,9 +33,10 @@ export const content = {
     /**
      * EC, 21 Oct 2026: every client gets one person working exclusively for them, and no AI at the top of the page. Later that day:
      * that person is the main contact, and the work in each field is done by Me²'s specialist in it (marketing, finance, admin, web design…).
+     * The main contact isn't technically exclusive, so the copy says "dedicated", never "working exclusively" (EC, 21 Oct 2026).
      */
     subhead:
-      '{SITE_NAME} gives your business its own trained person, working exclusively for you, with our specialists in admin, finance, customer service and marketing behind them. They report back to you like part of your team. We design and build the website out front, too.',
+      '{SITE_NAME} gives your business its own trained person, dedicated to you, with our specialists in admin, finance, customer service and marketing behind them. They report back to you like part of your team. We design and build the website out front, too.',
     primary: 'Talk to us',
     /** The hero's second link: to the work, or (while showProof is off) to Start here. */
     secondary: 'See our work',
@@ -140,7 +141,7 @@ export const content = {
       name: 'The whole back office',
       /** showPricing. EC, 16 Oct 2026: "prices should be provided upon quotation depending on the clients requirements". One monthly fee (EC, 14 Oct). */
       price: 'Quoted for your business',
-      body: 'Your own {SITE_NAME} person runs it for you, working exclusively on your business. Each area is handled by our specialist in it, from finance to marketing, with AI agents built around how you do things. Everything is checked before it goes out, anything unusual is dealt with, and your person reports back to you.',
+      body: 'Your own dedicated {SITE_NAME} person runs it for you. Each area is handled by our specialist in it, from finance to marketing, with AI agents built around how you do things. Everything is checked before it goes out, anything unusual is dealt with, and your person reports back to you.',
       /**
        * Everything behind the front line (EC, 14 Oct 2026: "it's everything"). Only what Me² can take on today;
        * the examples for operations, finance, marketing and social media come from the confirmed jobs, the rest are new (EC to confirm).
@@ -193,7 +194,7 @@ export const content = {
     items: [
       {
         title: 'You know who’s looking after you.',
-        body: "One {SITE_NAME} person is assigned to your business, working exclusively for you. They learn how you like things done, bring in our specialist for each kind of work, and they're the one you message when something comes up.",
+        body: "One {SITE_NAME} person is assigned to your business and dedicated to you. They learn how you like things done, bring in our specialist for each kind of work, and they're the one you message when something comes up.",
       },
       {
         title: 'A person owns every task.',
