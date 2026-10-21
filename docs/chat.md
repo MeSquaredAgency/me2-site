@@ -3,7 +3,10 @@
 EC, 21 Oct 2026, asked for "an AI chat bot agent" and chose an **AI receptionist on Claude Haiku**, with its button appearing **after the hero**. That overrides two earlier calls on purpose (DECISIONS.md, 21 Oct 2026): chat widgets were out of scope (BRIEF §3), and the 20 Oct reply bots were "no AI replies".
 
 ## What the visitor sees
-- On the home page only. Once the hero has scrolled away, a dark "Questions? Ask us" button sits bottom right. It steps aside while the contact section or the footer is on screen, where the form and the other ways in already are.
+- On the home page only. Once the hero has scrolled away, a dark launcher sits bottom right: the assistant's avatar (the navy circle with the ² lit, as in the hero conversation) and "Ask Me²". It steps aside while the contact section or the footer is on screen, where the form and the other ways in already are.
+- Once per visit, about 1.5 seconds after the launcher first shows, a small greeting pops out of it, labelled "Me² assistant (AI)": "Hi! Wondering what we'd take off your plate? Ask me anything about Me²." Tapping it opens the chat; the × dismisses it. It isn't shown again that visit (kept in sessionStorage; if storage is blocked it may show again on reload).
+- Under the intro, four suggested questions wait on the visitor's side as outlined bubbles (`content.chat.suggestions`). One tap sends it; they go after the first message.
+- Motion: the panel grows out of the launcher's corner, new messages rise in, and the send button lights up navy when there's text. None of it plays with reduced motion.
 - The chat opens as a warm white card (full screen on phones). The header says **"Automatic assistant (AI). A person follows up."** and the first message, fixed text from the page, says it's an AI.
 - The visitor types; the assistant answers in a few sentences. When they want a person, it asks for name, email and a sentence about what they need (business name, phone and a call-back time optional), reads them back, and once the visitor confirms, passes them on. The page then says "Thanks, that's with our team now…" and the chat ends.
 - Without JavaScript there is no chat. The form, email and WhatsApp links are all still there.

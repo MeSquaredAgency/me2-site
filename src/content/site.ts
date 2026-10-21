@@ -340,7 +340,23 @@ export const content = {
    * fixed text the Worker or the page sends; everything else it says is written by the AI from this file.
    */
   chat: {
-    button: 'Questions? Ask us',
+    /** The launcher, beside the assistant's avatar. */
+    button: 'Ask {SITE_NAME}',
+    /**
+     * A one-time greeting that pops out of the launcher shortly after the hero has gone (once per visit). It says it's the AI,
+     * so nobody mistakes it for a person reaching out. Tapping it opens the chat.
+     */
+    greetingWho: '{SITE_NAME} assistant (AI)',
+    greeting: "Hi! Wondering what we'd take off your plate? Ask me anything about {SITE_NAME}.",
+    greetingDismiss: 'Dismiss message',
+    /** Tappable first questions under the intro; each sends as the visitor's message. Gone after the first message. */
+    suggestionsLabel: 'Suggested questions',
+    suggestions: [
+      'What would you take off my plate?',
+      'How does pricing work?',
+      'Is it people or AI doing the work?',
+      "I'd like someone to call me",
+    ],
     title: 'Ask {SITE_NAME}',
     /** Under the title, always on show. */
     who: 'Automatic assistant (AI). A person follows up.',
