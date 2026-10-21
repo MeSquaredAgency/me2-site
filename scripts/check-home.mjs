@@ -26,19 +26,18 @@ const browserChecks = [];
 // Task 1: human first, hero chosen by EC (14 Oct 2026)
 check('hero line', /<h1[^>]*>[\s\S]*<\/h1>/.test(html) && decode(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim() === 'We run the back office. You run the business.');
 check('old hero line gone', lacks('AI does the volume'));
-check('hero subhead leads with people', has('Me² is the team behind your business: trained people, backed by AI agents, running your admin, accounts, customer service and marketing. We design and build the website out front, too.'));
-check('hero screen opens on the back-office board', /data-scene="run"[^>]*aria-pressed="true"/.test(html) && /data-screen-label[^>]*>Your back office, run by people</.test(html));
-check('hero screen captions', html.includes('aria-label="AI agents that draft, people who check"') && html.includes('aria-label="Your back office, run by people"'));
+check('hero subhead leads with your own person', has('Me² gives your business its own trained person, working exclusively on your admin, accounts, customer service and marketing, and reporting back to you like part of your team.') && lacks('works for nobody else'));
+check('hero picture: a conversation with your Me² person, labelled as sample', has('Your Me² person') && has('Looking after your back office') && has('Illustration with sample messages.') && has("Done. I've let them know, and it's in this week's report."));
+check('hero: no AI, no dashboard, no WebGL', (() => { const hero = html.slice(html.indexOf('<section class="hero'), html.indexOf('data-pain')); return !/\bAI\b/.test(decode(hero.replace(/<[^>]+>/g, ' '))) && !hero.includes('<canvas') && !hero.includes('data-screen'); })() && lacks('Agent drafting'));
 // Copy review, 16 Oct 2026: no "trained on your business" (invites "are you training AI on my data?"), no real-estate "tenant", and one sentence said once.
 check('no "trained on your business"', lacks('trained on your business'));
 check('no "tenant" anywhere on the page', lacks('tenant'));
 check('form labels', has('What do you need a hand with?') && />Email<\/label>/.test(html) && lacks('Work email'));
 check('form privacy line matches the policy', has("We use these details to reply to you, and we won't add you to a mailing list.") && lacks('only to reply to you'));
-check('FAQ: software answer not the How we work line', has('Usually not. We set the work up around the tools you already use') && text.split('We start from the tools and processes you already use').length === 2);
-check('one team, as literally true', has('Your website and your back office sit with one team.') && lacks('The people who design your site are the people who build'));
+check('FAQ: software answer not the How we work line', has('Usually not. We set the work up around the tools you already use') && text.split('We start from the tools and processes you already use').length <= 2);
+check('one team, said once and literally true', has('Three suppliers, and nobody owns the whole picture.') && lacks('Your website and your back office sit with one team.') && lacks('The people who design your site are the people who build'));
 check('search description fits (≤160 characters)', (html.match(/<meta name="description" content="([^"]*)"/)?.[1].length ?? 999) <= 160);
-check('board stages', has('Agent drafting') && lacks('AI drafting'));
-check('how we work leads with a person', /A person owns every task\.[\s\S]*One team, answerable for all of it\./.test(text));
+check('how we work leads with a person', /You know who’s looking after you\.[\s\S]*A person owns every task\./.test(text));
 check('old "checks the AI" commitment gone', lacks("A person checks the AI"));
 check('FAQ: people or AI', has('Is it people or AI doing the work?') && lacks("Who checks the AI's work?"));
 check('FAQ: no AI on its own', has("We don't sell AI on its own."));
@@ -83,12 +82,12 @@ check('FAQ: reply time, in the page, FAQ schema and llms.txt', has('Usually with
 check('no "day or night" promise left (page, structured data, llms.txt)', lacks('day or night') && !JSON.stringify(ld).includes('day or night') && !llms.includes('day or night'));
 const thanksHtml = decode(readFileSync('dist/thanks/index.html', 'utf8'));
 check('/thanks/: usually within 2 hours, on the page and in its description', thanksHtml.includes("We'll reply to the email you gave us, usually within 2 hours.") && thanksHtml.includes('We will reply to the email you gave us, usually within 2 hours.'));
-check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide', has('Our Command Centre team is based in Phnom Penh, Cambodia.') && has('In Phnom Penh, Cambodia, at our Command Centre.') && ld.find((x) => x['@type'] === 'Organization')?.address?.addressLocality === 'Phnom Penh' && llms.includes('Where is the team based?') && lacks('Adelaide'));
+check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide', has('Our team is based in Phnom Penh, Cambodia.') && has('In Phnom Penh, Cambodia, at our Command Centre.') && ld.find((x) => x['@type'] === 'Organization')?.address?.addressLocality === 'Phnom Penh' && llms.includes('Where is the team based?') && lacks('Adelaide'));
 // EC, 19 Oct 2026: the team is only in Phnom Penh, so the privacy page's overseas disclosure says so.
 const privacyHtml = decode(readFileSync('dist/privacy/index.html', 'utf8'));
 check('privacy: team in Phnom Penh only', privacyHtml.includes('Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia.') && !/Adelaide/.test(privacyHtml));
 // EC, 20 Oct 2026: WhatsApp on +855 69 713 244, automatic first replies, call backs (spec: docs/superpowers/specs/2026-10-19-reply-bots.md).
-check('privacy: WhatsApp, call backs, automatic replies, Meta, dated 20 Oct', ['If you message us on WhatsApp, we collect your phone number', 'If you ask us to call you back', 'we email you an automatic confirmation', 'Cloudflare, Resend, Google and Meta (for WhatsApp)', 'Last updated 20 October 2026'].every((t) => privacyHtml.includes(t)));
+check('privacy: WhatsApp, call backs, automatic replies, Meta, dated 21 Oct', ['If you message us on WhatsApp, we collect your phone number', 'If you ask us to call you back', 'we email you an automatic confirmation', 'Cloudflare, Resend, Google and Meta (for WhatsApp)', 'Last updated 21 October 2026'].every((t) => privacyHtml.includes(t)));
 const { siteConfig: idConfig } = await import('../src/config/site.config.ts');
 const waNumber = idConfig.WHATSAPP_NUMBER;
 const waUrl = `https://wa.me/${waNumber.replace(/\D/g, '')}`;
@@ -157,6 +156,7 @@ if (!args.has('--static')) {
     // With motion on, let the hero's entrance (it starts after load, later on phones) finish first, so axe judges what a visitor reads, not a fade.
     if (opts.javaScriptEnabled !== false && opts.reducedMotion !== 'reduce') {
       await page.waitForTimeout(4000);
+      await page.waitForFunction(() => [...document.querySelectorAll('[data-chat-msg]')].every((m) => m.classList.contains('is-on')), null, { timeout: 20000 }).catch(() => {});
       await page.evaluate(() => Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished.catch(() => {}))));
     }
     return page;
@@ -173,6 +173,8 @@ if (!args.has('--static')) {
       check(`no sideways scroll (${tag})`, sw <= iw, `${sw}/${iw}`);
       await page.locator('[data-enquire]').first().click();
       await page.waitForSelector('dialog[open]');
+      // Let the dialog finish fading in, so axe judges the form as a visitor reads it, not halfway through the fade.
+      await page.evaluate(() => Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished.catch(() => {}))));
       const vd = await axe(page);
       check(`axe clean, enquiry dialog open (${tag})`, vd.length === 0, vd.join(', '));
       await page.context().close();
@@ -215,27 +217,30 @@ if (!args.has('--static')) {
       await page.context().close();
     }
   });
-  // EC, 16 Oct 2026: "When you refresh the page, the computer glitches and covers the hero". Until the WebGL mark pins the
-  // screen to the glass (and always, without WebGL), the CSS alone must keep the screen clear of the headline's words.
+  // EC, 21 Oct 2026: the hero picture is a conversation. It must sit clear of the headline at every width, read in full
+  // without JavaScript or with reduced motion, and play through to the last message with motion on.
   browserChecks.push(async ({ open, check }) => {
     for (const width of [375, 768, 1024, 1280]) {
       const page = await open(width, { reducedMotion: 'reduce' });
-      await page.context().addInitScript(() => {
-        const get = HTMLCanvasElement.prototype.getContext;
-        HTMLCanvasElement.prototype.getContext = function (type, ...rest) { return /webgl/.test(type) ? null : get.call(this, type, ...rest); };
-      });
-      await page.reload({ waitUntil: 'networkidle' });
-      await page.evaluate(() => document.fonts.ready);
-      await page.waitForTimeout(2500);
       const r = await page.evaluate(() => {
-        const s = document.querySelector('[data-screen]').getBoundingClientRect();
+        const c = document.querySelector('[data-chat]').getBoundingClientRect();
         const hits = [...document.querySelectorAll('#hero-title .text')].map((t) => t.getBoundingClientRect())
-          .filter((t) => t.left < s.right && t.right > s.left && t.top < s.bottom && t.bottom > s.top);
-        return { gl: document.querySelector('.hero').classList.contains('is-gl'), hits: hits.length, box: [s.left, s.top, s.width, s.height].map(Math.round).join(',') };
+          .filter((t) => t.left < c.right && t.right > c.left && t.top < c.bottom && t.bottom > c.top);
+        return { hits: hits.length, box: [c.left, c.top, c.width, c.height].map(Math.round).join(',') };
       });
-      check(`hero screen clear of the headline without WebGL at ${width}px`, !r.gl && r.hits === 0, `screen at ${r.box}, over ${r.hits} line(s)`);
+      check(`hero conversation clear of the headline at ${width}px`, r.hits === 0, `chat at ${r.box}, over ${r.hits} line(s)`);
       await page.context().close();
     }
+    const shown = (page) => page.$$eval('[data-chat-msg]', (ms) => ms.length === 5 && ms.every((m) => getComputedStyle(m).opacity === '1'));
+    const noJs = await open(375, { javaScriptEnabled: false });
+    check('hero conversation: every message shown without JavaScript', await shown(noJs));
+    await noJs.context().close();
+    const still = await open(375, { reducedMotion: 'reduce' });
+    check('hero conversation: every message shown with reduced motion', await shown(still));
+    await still.context().close();
+    const live = await open(1280, { reducedMotion: 'no-preference' });
+    check('hero conversation: plays through to the last message', await shown(live));
+    await live.context().close();
   });
   // Final review fixes: a pain row lights as its line reaches the middle of the screen (spec), not earlier;
   // "owned by Me²" never breaks on a phone; Start here's two small panels end on the same line.

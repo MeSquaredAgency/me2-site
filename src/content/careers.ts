@@ -84,7 +84,7 @@ export const roles: Role[] = [
       {
         h: 'About Me²',
         paras: [
-          'Me² builds AI-enabled back-office teams for businesses, combining skilled people, effective processes and practical AI tools to help businesses run more efficiently.',
+          'Me² gives established businesses their own trained person to run their back office, backed by clear processes and practical AI tools.',
           "We're building our first Command Centre in Phnom Penh: a team of Remote Operators who take ownership of operational work, use technology intelligently and deliver reliable outcomes for our clients.",
           'Joining at this early stage means contributing to how the business operates while developing skills across property management, business operations and AI-enabled workflows.',
         ],
@@ -155,7 +155,7 @@ export const roles: Role[] = [
       {
         h: 'About Me²',
         paras: [
-          'Me² builds AI-enabled back-office teams for businesses. We combine skilled people, effective processes and practical AI tools to help businesses run more efficiently.',
+          'Me² gives established businesses their own trained person to run their back office, backed by clear processes and practical AI tools.',
           "We're building our first Command Centre in Phnom Penh, bringing together operators who take ownership of their work, maintain high standards and help improve how businesses operate.",
           "This is an opportunity to join at an early stage and contribute to both our clients' financial operations and the development of Me² itself.",
         ],
@@ -236,7 +236,7 @@ export const roles: Role[] = [
       {
         h: 'About Me²',
         paras: [
-          "Me² builds AI-enabled back-office teams for businesses. We combine skilled people, effective processes and practical AI tools to help businesses operate more efficiently. We're creating our first Command Centre in Phnom Penh, bringing together operators who take ownership of their work, use technology intelligently and deliver reliable outcomes.",
+          "Me² gives established businesses their own trained person to run their back office, backed by clear processes and practical AI tools. We're creating our first Command Centre in Phnom Penh, bringing together operators who take ownership of their work, use technology intelligently and deliver reliable outcomes.",
           "This is our first dedicated marketing hire. You'll help establish how Me² presents itself to the market while supporting marketing activities for our clients.",
         ],
       },
@@ -319,8 +319,9 @@ export const findRole = (slug: string): Role | undefined => listedRoles().find((
 
 export const careers = {
   index: {
-    h1: 'Join the Command Centre.',
-    intro: "We're building our first Command Centre in Phnom Penh: trained people who own the back-office work of businesses in Australia, with AI tools doing the drafting and the volume. We're hiring our first operators.",
+    /** EC, 21 Oct 2026: people first, as on the home page; the Command Centre is still named on each role page. */
+    h1: 'Join our team in Phnom Penh.',
+    intro: "We're building our first team in Phnom Penh: trained people who look after the back office of businesses in Australia and own the work from start to finish. AI tools help with the drafting, and our people check everything and make the calls. We're hiring our first team members.",
     rolesHeading: 'Open roles',
     rowFacts: 'Phnom Penh · Full-time · From US$600 a month',
     applying: "Apply on the role's page with your CV, or on LinkedIn where the role is listed there. Questions about a role? Email {CAREERS_EMAIL}.",

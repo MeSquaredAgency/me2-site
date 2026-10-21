@@ -55,7 +55,7 @@ const h1Of = (html) => textOf(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? ''
 const ldOf = (html) => [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap((m) => JSON.parse(m[1]));
 const indexHtml = read('dist/careers/index.html');
 check('built: /careers/', indexHtml.length > 0);
-check('/careers/: heading', h1Of(indexHtml) === 'Join the Command Centre.', h1Of(indexHtml));
+check('/careers/: heading', h1Of(indexHtml) === 'Join our team in Phnom Penh.', h1Of(indexHtml));
 check('/careers/: a row per role', SLUGS.every((s) => indexHtml.includes(`href="/careers/${s}/"`)));
 check('/careers/: row facts on each row', textOf(indexHtml).split('Phnom Penh · Full-time · From US$600 a month').length === 4);
 check('/careers/: people@ link', indexHtml.includes('href="mailto:people@mesquaredagency.com"'));

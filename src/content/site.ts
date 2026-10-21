@@ -30,65 +30,35 @@ export const content = {
   hero: {
     /** EC's choice (14 Oct 2026): the approved v0.13 hero, people first. Two sentences, each set on two lines. */
     h1: 'We run the back office. You run the business.',
-    /** The screen in the mark cycles through the three services, each with its caption. */
-    scenes: [
-      { scene: 'run', label: 'Your back office, run by people' },
-      { scene: 'design', label: 'Websites and digital products' },
-      { scene: 'build', label: 'AI agents that draft, people who check' },
-    ],
-    scenesLabel: 'Show',
+    /** EC, 21 Oct 2026: every client gets one person working exclusively for them, and no AI at the top of the page. */
     subhead:
-      '{SITE_NAME} is the team behind your business: trained people, backed by AI agents, running your admin, accounts, customer service and marketing. We design and build the website out front, too.',
+      '{SITE_NAME} gives your business its own trained person, working exclusively on your admin, accounts, customer service and marketing, and reporting back to you like part of your team. We design and build the website out front, too.',
     primary: 'Talk to us',
     /** The hero's second link: to the work, or (while showProof is off) to Start here. */
     secondary: 'See our work',
     secondaryStart: 'See where to start',
-    markSummary:
-      'Illustration: the {SITE_NAME} mark, a dark glass square with a small coral square glowing at its corner. The glass is a screen that shows the work: the Command Centre board of back-office tasks being checked, a web page being designed, and an AI agent drafting for a person to check.',
     /** showLocations. EC, 19 Oct 2026: "Based in Phnom Penh". */
-    location: 'Our Command Centre team is based in Phnom Penh, Cambodia.',
-  },
-
-  /** Illustrations on the hero screen (decorative; described for screen readers). */
-  visuals: {
-    design: {
-      srSummary: 'Illustration: a web page assembling itself, block by block, inside a browser window.',
-      url: 'yourbusiness.com.au',
+    location: 'Our team is based in Phnom Penh, Cambodia.',
+    /**
+     * The hero picture (EC, 21 Oct 2026: "It still looks entirely AI / computer based"): a sample conversation between
+     * a business owner and their Me² person. Sample messages, labelled as such; no names, no faces, no real client.
+     */
+    chat: {
+      label: 'Illustration: a sample conversation with your {SITE_NAME} person',
+      who: 'Your {SITE_NAME} person',
+      role: 'Looking after your back office',
+      day: 'Today',
+      messages: [
+        { from: 'them', time: '8:02 am', text: 'Morning! Your supplier bills are coded and ready for you to approve.' },
+        { from: 'them', time: '8:03 am', text: 'I chased the two overdue invoices. One has promised to pay on Friday.' },
+        { from: 'them', time: '8:05 am', text: 'One for you: a customer wants a refund on a late order. Are you happy for me to sort it?' },
+        { from: 'you', time: '8:21 am', text: 'Yes please. Thank you!' },
+        { from: 'them', time: '8:24 am', text: "Done. I've let them know, and it's in this week's report." },
+      ],
+      youLabel: 'You',
+      compose: 'Message your {SITE_NAME} person',
+      note: 'Illustration with sample messages.',
     },
-    build: {
-      srSummary: 'Illustration: emails, invoices and forms flow into an AI agent, are checked by a person, and go out to your accounts, your CRM and your reports.',
-      inputs: ['Emails', 'Invoices', 'Forms'],
-      core: 'AI agent',
-      check: 'Checked',
-      outputs: ['Accounts', 'CRM', 'Reports'],
-    },
-  },
-
-  /** The Run scene: a live board of sample back-office tasks (illustration; kinds of business, never clients). */
-  board: {
-    title: 'Command Centre',
-    live: 'Live',
-    stages: {
-      queued: 'Assigned',
-      drafting: 'Agent drafting',
-      checking: 'Operator checking',
-      caught: 'Error caught',
-      done: 'Checked, done',
-      fixed: 'Corrected, done',
-    },
-    tasks: [
-      { task: 'Supplier bills coded', for: 'Accounting practice', fix: true },
-      { task: 'Overdue invoice reminders', for: 'Trades business', fix: false },
-      { task: 'Customer email replies', for: 'Online store', fix: false },
-      { task: 'New client intake', for: 'Law firm', fix: false },
-      { task: 'Weekly sales report', for: 'Wholesaler', fix: true },
-      { task: 'Rent arrears summary', for: 'Property manager', fix: false },
-      { task: 'Quote follow-ups', for: 'Builder', fix: false },
-      { task: 'Timesheets for payroll', for: 'Cleaning company', fix: false },
-    ],
-    note: 'Illustration with sample tasks.',
-    srSummary:
-      'Illustration: a board of sample back-office tasks from different kinds of business. Each task is assigned to an operator, drafted by an AI agent and checked by the operator before it is marked done. Now and then the check catches an error, and it is corrected before the task is done.',
   },
 
   /** Where your week goes: five pains, each picked up by Me² as it settles on screen (EC, 14 Oct 2026: "a penny drop, oh shit moment"). */
@@ -167,7 +137,7 @@ export const content = {
       name: 'The whole back office',
       /** showPricing. EC, 16 Oct 2026: "prices should be provided upon quotation depending on the clients requirements". One monthly fee (EC, 14 Oct). */
       price: 'Quoted for your business',
-      body: 'Trained {SITE_NAME} people own the work, backed by AI agents built around your business. They check everything before it goes out, deal with anything unusual and report back to you.',
+      body: 'Your own {SITE_NAME} person owns the work, working exclusively on your business with AI agents built around how you do things. They check everything before it goes out, deal with anything unusual and report back to you.',
       /**
        * Everything behind the front line (EC, 14 Oct 2026: "it's everything"). Only what Me² can take on today;
        * the examples for operations, finance, marketing and social media come from the confirmed jobs, the rest are new (EC to confirm).
@@ -183,7 +153,7 @@ export const content = {
       ],
       /** EC: "eventually legal, tech dev, consulting, strategy". */
       coming: 'Coming next: legal, tech development, consulting and strategy.',
-      process: 'A written process for every repeat task, so the work never depends on one person.',
+      process: 'Every repeat task is written down as a process, so nothing stops if your person is ever away.',
       button: 'Talk to us about your back office',
       topic: 'Whole back office',
     },
@@ -192,7 +162,7 @@ export const content = {
       name: 'An extra set of hands',
       /** showPricing. Quoted, like the whole back office (EC, 16 Oct 2026). */
       price: 'Quoted per job',
-      body: "Don't need a whole team? A {SITE_NAME} person takes one job off your plate, like the inbox, the invoices or the data entry, backed by an AI agent set up around how you already work. They report back to you, and you stay in control.",
+      body: "Don't need a whole team? Your own {SITE_NAME} person, working exclusively for you, takes one job off your plate, like the inbox, the invoices or the data entry, backed by an AI agent set up around how you already work. They report back to you, and you stay in control.",
       button: 'Ask about an extra set of hands',
       topic: 'Extra set of hands',
     },
@@ -208,28 +178,40 @@ export const content = {
     also: "Need something these don't cover, like an automation between your tools or a dashboard? Tell us the job.",
   },
 
+  /**
+   * The trust section (EC, 21 Oct 2026: "It takes a lot of trust for someone to allow us to run the backend of their business").
+   * Each promise rests on terms EC has confirmed: one dedicated person (21 Oct), mistakes fixed at no charge,
+   * no lock-in and the client keeps everything (16 Oct). "One team" is said by the pain section; software by the FAQ.
+   */
   how: {
     kicker: 'How we work',
-    h2: 'What you can count on.',
+    h2: 'Handing over your back office takes trust.',
+    intro: "You built this business, and you know what one wrong invoice or one missed customer can cost. So we don't hand you software and a support line. We give you a person.",
     items: [
       {
+        title: 'You know who’s looking after you.',
+        body: "One {SITE_NAME} person is assigned to your business, working exclusively for you. They learn how you like things done, and they're the one you message when something comes up.",
+      },
+      {
         title: 'A person owns every task.',
-        body: 'AI agents do the drafting. A trained {SITE_NAME} person checks every name, date and number against the source before anything leaves.',
+        body: 'AI agents do the drafting. Your {SITE_NAME} person checks every name, date and number against the source before anything leaves.',
       },
       {
-        title: 'One team, answerable for all of it.',
-        body: 'Your website and your back office sit with one team. When something needs fixing, you know who to ask.',
+        title: 'If we get it wrong, we own it.',
+        body: "You hear it from us, not your customers. We put it right at no charge and change the process so it doesn't happen again.",
       },
       {
-        title: 'Built around how you already work.',
-        /** approved (v0.14 FAQ, adapted) */
-        body: "We start from the tools and processes you already use. If something would need to change, we'll tell you before we start.",
-      },
-      {
-        title: 'Straight answers.',
-        body: "We'll tell you plainly what we can do, what it will take, and when something isn't a fit.",
+        title: 'Your business stays yours.',
+        body: "Your data, your logins and every process we write down belong to you. There's no lock-in, so we only keep your work by doing it well.",
       },
     ],
+    /** showFounderNote. Patrick's own words, signed (EC, 21 Oct 2026); never written for him. Shown only once `note` is filled in. */
+    founder: {
+      label: 'A note from our founder',
+      note: '' as string,
+      name: '' as string,
+      role: '' as string,
+    },
   },
 
   faq: {
@@ -262,7 +244,7 @@ export const content = {
       },
       {
         q: 'Is it people or AI doing the work?',
-        a: "People, backed by AI. Every task is owned by a trained {SITE_NAME} person. AI agents set up for your business do the drafting and the volume, and that person checks it before it reaches you. We don't sell AI on its own.",
+        a: "People, backed by AI. Your business gets its own trained {SITE_NAME} person, who owns every task. AI agents set up for your business do the drafting and the volume, and your person checks it before it reaches you. We don't sell AI on its own.",
       },
       {
         q: 'What if your team gets something wrong?',
@@ -380,15 +362,16 @@ export const content = {
    * It describes what the site actually does: one enquiry form, no cookies of its own, hosting on Cloudflare,
    * form emails delivered by Resend, email in Google Workspace, and a team in Phnom Penh (overseas disclosure, APP 8).
    * EC, 19 Oct 2026: "the Me² team is only in Phnom Penh", so Adelaide was taken out.
+   * EC, 21 Oct 2026: "Who we are" describes Me² people first, as the home page does (no change to what is collected or how it is used).
    * EC, 20 Oct 2026: WhatsApp, call backs and automatic first replies added (EC signs off privacy changes).
    */
   privacy: {
     h1: 'Privacy',
-    updated: 'Last updated 20 October 2026',
+    updated: 'Last updated 21 October 2026',
     sections: [
       {
         h: 'Who we are',
-        p: ['{SITE_NAME} ({SITE_NAME_PLAIN}) designs and builds websites and AI systems and runs back-office work for businesses. This policy explains how we handle personal information we collect through this website. "We" means {SITE_NAME}.'],
+        p: ['{SITE_NAME} ({SITE_NAME_PLAIN}) gives established businesses their own trained person to run their back office, and designs and builds websites. This policy explains how we handle personal information we collect through this website. "We" means {SITE_NAME}.'],
       },
       {
         h: 'What we collect',

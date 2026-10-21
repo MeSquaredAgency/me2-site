@@ -102,7 +102,7 @@ const rows = (shots: Shot[]) => shots.reduce<Shot[][]>((acc, s) => {
   .shot { position: relative; margin: 0; overflow: hidden; isolation: isolate; background: var(--color-abyss-2); }
   .shot :global(picture), .shot :global(img) { display: block; width: 100%; height: 100%; }
   .shot :global(img) { object-fit: cover; object-position: top center; transform: translateY(var(--drift, 0%)) scale(1.1); }
-  .wide { aspect-ratio: 16 / 10; border-radius: 10px; box-shadow: 0 40px 100px -40px rgb(0 0 0 / 0.8), inset 0 0 0 1px rgb(232 237 241 / 0.06); }
+  .wide { aspect-ratio: 16 / 10; border-radius: 10px; box-shadow: 0 40px 100px -40px rgb(0 0 0 / 0.8), inset 0 0 0 1px rgb(244 239 231 / 0.06); }
   /* Phone shots in a plain phone-shaped frame (no device artwork). */
   .shot.phone { aspect-ratio: 390 / 844; border-radius: 30px; border: 7px solid #142433; box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.8); }
   .shot.phone :global(img) { transform: translateY(var(--drift, 0%)) scale(1.04); }

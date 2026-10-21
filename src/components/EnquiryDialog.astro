@@ -22,7 +22,7 @@ const f = content.form;
   .enquiry-dialog {
     width: min(560px, calc(100vw - 32px)); max-height: calc(100svh - 32px); overflow: auto; overscroll-behavior: contain; margin: auto; padding: 0; border: 0; border-radius: 18px;
     background: linear-gradient(160deg, #10202f, var(--color-abyss) 70%); color: var(--color-mist);
-    box-shadow: 0 40px 120px rgb(0 0 0 / 0.6), inset 0 1px 0 rgb(232 237 241 / 0.08);
+    box-shadow: 0 40px 120px rgb(0 0 0 / 0.6), inset 0 1px 0 rgb(244 239 231 / 0.08);
   }
   .enquiry-dialog::backdrop { background: rgb(4 9 14 / 0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
   .enquiry-dialog[open] { animation: dlg-in 500ms var(--ease-out); }
@@ -33,7 +33,7 @@ const f = content.form;
   .dlg-head h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); letter-spacing: -0.035em; }
   .dlg-close {
     width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; flex: none;
-    background: none; color: var(--color-mist); border: 1px solid rgb(232 237 241 / 0.24); cursor: pointer; padding: 0;
+    background: none; color: var(--color-mist); border: 1px solid rgb(244 239 231 / 0.24); cursor: pointer; padding: 0;
   }
   .dlg-close span { position: relative; width: 14px; height: 14px; }
   .dlg-close span::before, .dlg-close span::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; margin-top: -0.75px; background: currentColor; }

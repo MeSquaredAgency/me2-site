@@ -1,70 +1,54 @@
 ---
-import { fill } from '../config';
+import { fill, flags } from '../config';
 import { content } from '../content/site';
 const c = content.how;
 ---
-<section id="how" class="how on-dark render-later" aria-labelledby="how-title">
+<section id="how" class="how on-paper render-later" aria-labelledby="how-title">
   <div class="wrap">
     <div class="head">
       <p class="kicker">{c.kicker}</p>
       <h2 id="how-title">{c.h2}</h2>
+      <p class="lede intro">{c.intro}</p>
     </div>
     <ul class="items">
       {c.items.map((it) => (
-        <li class="item" data-how>
-          <span class="mark" aria-hidden="true"></span>
+        <li class="item">
           <h3 class="title">{it.title}</h3>
           <p class="body">{fill(it.body)}</p>
         </li>
       ))}
     </ul>
+    {flags.showFounderNote && c.founder.note && (
+      <figure class="founder" aria-label={c.founder.label}>
+        <p class="kicker">{c.founder.label}</p>
+        <blockquote class="note">{c.founder.note.split('\n\n').map((p) => <p>{p}</p>)}</blockquote>
+        <figcaption class="sig"><span class="sig-name">{c.founder.name}</span> {c.founder.role}</figcaption>
+      </figure>
+    )}
   </div>
 </section>
-
-<script>
-  // Each commitment's square goes through the board's stages as it comes on screen: drafted, checked, done.
-  const items = document.querySelectorAll<HTMLElement>('[data-how]');
-  if (items.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    document.querySelector('.how')?.classList.add('is-live');
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-on'); io.unobserve(e.target); }
-    }, { rootMargin: '0px 0px -25% 0px' });
-    items.forEach((i) => io.observe(i));
-  }
-</script>
 
 <style>
   .how {
     padding-block: var(--section-y);
-    background:
-      radial-gradient(50% 60% at 100% 0%, rgb(var(--glow) / 0.08), transparent 70%),
-      var(--color-abyss);
+    background: var(--color-paper-2);
   }
   /* One left edge for the label, the headline and the commitments (as in Start here). */
   .head { display: grid; justify-items: start; gap: 24px; margin-bottom: clamp(48px, 6vw, 88px); }
-  .items { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--color-line-dark); }
-  .item { display: grid; gap: 14px; align-content: start; padding: 36px 0 44px; border-bottom: 1px solid var(--color-line-dark); }
-  .mark { width: 14px; height: 14px; box-sizing: border-box; background: var(--color-mist); margin-bottom: 10px; }
-  .item:last-child .mark { background: var(--color-coral); box-shadow: 0 0 22px 3px rgb(var(--glow) / 0.45); }
-  /* Drafted (outline), being checked (half), done (solid); the last one lands coral, like the ². */
-  .how:global(.is-live) .mark { background: transparent; border: 1.5px solid rgb(232 237 241 / 0.55); box-shadow: none; }
-  .how:global(.is-live) .item:global(.is-on) .mark { animation: check 1400ms var(--ease-out) forwards; }
-  .how:global(.is-live) .item:last-child:global(.is-on) .mark { animation: check-coral 1600ms var(--ease-out) forwards; }
-  @keyframes check {
-    0% { border-color: rgb(232 237 241 / 0.55); background: transparent; }
-    45% { border-color: var(--color-mist); background: linear-gradient(0deg, var(--color-mist) 50%, transparent 50%); }
-    100% { border-color: var(--color-mist); background: var(--color-mist); }
-  }
-  @keyframes check-coral {
-    0% { border-color: rgb(232 237 241 / 0.55); background: transparent; }
-    40% { border-color: var(--color-mist); background: linear-gradient(0deg, var(--color-mist) 50%, transparent 50%); }
-    100% { border-color: var(--color-coral); background: var(--color-coral); box-shadow: 0 0 22px 3px rgb(var(--glow) / 0.45); }
-  }
-  .title { font-size: clamp(1.6rem, 2.6vw, 2.6rem); font-weight: 520; font-stretch: 90%; letter-spacing: -0.035em; line-height: 1.05; max-width: 18ch; }
-  .body { color: var(--color-haze); max-width: 44ch; font-size: 1.08rem; }
+  .head h2 { max-width: 16ch; }
+  .intro { max-width: 46ch; color: var(--color-slate); }
+  .items { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--color-line); }
+  .item { display: grid; gap: 14px; align-content: start; padding: 36px 0 44px; border-bottom: 1px solid var(--color-line); }
+  .title { font-size: clamp(1.6rem, 2.6vw, 2.6rem); font-weight: 520; font-stretch: 90%; letter-spacing: -0.035em; line-height: 1.05; max-width: 18ch; text-wrap: balance; }
+  .body { color: var(--color-slate); max-width: 44ch; font-size: 1.08rem; }
+  /* The founder's note: their words in the display face, signed, after the promises. */
+  .founder { margin: clamp(72px, 9vw, 128px) 0 0; display: grid; justify-items: start; gap: 28px; }
+  .note { margin: 0; display: grid; gap: 0.7em; max-width: 30ch; font-size: clamp(1.5rem, 2.6vw, 2.4rem); font-weight: 480; font-stretch: 92%; line-height: 1.18; letter-spacing: -0.025em; color: var(--color-ink); }
+  .sig { color: var(--color-slate); }
+  .sig-name { color: var(--color-ink); font-weight: 560; }
   @media (min-width: 1000px) {
     .items { grid-template-columns: 1fr 1fr; column-gap: clamp(48px, 6vw, 112px); }
-    /* Side by side, the squares, titles and bodies line up across each pair, whatever the titles' length. */
-    .item { grid-row: span 3; grid-template-rows: subgrid; padding: 44px 0 56px; }
+    /* Side by side, the titles and bodies line up across each pair, whatever the titles' length. */
+    .item { grid-row: span 2; grid-template-rows: subgrid; padding: 44px 0 56px; }
   }
 </style>
