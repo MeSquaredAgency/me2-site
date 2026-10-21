@@ -362,15 +362,16 @@ export const content = {
    * It describes what the site actually does: one enquiry form, no cookies of its own, hosting on Cloudflare,
    * form emails delivered by Resend, email in Google Workspace, and a team in Phnom Penh (overseas disclosure, APP 8).
    * EC, 19 Oct 2026: "the Me² team is only in Phnom Penh", so Adelaide was taken out.
+   * EC, 21 Oct 2026: "Who we are" describes Me² people first, as the home page does (no change to what is collected or how it is used).
    * EC, 20 Oct 2026: WhatsApp, call backs and automatic first replies added (EC signs off privacy changes).
    */
   privacy: {
     h1: 'Privacy',
-    updated: 'Last updated 20 October 2026',
+    updated: 'Last updated 21 October 2026',
     sections: [
       {
         h: 'Who we are',
-        p: ['{SITE_NAME} ({SITE_NAME_PLAIN}) designs and builds websites and AI systems and runs back-office work for businesses. This policy explains how we handle personal information we collect through this website. "We" means {SITE_NAME}.'],
+        p: ['{SITE_NAME} ({SITE_NAME_PLAIN}) gives established businesses their own trained person to run their back office, and designs and builds websites. This policy explains how we handle personal information we collect through this website. "We" means {SITE_NAME}.'],
       },
       {
         h: 'What we collect',

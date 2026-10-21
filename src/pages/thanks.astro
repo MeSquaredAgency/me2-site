@@ -7,13 +7,13 @@ import { content } from '../content/site';
 const c = content.thanks;
 ---
 <Base path="/thanks/">
-  <Header />
-  <main id="main" class="done on-dark">
+  <Header tone="paper" />
+  <main id="main" class="done on-paper">
     <div class="wrap inner">
       <span class="sq" aria-hidden="true"></span>
       <h1>{c.h1}</h1>
       <p>{c.body}</p>
-      <a href="/" class="btn btn-light btn-lg"><span class="dot" aria-hidden="true"></span>{c.button}</a>
+      <a href="/" class="btn btn-dark btn-lg"><span class="dot" aria-hidden="true"></span>{c.button}</a>
     </div>
   </main>
   <Footer />
@@ -22,7 +22,7 @@ const c = content.thanks;
   .done { min-height: 72vh; display: flex; align-items: center; }
   .inner { display: grid; justify-items: start; gap: 24px; padding-top: 160px; padding-bottom: 120px; }
   h1 { font-size: clamp(3rem, 8vw, 7rem); line-height: 0.9; letter-spacing: -0.05em; }
-  p { color: var(--color-haze); font-size: 1.2rem; }
-  .sq { width: 16px; height: 16px; background: var(--color-coral); box-shadow: 0 0 30px 6px rgb(var(--glow) / 0.5); }
+  p { color: var(--color-slate); font-size: 1.2rem; }
+  .sq { width: 16px; height: 16px; background: var(--color-coral-deep); }
   .btn-lg { min-height: 58px; margin-top: 12px; }
 </style>

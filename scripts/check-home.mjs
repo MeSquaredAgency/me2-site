@@ -87,7 +87,7 @@ check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide',
 const privacyHtml = decode(readFileSync('dist/privacy/index.html', 'utf8'));
 check('privacy: team in Phnom Penh only', privacyHtml.includes('Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia.') && !/Adelaide/.test(privacyHtml));
 // EC, 20 Oct 2026: WhatsApp on +855 69 713 244, automatic first replies, call backs (spec: docs/superpowers/specs/2026-10-19-reply-bots.md).
-check('privacy: WhatsApp, call backs, automatic replies, Meta, dated 20 Oct', ['If you message us on WhatsApp, we collect your phone number', 'If you ask us to call you back', 'we email you an automatic confirmation', 'Cloudflare, Resend, Google and Meta (for WhatsApp)', 'Last updated 20 October 2026'].every((t) => privacyHtml.includes(t)));
+check('privacy: WhatsApp, call backs, automatic replies, Meta, dated 21 Oct', ['If you message us on WhatsApp, we collect your phone number', 'If you ask us to call you back', 'we email you an automatic confirmation', 'Cloudflare, Resend, Google and Meta (for WhatsApp)', 'Last updated 21 October 2026'].every((t) => privacyHtml.includes(t)));
 const { siteConfig: idConfig } = await import('../src/config/site.config.ts');
 const waNumber = idConfig.WHATSAPP_NUMBER;
 const waUrl = `https://wa.me/${waNumber.replace(/\D/g, '')}`;
@@ -173,6 +173,8 @@ if (!args.has('--static')) {
       check(`no sideways scroll (${tag})`, sw <= iw, `${sw}/${iw}`);
       await page.locator('[data-enquire]').first().click();
       await page.waitForSelector('dialog[open]');
+      // Let the dialog finish fading in, so axe judges the form as a visitor reads it, not halfway through the fade.
+      await page.evaluate(() => Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished.catch(() => {}))));
       const vd = await axe(page);
       check(`axe clean, enquiry dialog open (${tag})`, vd.length === 0, vd.join(', '));
       await page.context().close();
