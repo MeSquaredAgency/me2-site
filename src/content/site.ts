@@ -30,9 +30,12 @@ export const content = {
   hero: {
     /** EC's choice (14 Oct 2026): the approved v0.13 hero, people first. Two sentences, each set on two lines. */
     h1: 'We run the back office. You run the business.',
-    /** EC, 21 Oct 2026: every client gets one person working exclusively for them, and no AI at the top of the page. */
+    /**
+     * EC, 21 Oct 2026: every client gets one person working exclusively for them, and no AI at the top of the page. Later that day:
+     * that person is the main contact, and the work in each field is done by Me²'s specialist in it (marketing, finance, admin, web design…).
+     */
     subhead:
-      '{SITE_NAME} gives your business its own trained person, working exclusively on your admin, accounts, customer service and marketing, and reporting back to you like part of your team. We design and build the website out front, too.',
+      '{SITE_NAME} gives your business its own trained person, working exclusively for you, with our specialists in admin, finance, customer service and marketing behind them. They report back to you like part of your team. We design and build the website out front, too.',
     primary: 'Talk to us',
     /** The hero's second link: to the work, or (while showProof is off) to Start here. */
     secondary: 'See our work',
@@ -137,7 +140,7 @@ export const content = {
       name: 'The whole back office',
       /** showPricing. EC, 16 Oct 2026: "prices should be provided upon quotation depending on the clients requirements". One monthly fee (EC, 14 Oct). */
       price: 'Quoted for your business',
-      body: 'Your own {SITE_NAME} person owns the work, working exclusively on your business with AI agents built around how you do things. They check everything before it goes out, deal with anything unusual and report back to you.',
+      body: 'Your own {SITE_NAME} person runs it for you, working exclusively on your business. Each area is handled by our specialist in it, from finance to marketing, with AI agents built around how you do things. Everything is checked before it goes out, anything unusual is dealt with, and your person reports back to you.',
       /**
        * Everything behind the front line (EC, 14 Oct 2026: "it's everything"). Only what Me² can take on today;
        * the examples for operations, finance, marketing and social media come from the confirmed jobs, the rest are new (EC to confirm).
@@ -162,7 +165,7 @@ export const content = {
       name: 'An extra set of hands',
       /** showPricing. Quoted, like the whole back office (EC, 16 Oct 2026). */
       price: 'Quoted per job',
-      body: "Don't need a whole team? Your own {SITE_NAME} person, working exclusively for you, takes one job off your plate, like the inbox, the invoices or the data entry, backed by an AI agent set up around how you already work. They report back to you, and you stay in control.",
+      body: "Don't need a whole team? Our specialist in the job takes one thing off your plate, like the inbox, the invoices or the data entry, backed by an AI agent set up around how you already work. They report back to you, and you stay in control.",
       button: 'Ask about an extra set of hands',
       topic: 'Extra set of hands',
     },
@@ -186,15 +189,15 @@ export const content = {
   how: {
     kicker: 'How we work',
     h2: 'Handing over your back office takes trust.',
-    intro: "You built this business, and you know what one wrong invoice or one missed customer can cost. So we don't hand you software and a support line. We give you a person.",
+    intro: "You built this business, and you know what one wrong invoice or one missed customer can cost. So we don't hand you software and a support line. We give you a person, with a team of specialists behind them.",
     items: [
       {
         title: 'You know who’s looking after you.',
-        body: "One {SITE_NAME} person is assigned to your business, working exclusively for you. They learn how you like things done, and they're the one you message when something comes up.",
+        body: "One {SITE_NAME} person is assigned to your business, working exclusively for you. They learn how you like things done, bring in our specialist for each kind of work, and they're the one you message when something comes up.",
       },
       {
         title: 'A person owns every task.',
-        body: 'AI agents do the drafting. Your {SITE_NAME} person checks every name, date and number against the source before anything leaves.',
+        body: 'AI agents do the drafting. Our specialist in that work checks every name, date and number against the source before anything leaves.',
       },
       {
         title: 'If we get it wrong, we own it.',
@@ -222,7 +225,7 @@ export const content = {
     items: [
       {
         q: 'What does {SITE_NAME} actually do?',
-        a: 'We run the back office of established businesses: admin, operations, customer service, finance, marketing, social media and paid ads, done by trained people backed by AI agents built for your business. We also design and build websites. You can start with an extra set of hands and add the rest later.',
+        a: 'We run the back office of established businesses: admin, operations, customer service, finance, marketing, social media and paid ads, done by trained specialists in each area, backed by AI agents built for your business. We also design and build websites. You can start with an extra set of hands and add the rest later.',
       },
       {
         q: 'What does it cost?',
@@ -244,7 +247,7 @@ export const content = {
       },
       {
         q: 'Is it people or AI doing the work?',
-        a: "People, backed by AI. Your business gets its own trained {SITE_NAME} person, who owns every task. AI agents set up for your business do the drafting and the volume, and your person checks it before it reaches you. We don't sell AI on its own.",
+        a: "People, backed by AI. Your business gets its own trained {SITE_NAME} person as your main contact, and each kind of work is done by our specialist in it, like our marketing, finance and admin executives. AI agents set up for your business do the drafting and the volume, and a person checks it before it reaches you. We don't sell AI on its own.",
       },
       {
         q: 'What if your team gets something wrong?',
@@ -425,7 +428,7 @@ export const content = {
     sections: [
       {
         h: 'Who we are',
-        p: ['{SITE_NAME} ({SITE_NAME_PLAIN}) gives established businesses their own trained person to run their back office, and designs and builds websites. This policy explains how we handle personal information we collect through this website. "We" means {SITE_NAME}.'],
+        p: ['{SITE_NAME} ({SITE_NAME_PLAIN}) gives established businesses their own trained person, backed by specialists in each field, to run their back office, and designs and builds websites. This policy explains how we handle personal information we collect through this website. "We" means {SITE_NAME}.'],
       },
       {
         h: 'What we collect',

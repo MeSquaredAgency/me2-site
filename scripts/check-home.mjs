@@ -26,7 +26,7 @@ const browserChecks = [];
 // Task 1: human first, hero chosen by EC (14 Oct 2026)
 check('hero line', /<h1[^>]*>[\s\S]*<\/h1>/.test(html) && decode(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim() === 'We run the back office. You run the business.');
 check('old hero line gone', lacks('AI does the volume'));
-check('hero subhead leads with your own person', has('Me² gives your business its own trained person, working exclusively on your admin, accounts, customer service and marketing, and reporting back to you like part of your team.') && lacks('works for nobody else'));
+check('hero subhead leads with your own person, with specialists behind them', has('Me² gives your business its own trained person, working exclusively for you, with our specialists in admin, finance, customer service and marketing behind them. They report back to you like part of your team.') && lacks('works for nobody else'));
 check('hero picture: a conversation with your Me² person, labelled as sample', has('Your Me² person') && has('Looking after your back office') && has('Illustration with sample messages.') && has("Done. I've let them know, and it's in this week's report."));
 check('hero: no AI, no dashboard, no WebGL', (() => { const hero = html.slice(html.indexOf('<section class="hero'), html.indexOf('data-pain')); return !/\bAI\b/.test(decode(hero.replace(/<[^>]+>/g, ' '))) && !hero.includes('<canvas') && !hero.includes('data-screen'); })() && lacks('Agent drafting'));
 // Copy review, 16 Oct 2026: no "trained on your business" (invites "are you training AI on my data?"), no real-estate "tenant", and one sentence said once.
