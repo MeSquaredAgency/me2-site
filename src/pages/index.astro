@@ -9,6 +9,7 @@ import How from '../components/How.astro';
 import Faq from '../components/Faq.astro';
 import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
+import ChatWidget from '../components/ChatWidget.astro';
 import { homeSchema } from '../lib/schema';
 import { flags } from '../config';
 ---
@@ -24,4 +25,5 @@ import { flags } from '../config';
     <Contact />
   </main>
   <Footer />
+  {flags.enableChat && <ChatWidget />}
 </Base>

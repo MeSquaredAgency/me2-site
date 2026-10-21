@@ -102,6 +102,22 @@ One-time setup:
 ### Warning: saving a secret in the dashboard publishes the newest preview
 Saving a secret (or variable) in the Cloudflare dashboard with **Deploy** makes a new version from the **latest uploaded** version, which is often a branch preview, and puts it **live**. That's how the v0.15 redesign went live on 10 Oct 2026 when the Resend key was saved. Before touching secrets in the dashboard, check that nothing newer than live has been uploaded (`npx wrangler versions list` against `npx wrangler deployments list`). Otherwise use `npx wrangler versions secret put` (adds it without deploying), or `npx wrangler secret put` once `main` is the latest version (it refuses if a newer preview exists).
 
+## Website chat (AI)
+The chat on the home page ([docs/chat.md](docs/chat.md)) posts to `/api/chat` (`worker/chat.ts`), which calls Anthropic's API (Claude Haiku 5.5) with the `ANTHROPIC_API_KEY` secret, and emails details the visitor confirms to hello@ through Resend, like the form. Until the key is set, the chat answers "The chat isn't working right now…" with the email address, so **set the key before merging**, or merge with `enableChat` off.
+
+One-time setup (EC; about 15 minutes):
+
+1. **Create an Anthropic Console account** at platform.claude.com, ideally with a business address such as tech@, as the Me² organisation.
+2. **Billing:** add a payment method and buy a small amount of credit (US$5 covers about 10,000 chat messages). Turn auto-reload off, or set it low.
+3. **Spend limit:** Settings → Limits → set a monthly spend limit (for example US$20). If it's ever hit, the chat stops answering and points visitors to email; nothing else on the site is affected.
+4. **API key:** Settings → API keys → Create key, named `mesquaredagency.com website chat`. Copy it (the Console shows it once).
+5. **Give the key to the site as a secret**, the same safe way as the Resend key: `npx wrangler versions secret put ANTHROPIC_API_KEY` (paste the key when asked). That adds it without publishing anything; see the warning above before using the dashboard. Previews use the same secret, so the chat works on the branch preview straight away.
+6. **Test on the preview:** ask a few questions (what you do, prices, something off topic), then leave your own details and confirm. An email "[Preview] Website chat: <your name>" should reach hello@ within a minute. Workers Logs shows one `chat` line per message.
+
+**Rate limit:** `CHAT_LIMIT` in `wrangler.jsonc` (Workers rate limiting, no dashboard step) allows 8 messages a minute from one address. The chat also stops after 12 visitor messages.
+
+**Changing the key:** create a new key in the Console, replace the secret with `npx wrangler versions secret put ANTHROPIC_API_KEY` and push `main`, then delete the old key in the Console.
+
 ## After launch
 - Submit `https://mesquaredagency.com/sitemap.xml` in Google Search Console (add the domain as a property first).
 - Tell Bing and others the site exists:

@@ -23,6 +23,12 @@ export const flags = {
    * On since 20 Oct 2026 (EC: the first reply is a receptionist; a person follows up). Off: enquiries still reach hello@, with no confirmation.
    */
   sendEnquiryConfirmation: true,
+  /**
+   * The website chat: an AI receptionist (Claude Haiku) that answers questions from the site's copy and passes the visitor's
+   * details to hello@ (worker/chat.ts, docs/chat.md). Its button appears once the hero is scrolled past. Needs showPrivacyPage,
+   * and the ANTHROPIC_API_KEY secret set in Cloudflare (DEPLOY.md). EC, 21 Oct 2026: "AI receptionist (Claude Haiku)".
+   */
+  enableChat: true,
   /** "Book a call" button. Needs BOOKING_URL and showPrivacyPage (EC). */
   enableBooking: false,
   /** Any analytics beyond Cloudflare Web Analytics. Needs showPrivacyPage (EC). */

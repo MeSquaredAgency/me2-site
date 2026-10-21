@@ -6,13 +6,15 @@
 //     FORM_TO_EMAIL through Resend (its HTTP API; the RESEND_API_KEY secret, set in Cloudflare, see DEPLOY.md), then,
 //     on the live site, emails the visitor a fixed-text automatic confirmation (sendEnquiryConfirmation); and
 //  4. handles job applications (POST /api/applications, ./applications.ts): emails each one, CV attached, to CAREERS_EMAIL; and
-//  5. answers AI agents that ask for markdown (Accept: text/markdown) with the page's markdown version, built beside
+//  5. runs the website chat (POST /api/chat, ./chat.ts): an AI receptionist on Claude Haiku that passes visitors' details to hello@; and
+//  6. answers AI agents that ask for markdown (Accept: text/markdown) with the page's markdown version, built beside
 //     it as index.html.md by scripts/postbuild.mjs. Browsers never ask for it, so they get the HTML as before.
-// Data rule (BRIEF §6): the enquiry form takes contact details and a short message only; the careers form also takes a CV.
+// Data rule (BRIEF §6): the enquiry form and the chat's hand-over take contact details and a short message only; the careers form also takes a CV.
 import { siteConfig } from '../src/config/site.config.ts';
 import { flags } from '../src/config/flags.ts';
 import { content } from '../src/content/site.ts';
 import { application } from './applications.ts';
+import { chatWith, type ChatEnv } from './chat.ts';
 
 interface AssessmentPreparedStatement {
   bind(...values: unknown[]): AssessmentPreparedStatement;
@@ -24,7 +26,7 @@ interface AssessmentDatabase {
   prepare(query: string): AssessmentPreparedStatement;
 }
 
-interface Env {
+interface Env extends ChatEnv {
   ASSETS: { fetch(request: Request): Promise<Response> };
   DB?: AssessmentDatabase;
   /** Resend API key (a Worker secret, never in the code). Missing until it's set in Cloudflare (DEPLOY.md). */
@@ -54,6 +56,7 @@ export default {
     if (url.pathname === '/api/assessments') return assessment(request, env);
     if (url.pathname === '/api/enquiry') return enquiry(request, env, ctx);
     if (url.pathname === '/api/applications') return application(request, env);
+    if (url.pathname === '/api/chat') return chat(request, env, ctx);
     if (request.method === 'GET' || request.method === 'HEAD') {
       const md = url.pathname.endsWith('/index.html.md') ? url.pathname
         : url.pathname.endsWith('/') && prefersMarkdown(request.headers.get('accept')) ? `${url.pathname}index.html.md` : '';
@@ -291,6 +294,9 @@ async function confirmEnquiry(to: string, apiKey: string): Promise<void> {
   // No personal details in logs: just what happened.
   console.log(JSON.stringify(failed ? { event: 'enquiry-confirmation', result: 'send-failed', code: failed } : { event: 'enquiry-confirmation', result: 'sent' }));
 }
+
+// The chat's details reach hello@ like an enquiry, so they get the same confirmation (needs showPrivacyPage, like the form).
+const chat = chatWith({ enableChat: flags.enableChat && flags.showPrivacyPage, sendEnquiryConfirmation: flags.sendEnquiryConfirmation }, confirmEnquiry);
 
 function esc(s: string) {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);

@@ -25,7 +25,7 @@ export const fixtureText = fixture?.content ?? {};
 const variantFlags: Partial<Flags> = isFixture && process.env.FIXTURE_FLAGS ? JSON.parse(process.env.FIXTURE_FLAGS) : {};
 const merged: Flags = { ...realFlags, ...fixture?.flags, ...variantFlags };
 // Anything that collects personal information needs the privacy page live first.
-for (const key of ['enableContactForm', 'enableBooking', 'enableTracking'] as const) {
+for (const key of ['enableContactForm', 'enableChat', 'enableBooking', 'enableTracking'] as const) {
   if (merged[key] && !merged.showPrivacyPage) {
     console.warn(`[flags] ${key} needs showPrivacyPage; leaving it off.`);
     merged[key] = false;

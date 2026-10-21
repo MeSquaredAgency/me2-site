@@ -28,6 +28,11 @@
       "migrations_dir": "migrations"
     }
   ],
+  // The website chat (worker/chat.ts): at most 8 messages a minute from one address, so nobody can run up the
+  // Anthropic bill. The chat's ANTHROPIC_API_KEY is a secret set in Cloudflare, like RESEND_API_KEY. See DEPLOY.md.
+  "ratelimits": [
+    { "name": "CHAT_LIMIT", "namespace_id": "1001", "simple": { "limit": 8, "period": 60 } }
+  ],
   // Workers Logs: each enquiry logs one line (sent / dropped / failed, the topic, never the person's details).
   "observability": { "enabled": true },
   // The live site is only on mesquaredagency.com; previews come from `npx wrangler versions upload`.
