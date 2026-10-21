@@ -1,8 +1,11 @@
 ---
 /**
  * The website chat (enableChat): an AI receptionist that answers questions about Me² and passes the visitor's details
- * to a person (worker/chat.ts, docs/chat.md). Its button appears once the hero has scrolled away, and steps aside while
- * the contact section or the footer is on screen, where the form and the other ways in already are. The page keeps
+ * to a person (worker/chat.ts, docs/chat.md). Its launcher (a plain chat mark and "Ask Me²") appears once the hero
+ * has scrolled away, says hello once per visit in a small greeting labelled as the AI, and steps aside while the contact
+ * section or the footer is on screen, where the form and the other ways in already are. Inside, a few suggested
+ * questions send in one tap. The assistant never wears the lit ² avatar the hero gives "Your Me² person": that mark is
+ * for people, and a tool shouldn't look like a teammate. The page keeps
  * the conversation (never stored) and sends it to /api/chat each turn. Without JavaScript there is no chat; the
  * form, email and WhatsApp links are all still there.
  */
@@ -15,12 +18,20 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
 ---
 <div class="chatw is-away" data-chatw data-markdown="skip" hidden
   data-msg={JSON.stringify({ youLabel: c.youLabel, themLabel: c.themLabel, tooLong: c.tooLong, failure: fill(c.failure), busy: c.busy, limit: fill(c.limit), done: c.done, email: config.CONTACT_EMAIL, maxTurns: MAX_TURNS, maxMessage: MAX_MESSAGE })}>
-  <button type="button" class="chatw-open btn btn-dark" data-chat-open aria-expanded="false" aria-controls="chatw-panel">
-    <span class="dot" aria-hidden="true"></span>{c.button}
+  <div class="chatw-hello" data-chat-hello hidden>
+    <button type="button" class="chatw-hello-open" data-chat-hello-open aria-controls="chatw-panel">
+      <span class="chatw-hello-who">{fill(c.greetingWho)}</span>
+      <span class="chatw-hello-text">{fill(c.greeting)}</span>
+    </button>
+    <button type="button" class="chatw-hello-x" data-chat-hello-x aria-label={c.greetingDismiss}><span aria-hidden="true"></span></button>
+  </div>
+  <button type="button" class="chatw-open" data-chat-open aria-expanded="false" aria-controls="chatw-panel">
+    <span class="chatw-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M5 5.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8l-4.5 3.5v-3.5H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /><circle cx="8.5" cy="11.5" r="1.15" fill="currentColor" /><circle cx="12" cy="11.5" r="1.15" fill="currentColor" /><circle cx="15.5" cy="11.5" r="1.15" fill="currentColor" /></svg></span>
+    <span class="chatw-open-label">{fill(c.button)}</span>
   </button>
   <section id="chatw-panel" class="chatw-panel" role="dialog" aria-labelledby="chatw-title" aria-describedby="chatw-who" data-chat-panel hidden>
     <div class="chatw-head">
-      <span class="avatar" aria-hidden="true"><span class="sq"></span></span>
+      <span class="chatw-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M5 5.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8l-4.5 3.5v-3.5H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /><circle cx="8.5" cy="11.5" r="1.15" fill="currentColor" /><circle cx="12" cy="11.5" r="1.15" fill="currentColor" /><circle cx="15.5" cy="11.5" r="1.15" fill="currentColor" /></svg></span>
       <div class="chatw-id">
         <h2 id="chatw-title">{fill(c.title)}</h2>
         <p id="chatw-who" class="chatw-who">{c.who}</p>
@@ -31,6 +42,9 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
       <ol data-chat-log>
         <li class="cm them"><span class="sr-only">{c.themLabel}: </span><span class="bubble">{fill(c.intro)}</span></li>
       </ol>
+      <div class="chatw-sugg" role="group" aria-label={c.suggestionsLabel} data-chat-sugg>
+        {c.suggestions.map((q) => <button type="button" data-chat-ask>{q}</button>)}
+      </div>
     </div>
     <form class="chatw-form" data-chat-form>
       <!-- Left empty by people (it's hidden); bots fill it in. -->
@@ -58,14 +72,33 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
     const input = form.querySelector<HTMLTextAreaElement>('textarea')!;
     const send = form.querySelector<HTMLButtonElement>('[data-chat-send]')!;
     const err = root.querySelector<HTMLElement>('[data-chat-err]')!;
+    const hello = root.querySelector<HTMLElement>('[data-chat-hello]')!;
+    const sugg = root.querySelector<HTMLElement>('[data-chat-sugg]');
     const turns: { role: 'user' | 'assistant'; content: string }[] = [];
     let ended = false;
+    // Browser storage can be missing or blocked (private windows); the chat works without it, it just says hello again.
+    const store = {
+      get: (k: string) => { try { return sessionStorage.getItem(k); } catch { return null; } },
+      set: (k: string) => { try { sessionStorage.setItem(k, '1'); } catch { /* not kept */ } },
+    };
 
     // Shown once the hero has gone, and out of the way while the form (or the footer) is on screen. It starts away
     // until the first look, so it never flashes up over the hero.
     const seen = new Map<Element, boolean>();
     const watch = [document.querySelector('.hero'), document.getElementById('contact'), document.querySelector('.site-footer')].filter(Boolean) as Element[];
-    const place = () => root.classList.toggle('is-away', [...seen.values()].some(Boolean));
+    let helloTimer = 0;
+    const place = () => {
+      const away = [...seen.values()].some(Boolean);
+      root.classList.toggle('is-away', away);
+      // Say hello once per visit, a moment after the launcher first shows, unless the chat has been opened.
+      if (!away && !helloTimer && !store.get('me2-chat-hello')) {
+        helloTimer = window.setTimeout(() => {
+          if (!panel.hidden || root.classList.contains('is-away')) { helloTimer = 0; return; }
+          hello.hidden = false;
+          store.set('me2-chat-hello');
+        }, 1600);
+      }
+    };
     if (watch.length) {
       const io = new IntersectionObserver((entries) => {
         for (const e of entries) seen.set(e.target, e.isIntersecting);
@@ -76,6 +109,7 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
     root.hidden = false;
 
     const setOpen = (on: boolean) => {
+      hello.hidden = true;
       panel.hidden = !on;
       open.setAttribute('aria-expanded', String(on));
       root.classList.toggle('is-open', on);
@@ -84,6 +118,8 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
       else open.focus();
     };
     open.addEventListener('click', () => setOpen(true));
+    root.querySelector('[data-chat-hello-open]')!.addEventListener('click', () => setOpen(true));
+    root.querySelector('[data-chat-hello-x]')!.addEventListener('click', () => { hello.hidden = true; open.focus(); });
     root.querySelector('[data-chat-close]')!.addEventListener('click', () => setOpen(false));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) setOpen(false); });
 
@@ -95,7 +131,7 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
     const scrollDown = () => scroller.scrollTo({ top: scroller.scrollHeight, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     const add = (from: 'you' | 'them' | 'note', text: string) => {
       const li = document.createElement('li');
-      li.className = `cm ${from}`;
+      li.className = `cm ${from} is-new`;
       if (from !== 'note') li.append(Object.assign(document.createElement('span'), { className: 'sr-only', textContent: `${from === 'you' ? msg.youLabel : msg.themLabel}: ` }));
       const bubble = Object.assign(document.createElement('span'), { className: 'bubble' });
       bubble.append(...(from === 'you' ? [text] : withEmail(text)));
@@ -112,7 +148,15 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
 
     // The box grows with what's typed, up to a few lines. Enter sends; Shift+Enter starts a new line.
     const grow = () => { input.style.height = 'auto'; input.style.height = `${Math.min(input.scrollHeight, 132)}px`; };
-    input.addEventListener('input', () => { grow(); err.textContent = ''; });
+    const ready = () => form.classList.toggle('has-text', !!input.value.trim());
+    input.addEventListener('input', () => { grow(); ready(); err.textContent = ''; });
+    // A suggested question goes straight in as the visitor's own message.
+    sugg?.addEventListener('click', (e) => {
+      const b = (e.target as Element).closest<HTMLButtonElement>('[data-chat-ask]');
+      if (!b || send.disabled) return;
+      input.value = b.textContent ?? '';
+      form.requestSubmit();
+    });
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
     });
@@ -123,10 +167,12 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
       if (!text || send.disabled || ended) return;
       if (text.length > maxMessage) { err.textContent = msg.tooLong; return; }
       err.textContent = '';
+      sugg?.remove();
       turns.push({ role: 'user', content: text });
       const mine = add('you', text);
       input.value = '';
       grow();
+      ready();
       send.disabled = true;
       const typing = document.createElement('li');
       typing.className = 'cm them typing';
@@ -153,6 +199,7 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
         mine.remove();
         input.value = text;
         grow();
+        ready();
         add('note', (error as { status?: number }).status === 429 ? msg.busy : msg.failure);
       } finally {
         send.disabled = false;
@@ -166,15 +213,51 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
 <style>
   .chatw { position: fixed; z-index: 50; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); display: grid; justify-items: end; }
   .chatw[hidden] { display: none; }
-  /* The button slides away while the hero, the form or the footer is on screen; an open chat stays. */
+  /* The launcher: a plain chat mark and "Ask Me²". It slides away while the hero, the form or the footer is on screen;
+     an open chat stays. */
   .chatw-open {
+    display: inline-flex; align-items: center; gap: 12px; min-height: 56px; padding: 7px 22px 7px 7px; border: 0; border-radius: 999px; cursor: pointer;
+    background: var(--color-abyss); color: var(--color-mist); font: inherit; font-size: 1rem; font-weight: 560; letter-spacing: -0.01em;
     box-shadow: 0 0 0 1px rgb(244 239 231 / 0.28), 0 14px 34px -10px rgb(4 9 14 / 0.45);
-    transition: opacity 350ms var(--ease), transform 450ms var(--ease-out), visibility 0s;
+    transition: opacity 350ms var(--ease), transform 450ms var(--ease-out), background-color 300ms var(--ease), visibility 0s;
   }
-  .chatw.is-away:not(.is-open) .chatw-open { opacity: 0; transform: translateY(12px); visibility: hidden; transition: opacity 250ms var(--ease), transform 300ms var(--ease), visibility 0s 300ms; }
+  .chatw-open .chatw-icon { width: 42px; height: 42px; background: rgb(244 239 231 / 0.1); color: var(--color-mist); }
+  @media (hover: hover) and (pointer: fine) {
+    .chatw-open:hover { background: var(--color-navy); }
+    .chatw-open:hover .chatw-icon { background: rgb(244 239 231 / 0.16); }
+  }
+  .chatw.is-away:not(.is-open) :is(.chatw-open, .chatw-hello) { opacity: 0; transform: translateY(12px); visibility: hidden; transition: opacity 250ms var(--ease), transform 300ms var(--ease), visibility 0s 300ms; }
   .chatw.is-open .chatw-open { display: none; }
   .chatw-open:focus-visible { outline: 2px solid var(--color-coral); outline-offset: 3px; }
-  @media (prefers-reduced-motion: reduce) { .chatw-open, .chatw.is-away:not(.is-open) .chatw-open { transition: none; transform: none; } }
+
+  /* The greeting: a message from the launcher, once per visit, clearly from the AI. */
+  .chatw-hello { position: relative; width: min(290px, calc(100vw - 32px)); margin-bottom: 12px; transition: opacity 350ms var(--ease), transform 450ms var(--ease-out), visibility 0s; }
+  .chatw-hello[hidden] { display: none; }
+  .chatw-hello-open {
+    display: grid; gap: 4px; width: 100%; text-align: left; font: inherit; cursor: pointer; padding: 14px 44px 14px 16px; border: 0;
+    background: #fffdf9; color: var(--color-ink); border-radius: 20px 20px 6px 20px;
+    box-shadow: 0 0 0 1px var(--color-line), 0 22px 50px -18px rgb(4 9 14 / 0.45);
+  }
+  .chatw-hello-who { font-size: 0.78rem; font-weight: 500; color: var(--color-slate); }
+  .chatw-hello-text { font-size: 0.95rem; line-height: 1.42; }
+  .chatw-hello-open:focus-visible { outline: 2px solid var(--color-coral); outline-offset: 3px; }
+  .chatw-hello-x {
+    position: absolute; top: 6px; right: 6px; width: 32px; height: 32px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
+    background: none; color: var(--color-slate); display: grid; place-items: center;
+  }
+  .chatw-hello-x span { position: relative; width: 11px; height: 11px; }
+  .chatw-hello-x span::before, .chatw-hello-x span::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; margin-top: -0.75px; background: currentColor; }
+  .chatw-hello-x span::before { transform: rotate(45deg); }
+  .chatw-hello-x span::after { transform: rotate(-45deg); }
+  .chatw-hello-x:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 0; }
+  @media (hover: hover) and (pointer: fine) { .chatw-hello-x:hover { color: var(--color-ink); } }
+  @media (prefers-reduced-motion: no-preference) {
+    .chatw-hello:not([hidden]) { animation: chatw-pop 600ms var(--ease-out); transform-origin: bottom right; }
+  }
+  @keyframes chatw-pop { from { opacity: 0; transform: translateY(10px) scale(0.94); } }
+  @media (prefers-reduced-motion: reduce) {
+    .chatw-open, .chatw-hello, .chatw.is-away:not(.is-open) :is(.chatw-open, .chatw-hello) { transition: none; transform: none; }
+  }
 
   /* The panel: the same warm white card as the hero conversation, quieter. */
   .chatw-panel {
@@ -184,12 +267,15 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
   }
   .chatw-panel[hidden] { display: none; }
   @media (prefers-reduced-motion: no-preference) {
-    .chatw.is-open .chatw-panel { animation: chatw-in 450ms var(--ease-out); }
+    /* The panel grows out of the launcher's corner, and each new message rises in. */
+    .chatw.is-open .chatw-panel { animation: chatw-in 500ms var(--ease-out); transform-origin: bottom right; }
+    .chatw-msgs :global(.cm.is-new) { animation: chatw-rise 450ms var(--ease-out); }
   }
-  @keyframes chatw-in { from { opacity: 0; transform: translateY(14px); } }
+  @keyframes chatw-in { from { opacity: 0; transform: translateY(18px) scale(0.92); } }
+  @keyframes chatw-rise { from { opacity: 0; transform: translateY(8px); } }
   .chatw-head { display: flex; align-items: center; gap: 12px; padding: 4px 4px 12px; border-bottom: 1px solid var(--color-line); }
-  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--color-navy); display: grid; place-items: center; flex: none; }
-  .avatar .sq { width: 11px; height: 11px; background: var(--color-coral); }
+  /* The assistant's mark: a speech bubble in a quiet circle. Not the lit ² avatar, which belongs to people. */
+  .chatw-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--color-paper-2); color: var(--color-ink); display: grid; place-items: center; flex: none; }
   .chatw-id { flex: 1; min-width: 0; display: grid; gap: 1px; }
   .chatw-id h2 { font-size: 1rem; font-weight: 600; letter-spacing: -0.005em; font-stretch: 100%; line-height: 1.3; }
   .chatw-who { font-size: 0.82rem; color: var(--color-slate); }
@@ -224,6 +310,22 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
   @keyframes chatw-blink { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { .chatw-msgs :global(.dots i) { animation: none; opacity: 0.6; } }
 
+  /* Suggested first questions: replies waiting on your side of the conversation, outlined until you send one. */
+  .chatw-sugg { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; padding: 2px 2px 12px; }
+  .chatw-sugg button {
+    font: inherit; font-size: 0.92rem; line-height: 1.35; text-align: right; cursor: pointer; max-width: 86%;
+    padding: 9px 14px; border-radius: 19px 19px 6px 19px; background: none; color: var(--color-ink); border: 1px solid var(--color-navy);
+    transition: background-color 250ms var(--ease), color 250ms var(--ease);
+  }
+  @media (hover: hover) and (pointer: fine) { .chatw-sugg button:hover { background: var(--color-navy); color: #fffdf9; } }
+  .chatw-sugg button:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .chatw.is-open .chatw-sugg button { animation: chatw-rise 500ms var(--ease-out) both; }
+    .chatw.is-open .chatw-sugg button:nth-child(2) { animation-delay: 70ms; }
+    .chatw.is-open .chatw-sugg button:nth-child(3) { animation-delay: 140ms; }
+    .chatw.is-open .chatw-sugg button:nth-child(4) { animation-delay: 210ms; }
+  }
+
   .chatw-form { display: flex; align-items: flex-end; gap: 8px; padding: 6px 6px 6px 16px; border: 1px solid var(--color-line); border-radius: 24px; }
   .chatw-form[hidden] { display: none; }
   .chatw-form:focus-within { border-color: var(--color-ink); }
@@ -234,7 +336,13 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
   }
   textarea::placeholder { color: var(--color-slate); opacity: 1; }
   textarea:focus-visible { outline: none; }
-  .chatw-send { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--color-navy); color: #fffdf9; display: grid; place-items: center; cursor: pointer; flex: none; }
+  /* The send button waits in paper and lights up navy once there's something to send. */
+  .chatw-send {
+    width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--color-paper-2); color: var(--color-ink); display: grid; place-items: center; cursor: pointer; flex: none;
+    transition: background-color 250ms var(--ease), color 250ms var(--ease), transform 300ms var(--ease-out);
+  }
+  .has-text .chatw-send { background: var(--color-navy); color: #fffdf9; }
+  @media (hover: hover) and (pointer: fine) { .has-text .chatw-send:hover { transform: translateY(-2px); } }
   .chatw-send[disabled] { opacity: 0.6; cursor: progress; }
   .chatw-send:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
   .chatw-err { font-size: 0.85rem; color: var(--color-coral-deep); padding: 6px 8px 0; }
