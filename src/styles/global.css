@@ -74,7 +74,7 @@
   .btn-light { background: var(--color-mist); color: var(--color-abyss); }
   .btn-light .dot { background: var(--color-coral-deep); }
   .btn-dark { background: var(--color-abyss); color: var(--color-mist); }
-  .btn-line { border-color: rgb(232 237 241 / 0.3); color: var(--color-mist); }
+  .btn-line { border-color: rgb(244 239 231 / 0.3); color: var(--color-mist); }
   .on-paper .btn-line { border-color: var(--color-line); color: var(--color-ink); }
   @media (hover: hover) and (pointer: fine) {
     .btn-light:hover { background: #fff; }

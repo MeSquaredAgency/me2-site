@@ -47,6 +47,7 @@ export const content = {
       label: 'Illustration: a sample conversation with your {SITE_NAME} person',
       who: 'Your {SITE_NAME} person',
       role: 'Looking after your back office',
+      day: 'Today',
       messages: [
         { from: 'them', time: '8:02 am', text: 'Morning! Your supplier bills are coded and ready for you to approve.' },
         { from: 'them', time: '8:03 am', text: 'I chased the two overdue invoices. One has promised to pay on Friday.' },
@@ -55,6 +56,7 @@ export const content = {
         { from: 'them', time: '8:24 am', text: "Done. I've let them know, and it's in this week's report." },
       ],
       youLabel: 'You',
+      compose: 'Message your {SITE_NAME} person',
       note: 'Illustration with sample messages.',
     },
   },

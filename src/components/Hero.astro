@@ -4,6 +4,9 @@ import { fill, flags } from '../config';
 import { content } from '../content/site';
 const c = content.hero;
 const chat = c.chat;
+// Messages run together like a phone shows them: one time under each run of messages from the same person.
+const prev = (i: number) => chat.messages[i - 1]?.from;
+const next = (i: number) => chat.messages[i + 1]?.from;
 // "We run the back office. You run the business." → each sentence on two lines, its first two words on the first.
 const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
   const words = sentence.split(' ');
@@ -35,21 +38,28 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
       arrive one at a time, each of theirs after a moment of typing. Without JavaScript, or with reduced
       motion, the whole conversation is simply there.
     -->
-    <figure class="chat" aria-label={fill(chat.label)} data-chat>
-      <div class="chat-top">
-        <span class="avatar" aria-hidden="true"><span class="sq"></span></span>
-        <span class="who"><span class="who-name">{fill(chat.who)}</span><span class="who-role">{chat.role}</span></span>
+    <figure class="chat-fig" aria-label={fill(chat.label)} data-chat>
+      <div class="chat">
+        <div class="chat-top">
+          <span class="avatar" aria-hidden="true"><span class="sq"></span></span>
+          <span class="who"><span class="who-name">{fill(chat.who)}</span><span class="who-role">{chat.role}</span></span>
+        </div>
+        <p class="day" aria-hidden="true">{chat.day}</p>
+        <ol class="msgs">
+          {chat.messages.map((m, i) => (
+            <li class:list={['msg', m.from, { 'run-on': prev(i) === m.from, 'run-end': next(i) !== m.from }]} data-chat-msg={m.from}>
+              {m.from === 'you' && <span class="sr-only">{chat.youLabel}: </span>}
+              <span class="bubble">{m.text}</span>
+              {next(i) !== m.from && <span class="time">{m.time}</span>}
+              {m.from === 'them' && <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>}
+            </li>
+          ))}
+        </ol>
+        <div class="compose" aria-hidden="true">
+          <span class="compose-field">{fill(chat.compose)}</span>
+          <span class="compose-send"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+        </div>
       </div>
-      <ol class="msgs">
-        {chat.messages.map((m) => (
-          <li class:list={['msg', m.from]} data-chat-msg={m.from}>
-            {m.from === 'you' && <span class="sr-only">{chat.youLabel}: </span>}
-            <span class="bubble">{m.text}</span>
-            <span class="time">{m.time}</span>
-            {m.from === 'them' && <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>}
-          </li>
-        ))}
-      </ol>
       <figcaption class="chat-note">{chat.note}</figcaption>
     </figure>
   </div>
@@ -101,48 +111,55 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
   .location { margin-top: 28px; font-size: var(--text-small); color: var(--color-slate); }
 
   /* ---- The conversation: a warm white card, like a phone held out to you ---- */
+  .chat-fig { margin: 0; justify-self: center; width: 100%; max-width: 430px; }
   .chat {
-    margin: 0; justify-self: center; width: 100%; max-width: 440px; box-sizing: border-box;
-    background: #fffdf9; color: var(--color-ink); border-radius: 28px; padding: 22px 22px 18px;
-    box-shadow: 0 1px 0 rgb(27 35 44 / 0.04), 0 30px 80px -24px rgb(91 64 40 / 0.28), 0 12px 28px -18px rgb(27 35 44 / 0.2);
+    background: #fffdf9; color: var(--color-ink); border-radius: 30px; padding: 18px 18px 14px;
+    box-shadow: 0 1px 0 rgb(27 35 44 / 0.04), 0 36px 90px -30px rgb(91 64 40 / 0.32), 0 14px 30px -20px rgb(27 35 44 / 0.22);
   }
-  .chat-top { display: flex; align-items: center; gap: 14px; padding: 4px 4px 18px; border-bottom: 1px solid var(--color-line); }
-  .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--color-navy); display: grid; place-items: center; flex: none; }
-  .avatar .sq { width: 12px; height: 12px; background: var(--color-coral); }
-  .who { display: grid; gap: 2px; }
-  .who-name { font-weight: 600; font-size: 1rem; }
-  .who-role { font-size: var(--text-small); color: var(--color-slate); }
-  .msgs { list-style: none; margin: 0; padding: 18px 0 6px; display: grid; gap: 10px; }
-  .msg { position: relative; display: grid; gap: 4px; justify-items: start; max-width: 86%; }
+  .chat-top { display: flex; align-items: center; gap: 12px; padding: 4px 6px 14px; border-bottom: 1px solid var(--color-line); }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--color-navy); display: grid; place-items: center; flex: none; }
+  .avatar .sq { width: 11px; height: 11px; background: var(--color-coral); }
+  .who { display: grid; gap: 1px; }
+  .who-name { font-weight: 600; font-size: 0.98rem; letter-spacing: -0.005em; }
+  .who-role { font-size: 0.82rem; color: var(--color-slate); }
+  .day { margin: 14px 0 2px; text-align: center; font-size: 0.75rem; font-weight: 500; color: var(--color-slate); }
+  .msgs { list-style: none; margin: 0; padding: 8px 2px 4px; display: grid; }
+  .msg { position: relative; display: grid; gap: 5px; justify-items: start; max-width: 84%; margin-top: 14px; }
+  .msg.run-on { margin-top: 3px; }
   .msg.you { justify-self: end; justify-items: end; }
-  .bubble {
-    padding: 11px 15px; border-radius: 20px 20px 20px 6px; background: var(--color-paper-2);
-    font-size: 0.98rem; line-height: 1.42;
+  /* Theirs on the left in warm paper, yours on the right in the logo navy; bubbles in a run share a flat inner edge. */
+  .bubble { padding: 10px 14px; border-radius: 19px 19px 19px 6px; background: var(--color-paper-2); font-size: 0.95rem; line-height: 1.42; }
+  .run-on .bubble { border-top-left-radius: 6px; }
+  .you .bubble { border-radius: 19px 19px 6px 19px; background: var(--color-navy); color: #fffdf9; }
+  .time { font-size: 0.72rem; color: var(--color-slate); padding-inline: 8px; }
+  .compose {
+    display: flex; align-items: center; gap: 10px; margin-top: 16px; padding: 6px 6px 6px 16px;
+    border: 1px solid var(--color-line); border-radius: 999px;
   }
-  .you .bubble { border-radius: 20px 20px 6px 20px; background: var(--color-navy); color: #fffdf9; }
-  .time { font-size: 0.75rem; color: var(--color-slate); padding-inline: 6px; }
-  .chat-note { margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--color-line); font-size: 0.8rem; color: var(--color-slate); }
+  .compose-field { flex: 1; font-size: 0.88rem; color: var(--color-slate); }
+  .compose-send { width: 32px; height: 32px; border-radius: 50%; background: var(--color-navy); color: #fffdf9; display: grid; place-items: center; }
+  .chat-note { margin-top: 16px; text-align: center; font-size: 0.8rem; color: var(--color-slate); }
 
   /* Playing: each message waits its turn; theirs shows a moment of typing first. Space is kept, so nothing jumps. */
   .dots { display: none; }
-  .chat:global(.is-live) .msg { opacity: 0; transform: translateY(8px); transition: opacity 450ms var(--ease-out), transform 600ms var(--ease-out); }
-  .chat:global(.is-live) .msg:global(.is-typing) { opacity: 1; transform: none; }
-  .chat:global(.is-live) .msg:global(.is-typing) :is(.bubble, .time) { visibility: hidden; }
-  .chat:global(.is-live) .msg:global(.is-typing) .dots {
+  .chat-fig:global(.is-live) .msg { opacity: 0; transform: translateY(8px); transition: opacity 450ms var(--ease-out), transform 600ms var(--ease-out); }
+  .chat-fig:global(.is-live) .msg:global(.is-typing) { opacity: 1; transform: none; }
+  .chat-fig:global(.is-live) .msg:global(.is-typing) :is(.bubble, .time) { visibility: hidden; }
+  .chat-fig:global(.is-live) .msg:global(.is-typing) .dots {
     display: flex; gap: 5px; position: absolute; left: 0; top: 0;
-    padding: 15px 16px; border-radius: 20px 20px 20px 6px; background: var(--color-paper-2);
+    padding: 14px 15px; border-radius: 19px 19px 19px 6px; background: var(--color-paper-2);
   }
   .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--color-slate); animation: blink 1100ms infinite; }
   .dots i:nth-child(2) { animation-delay: 160ms; }
   .dots i:nth-child(3) { animation-delay: 320ms; }
   @keyframes blink { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
-  .chat:global(.is-live) .msg:global(.is-on) { opacity: 1; transform: none; }
+  .chat-fig:global(.is-live) .msg:global(.is-on) { opacity: 1; transform: none; }
 
   /* One entrance: the lines rise out of their masks, then the rest settles in. */
   @media (prefers-reduced-motion: no-preference) {
     .text { animation: rise 1300ms var(--ease-out) both; animation-delay: calc(120ms + var(--i) * 130ms); }
     .subhead, .actions, .location { animation: fade 1100ms var(--ease-out) 800ms both; }
-    .chat { animation: lift 1200ms var(--ease-out) 500ms both; }
+    .chat-fig { animation: lift 1200ms var(--ease-out) 500ms both; }
   }
   @keyframes rise { from { transform: translateY(105%); } }
   @keyframes fade { from { opacity: 0; } }
@@ -150,21 +167,21 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
 
   @media (min-width: 1000px) {
     .inner { grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr); }
-    .chat { justify-self: end; }
+    .chat-fig { justify-self: end; }
   }
   /* Stacked, the conversation comes straight after the headline, so the first screen shows a person; the header keeps "Talk to us" in reach. */
   @media (max-width: 999px) {
     .inner { min-height: 0; gap: 0; }
     .words { display: contents; }
     .lines { order: 1; font-size: clamp(3rem, 9vw, 5.6rem); }
-    .chat { order: 2; justify-self: start; margin-top: clamp(32px, 5vw, 48px); }
+    .chat-fig { order: 2; justify-self: start; margin-top: clamp(32px, 5vw, 48px); }
     .subhead { order: 3; margin-top: 40px; }
     .actions { order: 4; }
     .location { order: 5; }
   }
   @media (max-width: 639px) {
     .lines { font-size: clamp(2.6rem, 13.4vw, 4.2rem); }
-    .chat { padding: 18px 16px 14px; border-radius: 24px; }
-    .bubble { font-size: 0.95rem; }
+    .chat { padding: 16px 14px 12px; border-radius: 26px; }
+    .bubble { font-size: 0.93rem; }
   }
 </style>
