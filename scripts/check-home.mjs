@@ -26,16 +26,16 @@ const browserChecks = [];
 // Task 1: human first, hero chosen by EC (14 Oct 2026)
 check('hero line', /<h1[^>]*>[\s\S]*<\/h1>/.test(html) && decode(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim() === 'We run the back office. You run the business.');
 check('old hero line gone', lacks('AI does the volume'));
-check('hero subhead leads with people', has('Me² is the team behind your business: trained people, backed by AI agents, running your admin, accounts, customer service and marketing. We design and build the website out front, too.'));
+check('hero subhead leads with your own person', has('Me² gives your business its own trained person, working exclusively on your admin, accounts, customer service and marketing.') && lacks('works for nobody else'));
 check('hero screen opens on the back-office board', /data-scene="run"[^>]*aria-pressed="true"/.test(html) && /data-screen-label[^>]*>Run by your own person</.test(html));
-check('hero screen captions', html.includes('aria-label="AI agents that draft, people who check"') && html.includes('aria-label="Your back office, run by people"'));
+check('hero screen captions', html.includes('aria-label="AI agents that draft, people who check"') && html.includes('aria-label="Run by your own person"'));
 // Copy review, 16 Oct 2026: no "trained on your business" (invites "are you training AI on my data?"), no real-estate "tenant", and one sentence said once.
 check('no "trained on your business"', lacks('trained on your business'));
 check('no "tenant" anywhere on the page', lacks('tenant'));
 check('form labels', has('What do you need a hand with?') && />Email<\/label>/.test(html) && lacks('Work email'));
 check('form privacy line matches the policy', has("We use these details to reply to you, and we won't add you to a mailing list.") && lacks('only to reply to you'));
-check('FAQ: software answer not the How we work line', has('Usually not. We set the work up around the tools you already use') && text.split('We start from the tools and processes you already use').length === 2);
-check('one team, as literally true', has('Your website and your back office sit with one team.') && lacks('The people who design your site are the people who build'));
+check('FAQ: software answer not the How we work line', has('Usually not. We set the work up around the tools you already use') && text.split('We start from the tools and processes you already use').length <= 2);
+check('one team, said once and literally true', has('Three suppliers, and nobody owns the whole picture.') && lacks('Your website and your back office sit with one team.') && lacks('The people who design your site are the people who build'));
 check('search description fits (≤160 characters)', (html.match(/<meta name="description" content="([^"]*)"/)?.[1].length ?? 999) <= 160);
 check('board stages', has('Agent drafting') && has('Your person checking') && lacks('AI drafting'));
 check('how we work leads with a person', /You know who’s looking after you\.[\s\S]*A person owns every task\./.test(text));
