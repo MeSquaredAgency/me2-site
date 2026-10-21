@@ -1,6 +1,6 @@
-// Checks that the hero's buttons take a mouse click at every width, with the mark moving and still: the scene tabs at the foot of
-// the glass screen (Design / Build / Run) and Talk to us. Also checks the hero line's words still take the pointer (so they stay selectable).
-// Bugs it guards: the full-width hero h1 sat over the tabs from 1024px up and swallowed the click; Talk to us took no clicks at all.
+// Checks that the hero's links take a mouse click at every width, with motion on and off: Talk to us and See where to start,
+// with the sample conversation playing beside or below them. Also checks the hero line's words still take the pointer (so they stay selectable).
+// Bugs it guards: an earlier hero's full-width h1 sat over its buttons from 1024px up and swallowed the click; Talk to us took no clicks at all.
 // Usage: npm run build && node scripts/check-hero-clicks.mjs
 import { readFileSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -40,19 +40,17 @@ for (const [width, height] of [[375, 812], [1024, 768], [1280, 900], [1440, 900]
     const page = await ctx.newPage();
     await page.goto('http://localhost:4398/', { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
-    // Let the entrance finish and the mark start (it waits for the page to go quiet, longer on phones).
+    // Let the entrance finish (the conversation keeps playing; the links must take clicks while it does).
     await page.waitForTimeout(4000);
-    const gl = await page.$eval('.hero', (h) => h.classList.contains('is-gl'));
-
-    const tab = '.screen-foot .tabs .tab:nth-child(2)';
-    const hit = await hitAt(page, tab);
-    // A real mouse click where the tab is drawn: the mark keeps the screen moving, so it is never "stable" for a locator click.
-    await page.mouse.click(hit.x, hit.y);
-    const pressed = await page.$eval(tab, (t) => t.getAttribute('aria-pressed'));
-    check(`second scene tab takes a mouse click (${tag}${gl ? '' : ', no WebGL'})`, pressed === 'true', `aria-pressed=${pressed}; topmost element there: ${hit.on}`);
 
     const words = await hitAt(page, '#hero-title .line:first-child .text');
     check(`hero words still take the pointer (${tag})`, words.ok, `topmost element there: ${words.on}`);
+
+    const see = '.hero .actions > a.see';
+    await page.$eval(see, (a) => a.scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(300);
+    const seeHit = await hitAt(page, see);
+    check(`hero See where to start takes the pointer (${tag})`, seeHit.ok, `topmost element there: ${seeHit.on}`);
 
     // Talk to us comes from a child component (EnquireLink or EmailLink), so it misses Hero's scoped styles.
     const cta = '.hero .actions > :first-child';
