@@ -1,5 +1,5 @@
 ---
-import { fill } from '../config';
+import { fill, flags } from '../config';
 import { content } from '../content/site';
 const c = content.how;
 ---
@@ -8,6 +8,7 @@ const c = content.how;
     <div class="head">
       <p class="kicker">{c.kicker}</p>
       <h2 id="how-title">{c.h2}</h2>
+      <p class="lede intro">{c.intro}</p>
     </div>
     <ul class="items">
       {c.items.map((it) => (
@@ -18,6 +19,13 @@ const c = content.how;
         </li>
       ))}
     </ul>
+    {flags.showFounderNote && c.founder.note && (
+      <figure class="founder" aria-label={c.founder.label}>
+        <p class="kicker">{c.founder.label}</p>
+        <blockquote class="note">{c.founder.note.split('\n\n').map((p) => <p>{p}</p>)}</blockquote>
+        <figcaption class="sig"><span class="sig-name">{c.founder.name}</span> {c.founder.role}</figcaption>
+      </figure>
+    )}
   </div>
 </section>
 
@@ -42,6 +50,8 @@ const c = content.how;
   }
   /* One left edge for the label, the headline and the commitments (as in Start here). */
   .head { display: grid; justify-items: start; gap: 24px; margin-bottom: clamp(48px, 6vw, 88px); }
+  .head h2 { max-width: 16ch; }
+  .intro { max-width: 46ch; color: var(--color-haze); }
   .items { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--color-line-dark); }
   .item { display: grid; gap: 14px; align-content: start; padding: 36px 0 44px; border-bottom: 1px solid var(--color-line-dark); }
   .mark { width: 14px; height: 14px; box-sizing: border-box; background: var(--color-mist); margin-bottom: 10px; }
@@ -62,6 +72,11 @@ const c = content.how;
   }
   .title { font-size: clamp(1.6rem, 2.6vw, 2.6rem); font-weight: 520; font-stretch: 90%; letter-spacing: -0.035em; line-height: 1.05; max-width: 18ch; }
   .body { color: var(--color-haze); max-width: 44ch; font-size: 1.08rem; }
+  /* The founder's note: their words in the display face, signed, after the promises. */
+  .founder { margin: clamp(72px, 9vw, 128px) 0 0; display: grid; justify-items: start; gap: 28px; }
+  .note { margin: 0; display: grid; gap: 0.7em; max-width: 30ch; font-size: clamp(1.5rem, 2.6vw, 2.4rem); font-weight: 480; font-stretch: 92%; line-height: 1.18; letter-spacing: -0.025em; color: var(--color-mist); }
+  .sig { color: var(--color-haze); }
+  .sig-name { color: var(--color-mist); font-weight: 560; }
   @media (min-width: 1000px) {
     .items { grid-template-columns: 1fr 1fr; column-gap: clamp(48px, 6vw, 112px); }
     /* Side by side, the squares, titles and bodies line up across each pair, whatever the titles' length. */

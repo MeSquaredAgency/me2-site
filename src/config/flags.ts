@@ -32,6 +32,8 @@ export const flags = {
    * The application form also needs showPrivacyPage; without it each role page says to email a CV instead. On since 16 Oct 2026 (EC).
    */
   showCareers: true,
+  /** Patrick's founder note at the end of How we work (content.how.founder). Off until his words are in (EC, 21 Oct 2026). */
+  showFounderNote: false,
 };
 
 export type Flags = typeof flags;

@@ -27,7 +27,7 @@ const browserChecks = [];
 check('hero line', /<h1[^>]*>[\s\S]*<\/h1>/.test(html) && decode(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim() === 'We run the back office. You run the business.');
 check('old hero line gone', lacks('AI does the volume'));
 check('hero subhead leads with people', has('Me² is the team behind your business: trained people, backed by AI agents, running your admin, accounts, customer service and marketing. We design and build the website out front, too.'));
-check('hero screen opens on the back-office board', /data-scene="run"[^>]*aria-pressed="true"/.test(html) && /data-screen-label[^>]*>Your back office, run by people</.test(html));
+check('hero screen opens on the back-office board', /data-scene="run"[^>]*aria-pressed="true"/.test(html) && /data-screen-label[^>]*>Run by your own person</.test(html));
 check('hero screen captions', html.includes('aria-label="AI agents that draft, people who check"') && html.includes('aria-label="Your back office, run by people"'));
 // Copy review, 16 Oct 2026: no "trained on your business" (invites "are you training AI on my data?"), no real-estate "tenant", and one sentence said once.
 check('no "trained on your business"', lacks('trained on your business'));
@@ -37,8 +37,8 @@ check('form privacy line matches the policy', has("We use these details to reply
 check('FAQ: software answer not the How we work line', has('Usually not. We set the work up around the tools you already use') && text.split('We start from the tools and processes you already use').length === 2);
 check('one team, as literally true', has('Your website and your back office sit with one team.') && lacks('The people who design your site are the people who build'));
 check('search description fits (≤160 characters)', (html.match(/<meta name="description" content="([^"]*)"/)?.[1].length ?? 999) <= 160);
-check('board stages', has('Agent drafting') && lacks('AI drafting'));
-check('how we work leads with a person', /A person owns every task\.[\s\S]*One team, answerable for all of it\./.test(text));
+check('board stages', has('Agent drafting') && has('Your person checking') && lacks('AI drafting'));
+check('how we work leads with a person', /You know who’s looking after you\.[\s\S]*A person owns every task\./.test(text));
 check('old "checks the AI" commitment gone', lacks("A person checks the AI"));
 check('FAQ: people or AI', has('Is it people or AI doing the work?') && lacks("Who checks the AI's work?"));
 check('FAQ: no AI on its own', has("We don't sell AI on its own."));
