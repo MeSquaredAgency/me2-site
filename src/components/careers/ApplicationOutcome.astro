@@ -10,12 +10,12 @@ const { kind } = Astro.props;
 const c = kind === 'thanks' ? careers.thanks : careers.notSent;
 const [before, after] = fill(c.body).split(config.CAREERS_EMAIL);
 ---
-<main id="main" class="done on-dark">
+<main id="main" class="done on-paper">
   <div class="wrap inner">
     {kind === 'thanks' && <span class="sq" aria-hidden="true"></span>}
     <h1>{c.h1}</h1>
     <p>{before}{after !== undefined && <a href={`mailto:${config.CAREERS_EMAIL}`}>{config.CAREERS_EMAIL}</a>}{after}</p>
-    <a href="/careers/" class={`btn btn-lg ${kind === 'thanks' ? 'btn-light' : 'btn-line'}`}>{kind === 'thanks' && <span class="dot" aria-hidden="true"></span>}{c.button}</a>
+    <a href="/careers/" class={`btn btn-lg ${kind === 'thanks' ? 'btn-dark' : 'btn-line'}`}>{kind === 'thanks' && <span class="dot" aria-hidden="true"></span>}{c.button}</a>
   </div>
 </main>
 
@@ -23,8 +23,8 @@ const [before, after] = fill(c.body).split(config.CAREERS_EMAIL);
   .done { min-height: 72vh; display: flex; align-items: center; }
   .inner { display: grid; justify-items: start; gap: 24px; padding-top: 160px; padding-bottom: 120px; }
   h1 { font-size: clamp(2.6rem, 6vw, 5.5rem); line-height: 0.95; letter-spacing: -0.05em; }
-  p { color: var(--color-haze); font-size: 1.2rem; max-width: 52ch; }
-  p a { color: var(--color-mist); text-decoration: underline; text-underline-offset: 0.2em; }
-  .sq { width: 16px; height: 16px; background: var(--color-coral); box-shadow: 0 0 30px 6px rgb(var(--glow) / 0.5); }
+  p { color: var(--color-slate); font-size: 1.2rem; max-width: 52ch; }
+  p a { color: var(--color-ink); text-decoration: underline; text-underline-offset: 0.2em; }
+  .sq { width: 16px; height: 16px; background: var(--color-coral-deep); }
   .btn-lg { margin-top: 12px; }
 </style>

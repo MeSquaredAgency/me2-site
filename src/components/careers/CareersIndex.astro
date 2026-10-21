@@ -9,7 +9,7 @@ const [applyBefore, applyAfter] = withMail(c.applying);
 const [noneBefore, noneAfter] = withMail(c.none);
 ---
 <main id="main">
-  <section class="head on-dark">
+  <section class="head on-paper">
     <div class="wrap head-inner">
       <h1>{c.h1}</h1>
       <p class="lede">{c.intro}</p>
@@ -45,7 +45,8 @@ const [noneBefore, noneAfter] = withMail(c.none);
 </main>
 
 <style>
-  .head { padding: 170px 0 96px; }
+  /* Warm paper, like the home page (EC, 21 Oct 2026); a hairline parts the title from the roles. */
+  .head { padding: 170px 0 96px; border-bottom: 1px solid var(--color-line); }
   .head-inner { display: grid; gap: 32px; }
   h1 { max-width: 12ch; }
   .lede { max-width: 52ch; }

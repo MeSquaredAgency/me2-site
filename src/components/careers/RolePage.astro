@@ -19,7 +19,7 @@ const facts = [
 ];
 ---
 <main id="main">
-  <section class="head on-dark">
+  <section class="head on-paper">
     <div class="wrap head-inner">
       <p class="crumb"><a href="/careers/" class="tlink">{c.crumb}</a></p>
       <p class="kicker">{c.kicker}</p>
@@ -28,7 +28,7 @@ const facts = [
         {facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
       </dl>
       <div class="actions">
-        <a href="#apply" class="btn btn-light btn-lg"><span class="dot" aria-hidden="true"></span>{c.apply}</a>
+        <a href="#apply" class="btn btn-dark btn-lg"><span class="dot" aria-hidden="true"></span>{c.apply}</a>
         {role.linkedinUrl && <a href={role.linkedinUrl} class="btn btn-line btn-lg" target="_blank" rel="noopener">{c.linkedin}</a>}
       </div>
     </div>
@@ -79,16 +79,17 @@ const facts = [
 </main>
 
 <style>
-  .head { padding: 170px 0 80px; }
+  /* Warm paper, like the home page (EC, 21 Oct 2026); the application form below stays dark, like the home page's enquiry form. */
+  .head { padding: 170px 0 80px; border-bottom: 1px solid var(--color-line); }
   .head-inner { display: grid; gap: 22px; justify-items: start; }
-  .crumb { font-size: 0.95rem; color: var(--color-haze); }
-  .crumb a { color: var(--color-mist); }
+  .crumb { font-size: 0.95rem; color: var(--color-slate); }
+  .crumb a { color: var(--color-ink); }
   h1 { font-size: clamp(3rem, 8vw, 8.5rem); line-height: 0.92; letter-spacing: -0.05em; max-width: 14ch; }
   .facts { display: grid; gap: 18px 40px; margin: 18px 0 0; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; max-width: 980px; }
   @media (min-width: 900px) { .facts { grid-template-columns: repeat(4, max-content); } }
-  .facts div { display: grid; gap: 4px; align-content: start; padding-top: 14px; border-top: 1px solid var(--color-line-dark); }
-  dt { font-size: 0.85rem; color: var(--color-haze); }
-  dd { margin: 0; font-weight: 520; color: var(--color-mist); max-width: 26ch; }
+  .facts div { display: grid; gap: 4px; align-content: start; padding-top: 14px; border-top: 1px solid var(--color-line); }
+  dt { font-size: 0.85rem; color: var(--color-slate); }
+  dd { margin: 0; font-weight: 520; color: var(--color-ink); max-width: 26ch; }
   .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px; }
 
   .layout { display: grid; gap: 56px; }

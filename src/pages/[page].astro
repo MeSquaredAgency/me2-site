@@ -12,9 +12,9 @@ export function getStaticPaths() {
 const c = content.privacy;
 ---
 <Base path="/privacy/">
-  <Header />
+  <Header tone="paper" />
   <main id="main">
-    <section class="head on-dark"><div class="wrap"><h1>{c.h1}</h1><p class="updated">{c.updated}</p></div></section>
+    <section class="head on-paper"><div class="wrap"><h1>{c.h1}</h1><p class="updated">{c.updated}</p></div></section>
     <section class="section on-paper">
       <div class="wrap body">
         {fixtureText.privacy
@@ -31,9 +31,10 @@ const c = content.privacy;
   <Footer />
 </Base>
 <style>
-  .head { padding: 170px 0 72px; }
+  /* Warm paper, like the home page (EC, 21 Oct 2026); a hairline parts the title from the policy. */
+  .head { padding: 170px 0 72px; border-bottom: 1px solid var(--color-line); }
   h1 { font-size: clamp(3rem, 8vw, 7rem); line-height: 0.9; letter-spacing: -0.05em; }
-  .updated { margin-top: 20px; color: var(--color-haze); }
+  .updated { margin-top: 20px; color: var(--color-slate); }
   .body { display: grid; gap: 40px; }
   .part { display: grid; gap: 12px; }
   .part h2 { font-size: clamp(1.4rem, 2vw, 1.8rem); letter-spacing: -0.025em; line-height: 1.2; }

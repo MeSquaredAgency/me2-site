@@ -26,7 +26,7 @@ const role = slug ? findRole(slug) : undefined;
 const path = slug ? `/careers/${slug}/` : '/careers/';
 ---
 <Base path={path} schema={role ? [jobPostingSchema(role)] : []}>
-  <Header />
+  <Header tone="paper" />
   {!slug ? <CareersIndex /> : role ? <RolePage role={role} /> : <ApplicationOutcome kind={slug === 'thanks' ? 'thanks' : 'not-sent'} />}
   <Footer />
 </Base>
