@@ -38,8 +38,8 @@ export const content = {
     ],
     scenesLabel: 'Show',
     subhead:
-      /** EC, 21 Oct 2026: one person is assigned to each business and works on its back office alone. */
-      '{SITE_NAME} gives your business its own trained person, who runs your admin, accounts, customer service and marketing, and works for nobody else. AI agents take the heavy lifting off their hands. We design and build the website out front, too.',
+      /** EC, 21 Oct 2026: every client gets one person working exclusively for them. Say "working exclusively", never "works for nobody else". */
+      '{SITE_NAME} gives your business its own trained person, working exclusively on your admin, accounts, customer service and marketing. AI agents take the heavy lifting off their hands. We design and build the website out front, too.',
     primary: 'Talk to us',
     /** The hero's second link: to the work, or (while showProof is off) to Start here. */
     secondary: 'See our work',
@@ -171,7 +171,7 @@ export const content = {
       name: 'The whole back office',
       /** showPricing. EC, 16 Oct 2026: "prices should be provided upon quotation depending on the clients requirements". One monthly fee (EC, 14 Oct). */
       price: 'Quoted for your business',
-      body: 'Your own {SITE_NAME} person owns the work and works for nobody else, backed by AI agents built around how you do things. They check everything before it goes out, deal with anything unusual and report back to you.',
+      body: 'Your own {SITE_NAME} person owns the work, working exclusively on your business with AI agents built around how you do things. They check everything before it goes out, deal with anything unusual and report back to you.',
       /**
        * Everything behind the front line (EC, 14 Oct 2026: "it's everything"). Only what Me² can take on today;
        * the examples for operations, finance, marketing and social media come from the confirmed jobs, the rest are new (EC to confirm).
@@ -196,7 +196,7 @@ export const content = {
       name: 'An extra set of hands',
       /** showPricing. Quoted, like the whole back office (EC, 16 Oct 2026). */
       price: 'Quoted per job',
-      body: "Don't need a whole team? A {SITE_NAME} person takes one job off your plate, like the inbox, the invoices or the data entry, backed by an AI agent set up around how you already work. They report back to you, and you stay in control.",
+      body: "Don't need a whole team? Your own {SITE_NAME} person, working exclusively for you, takes one job off your plate, like the inbox, the invoices or the data entry, backed by an AI agent set up around how you already work. They report back to you, and you stay in control.",
       button: 'Ask about an extra set of hands',
       topic: 'Extra set of hands',
     },
@@ -224,7 +224,7 @@ export const content = {
     items: [
       {
         title: 'You know who’s looking after you.',
-        body: "One {SITE_NAME} person is assigned to your business and works for nobody else. They learn how you like things done, and they're the one you message when something comes up.",
+        body: "One {SITE_NAME} person is assigned to your business, working exclusively for you. They learn how you like things done, and they're the one you message when something comes up.",
       },
       {
         title: 'A person owns every task.',
