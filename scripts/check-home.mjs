@@ -87,12 +87,14 @@ check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide',
 const privacyHtml = decode(readFileSync('dist/privacy/index.html', 'utf8'));
 check('privacy: team in Phnom Penh only', privacyHtml.includes('Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia.') && !/Adelaide/.test(privacyHtml));
 // EC, 20 Oct 2026: WhatsApp on +855 69 713 244, automatic first replies, call backs (spec: docs/superpowers/specs/2026-10-19-reply-bots.md).
-check('privacy: WhatsApp, call backs, automatic replies, Meta, dated 21 Oct', ['If you message us on WhatsApp, we collect your phone number', 'If you ask us to call you back', 'we email you an automatic confirmation', 'Cloudflare, Resend, Google and Meta (for WhatsApp)', 'Last updated 21 October 2026'].every((t) => privacyHtml.includes(t)));
+check('privacy: WhatsApp, call backs, automatic replies, Meta, dated 21 Oct', ['If you message us on WhatsApp, we collect your phone number', 'If you ask us to call you back', 'we email you an automatic confirmation', 'Cloudflare, Resend, Google, Meta (for WhatsApp) and Anthropic (for the chat)', 'Last updated 21 October 2026'].every((t) => privacyHtml.includes(t)));
 const { siteConfig: idConfig } = await import('../src/config/site.config.ts');
 const waNumber = idConfig.WHATSAPP_NUMBER;
 const waUrl = `https://wa.me/${waNumber.replace(/\D/g, '')}`;
 check(waNumber ? 'WhatsApp: linked in the contact section and footer, and in llms.txt' : 'WhatsApp: left out while the number is empty',
   waNumber ? html.split(`href="${waUrl}"`).length - 1 === 2 && has(`Or message us on WhatsApp: ${waNumber}`) && llms.includes(waUrl) : !html.includes('wa.me/') && !llms.includes('wa.me/'));
+// The website chat (EC, 21 Oct 2026; docs/chat.md): our own, hidden until its script runs, and it says it's an AI.
+check('chat: says it is an AI, and the privacy policy covers it', has('Automatic assistant (AI). A person follows up.') && /data-chatw[^>]*hidden/.test(html) && privacyHtml.includes('If you use the chat on our home page, what you type is sent to Anthropic'));
 check('no chat widget or WhatsApp script on the page', !/<script[^>]+src="https?:\/\//.test(html) && !/<iframe/.test(html));
 // EC's terms, 16 Oct 2026 ("Yes, all good terms").
 for (const q of ['How soon can you start?', 'Is there a lock-in contract?', 'What if your team gets something wrong?', 'What happens to our data, and who can see it?']) check(`FAQ: ${q}`, has(q) && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === q)));

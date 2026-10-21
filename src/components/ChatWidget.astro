@@ -1,0 +1,251 @@
+---
+/**
+ * The website chat (enableChat): an AI receptionist that answers questions about Me² and passes the visitor's details
+ * to a person (worker/chat.ts, docs/chat.md). Its button appears once the hero has scrolled away, and steps aside while
+ * the contact section or the footer is on screen, where the form and the other ways in already are. The page keeps
+ * the conversation (never stored) and sends it to /api/chat each turn. Without JavaScript there is no chat; the
+ * form, email and WhatsApp links are all still there.
+ */
+import { config, fill } from '../config';
+import { content } from '../content/site';
+import { MAX_MESSAGE, MAX_TURNS } from '../../worker/chat-limits';
+const c = content.chat;
+const privacyBefore = c.note.slice(0, c.note.indexOf(c.privacyLink));
+const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.length);
+---
+<div class="chatw is-away" data-chatw data-markdown="skip" hidden
+  data-msg={JSON.stringify({ youLabel: c.youLabel, themLabel: c.themLabel, tooLong: c.tooLong, failure: fill(c.failure), busy: c.busy, limit: fill(c.limit), done: c.done, email: config.CONTACT_EMAIL, maxTurns: MAX_TURNS, maxMessage: MAX_MESSAGE })}>
+  <button type="button" class="chatw-open btn btn-dark" data-chat-open aria-expanded="false" aria-controls="chatw-panel">
+    <span class="dot" aria-hidden="true"></span>{c.button}
+  </button>
+  <section id="chatw-panel" class="chatw-panel" role="dialog" aria-labelledby="chatw-title" aria-describedby="chatw-who" data-chat-panel hidden>
+    <div class="chatw-head">
+      <span class="avatar" aria-hidden="true"><span class="sq"></span></span>
+      <div class="chatw-id">
+        <h2 id="chatw-title">{fill(c.title)}</h2>
+        <p id="chatw-who" class="chatw-who">{c.who}</p>
+      </div>
+      <button type="button" class="chatw-close" data-chat-close aria-label={c.close}><span aria-hidden="true"></span></button>
+    </div>
+    <div class="chatw-msgs" role="log" aria-live="polite" aria-label={c.logLabel} tabindex="0" data-chat-scroll>
+      <ol data-chat-log>
+        <li class="cm them"><span class="sr-only">{c.themLabel}: </span><span class="bubble">{fill(c.intro)}</span></li>
+      </ol>
+    </div>
+    <form class="chatw-form" data-chat-form>
+      <!-- Left empty by people (it's hidden); bots fill it in. -->
+      <p class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></p>
+      <label for="chatw-input" class="sr-only">{c.label}</label>
+      <textarea id="chatw-input" name="message" rows="1" maxlength={MAX_MESSAGE} placeholder={c.placeholder} aria-describedby="chatw-err"></textarea>
+      <button type="submit" class="chatw-send" aria-label={c.send} data-chat-send>
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </button>
+    </form>
+    <p class="chatw-err" id="chatw-err" data-chat-err></p>
+    <p class="chatw-note">{privacyBefore}<a href="/privacy/">{c.privacyLink}</a>{privacyAfter}</p>
+  </section>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-chatw]');
+  if (root) {
+    const { maxTurns, maxMessage, ...msg } = JSON.parse(root.dataset.msg!) as Record<string, string> & { maxTurns: number; maxMessage: number };
+    const open = root.querySelector<HTMLButtonElement>('[data-chat-open]')!;
+    const panel = root.querySelector<HTMLElement>('[data-chat-panel]')!;
+    const log = root.querySelector<HTMLOListElement>('[data-chat-log]')!;
+    const scroller = root.querySelector<HTMLElement>('[data-chat-scroll]')!;
+    const form = root.querySelector<HTMLFormElement>('[data-chat-form]')!;
+    const input = form.querySelector<HTMLTextAreaElement>('textarea')!;
+    const send = form.querySelector<HTMLButtonElement>('[data-chat-send]')!;
+    const err = root.querySelector<HTMLElement>('[data-chat-err]')!;
+    const turns: { role: 'user' | 'assistant'; content: string }[] = [];
+    let ended = false;
+
+    // Shown once the hero has gone, and out of the way while the form (or the footer) is on screen. It starts away
+    // until the first look, so it never flashes up over the hero.
+    const seen = new Map<Element, boolean>();
+    const watch = [document.querySelector('.hero'), document.getElementById('contact'), document.querySelector('.site-footer')].filter(Boolean) as Element[];
+    const place = () => root.classList.toggle('is-away', [...seen.values()].some(Boolean));
+    if (watch.length) {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) seen.set(e.target, e.isIntersecting);
+        place();
+      });
+      watch.forEach((el) => io.observe(el));
+    }
+    root.hidden = false;
+
+    const setOpen = (on: boolean) => {
+      panel.hidden = !on;
+      open.setAttribute('aria-expanded', String(on));
+      root.classList.toggle('is-open', on);
+      document.documentElement.classList.toggle('chat-open', on);
+      if (on) (ended ? panel.querySelector<HTMLElement>('[data-chat-close]')! : input).focus();
+      else open.focus();
+    };
+    open.addEventListener('click', () => setOpen(true));
+    root.querySelector('[data-chat-close]')!.addEventListener('click', () => setOpen(false));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) setOpen(false); });
+
+    // Any mention of the contact email becomes a link to it.
+    const withEmail = (text: string) => {
+      const parts = text.split(msg.email);
+      return parts.flatMap((p, i) => (i ? [Object.assign(document.createElement('a'), { href: `mailto:${msg.email}`, textContent: msg.email }), p] : [p]));
+    };
+    const scrollDown = () => scroller.scrollTo({ top: scroller.scrollHeight, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    const add = (from: 'you' | 'them' | 'note', text: string) => {
+      const li = document.createElement('li');
+      li.className = `cm ${from}`;
+      if (from !== 'note') li.append(Object.assign(document.createElement('span'), { className: 'sr-only', textContent: `${from === 'you' ? msg.youLabel : msg.themLabel}: ` }));
+      const bubble = Object.assign(document.createElement('span'), { className: 'bubble' });
+      bubble.append(...(from === 'you' ? [text] : withEmail(text)));
+      li.append(bubble);
+      log.append(li);
+      scrollDown();
+      return li;
+    };
+    const end = (note: string) => {
+      ended = true;
+      form.hidden = true;
+      add('note', note);
+    };
+
+    // The box grows with what's typed, up to a few lines. Enter sends; Shift+Enter starts a new line.
+    const grow = () => { input.style.height = 'auto'; input.style.height = `${Math.min(input.scrollHeight, 132)}px`; };
+    input.addEventListener('input', () => { grow(); err.textContent = ''; });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text || send.disabled || ended) return;
+      if (text.length > maxMessage) { err.textContent = msg.tooLong; return; }
+      err.textContent = '';
+      turns.push({ role: 'user', content: text });
+      const mine = add('you', text);
+      input.value = '';
+      grow();
+      send.disabled = true;
+      const typing = document.createElement('li');
+      typing.className = 'cm them typing';
+      typing.innerHTML = '<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>';
+      log.append(typing);
+      scrollDown();
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ messages: turns, website: (form.elements.namedItem('website') as HTMLInputElement).value }),
+        });
+        const body = (await res.json().catch(() => ({}))) as { ok?: boolean; reply?: string; done?: boolean };
+        typing.remove();
+        if (!res.ok || !body.ok || !body.reply) throw Object.assign(new Error(String(res.status)), { status: res.status });
+        turns.push({ role: 'assistant', content: body.reply });
+        add('them', body.reply);
+        if (body.done) end(msg.done);
+        else if (turns.length >= maxTurns * 2) end(msg.limit);
+      } catch (error) {
+        typing.remove();
+        // Nothing was answered: take the message back so it can be sent again, and say what to do instead.
+        turns.pop();
+        mine.remove();
+        input.value = text;
+        grow();
+        add('note', (error as { status?: number }).status === 429 ? msg.busy : msg.failure);
+      } finally {
+        send.disabled = false;
+        // Once the form has gone, focus stays in the chat, on its close button.
+        (ended ? panel.querySelector<HTMLElement>('[data-chat-close]')! : input).focus();
+      }
+    });
+  }
+</script>
+
+<style>
+  .chatw { position: fixed; z-index: 50; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); display: grid; justify-items: end; }
+  .chatw[hidden] { display: none; }
+  /* The button slides away while the hero, the form or the footer is on screen; an open chat stays. */
+  .chatw-open {
+    box-shadow: 0 0 0 1px rgb(244 239 231 / 0.28), 0 14px 34px -10px rgb(4 9 14 / 0.45);
+    transition: opacity 350ms var(--ease), transform 450ms var(--ease-out), visibility 0s;
+  }
+  .chatw.is-away:not(.is-open) .chatw-open { opacity: 0; transform: translateY(12px); visibility: hidden; transition: opacity 250ms var(--ease), transform 300ms var(--ease), visibility 0s 300ms; }
+  .chatw.is-open .chatw-open { display: none; }
+  .chatw-open:focus-visible { outline: 2px solid var(--color-coral); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { .chatw-open, .chatw.is-away:not(.is-open) .chatw-open { transition: none; transform: none; } }
+
+  /* The panel: the same warm white card as the hero conversation, quieter. */
+  .chatw-panel {
+    width: min(400px, calc(100vw - 32px)); height: min(620px, calc(100svh - 32px)); box-sizing: border-box;
+    display: flex; flex-direction: column; background: #fffdf9; color: var(--color-ink); border-radius: 24px; padding: 14px 14px 12px;
+    box-shadow: 0 1px 0 rgb(27 35 44 / 0.04), 0 36px 90px -30px rgb(4 9 14 / 0.5), 0 14px 30px -20px rgb(27 35 44 / 0.3), 0 0 0 1px var(--color-line);
+  }
+  .chatw-panel[hidden] { display: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    .chatw.is-open .chatw-panel { animation: chatw-in 450ms var(--ease-out); }
+  }
+  @keyframes chatw-in { from { opacity: 0; transform: translateY(14px); } }
+  .chatw-head { display: flex; align-items: center; gap: 12px; padding: 4px 4px 12px; border-bottom: 1px solid var(--color-line); }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--color-navy); display: grid; place-items: center; flex: none; }
+  .avatar .sq { width: 11px; height: 11px; background: var(--color-coral); }
+  .chatw-id { flex: 1; min-width: 0; display: grid; gap: 1px; }
+  .chatw-id h2 { font-size: 1rem; font-weight: 600; letter-spacing: -0.005em; font-stretch: 100%; line-height: 1.3; }
+  .chatw-who { font-size: 0.82rem; color: var(--color-slate); }
+  .chatw-close {
+    width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; flex: none;
+    background: none; color: var(--color-ink); border: 1px solid var(--color-line); cursor: pointer; padding: 0;
+  }
+  .chatw-close span { position: relative; width: 14px; height: 14px; }
+  .chatw-close span::before, .chatw-close span::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; margin-top: -0.75px; background: currentColor; }
+  .chatw-close span::before { transform: rotate(45deg); }
+  .chatw-close span::after { transform: rotate(-45deg); }
+  .chatw-close:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+  @media (hover: hover) and (pointer: fine) { .chatw-close:hover { border-color: var(--color-ink); } }
+
+  /* Theirs on the left in warm paper, yours on the right in the logo navy, as in the hero. Messages are added by the
+     script, so their styles are :global (scoped styles only reach the markup above). */
+  .chatw-msgs { flex: 1; overflow-y: auto; overscroll-behavior: contain; border-radius: 12px; }
+  .chatw-msgs:focus-visible { outline: 2px solid var(--color-ink); outline-offset: -2px; }
+  .chatw-msgs ol { list-style: none; margin: 0; padding: 6px 2px 10px; display: flex; flex-direction: column; gap: 10px; }
+  .chatw-msgs :global(.cm) { max-width: 86%; }
+  .chatw-msgs :global(.cm:first-child) { margin-top: 8px; }
+  .chatw-msgs :global(.cm.you) { align-self: flex-end; }
+  .chatw-msgs :global(.bubble) { display: inline-block; padding: 10px 14px; border-radius: 19px 19px 19px 6px; background: var(--color-paper-2); font-size: 0.95rem; line-height: 1.42; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .chatw-msgs :global(.you .bubble) { border-radius: 19px 19px 6px 19px; background: var(--color-navy); color: #fffdf9; }
+  .chatw-msgs :global(.cm.note) { max-width: none; align-self: center; text-align: center; }
+  .chatw-msgs :global(.note .bubble) { background: none; padding: 4px 8px; font-size: 0.85rem; color: var(--color-slate); }
+  .chatw-msgs :global(.bubble a) { color: inherit; text-decoration: underline; text-underline-offset: 0.18em; }
+  .chatw-msgs :global(.dots) { display: flex; gap: 5px; padding: 14px 15px; border-radius: 19px 19px 19px 6px; background: var(--color-paper-2); width: max-content; }
+  .chatw-msgs :global(.dots i) { width: 7px; height: 7px; border-radius: 50%; background: var(--color-slate); animation: chatw-blink 1100ms infinite; }
+  .chatw-msgs :global(.dots i:nth-child(2)) { animation-delay: 160ms; }
+  .chatw-msgs :global(.dots i:nth-child(3)) { animation-delay: 320ms; }
+  @keyframes chatw-blink { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .chatw-msgs :global(.dots i) { animation: none; opacity: 0.6; } }
+
+  .chatw-form { display: flex; align-items: flex-end; gap: 8px; padding: 6px 6px 6px 16px; border: 1px solid var(--color-line); border-radius: 24px; }
+  .chatw-form[hidden] { display: none; }
+  .chatw-form:focus-within { border-color: var(--color-ink); }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  textarea {
+    flex: 1; min-width: 0; resize: none; border: 0; background: none; font: inherit; font-size: 1rem; line-height: 1.4; color: var(--color-ink);
+    padding: 8px 0; max-height: 132px;
+  }
+  textarea::placeholder { color: var(--color-slate); opacity: 1; }
+  textarea:focus-visible { outline: none; }
+  .chatw-send { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--color-navy); color: #fffdf9; display: grid; place-items: center; cursor: pointer; flex: none; }
+  .chatw-send[disabled] { opacity: 0.6; cursor: progress; }
+  .chatw-send:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+  .chatw-err { font-size: 0.85rem; color: var(--color-coral-deep); padding: 6px 8px 0; }
+  .chatw-err:empty { display: none; }
+  .chatw-note { font-size: 0.78rem; color: var(--color-slate); text-align: center; padding: 8px 8px 0; }
+  .chatw-note a { color: var(--color-ink); text-decoration: underline; text-underline-offset: 0.18em; }
+
+  /* On a phone the open chat takes the whole screen, and the page behind stays still. */
+  @media (max-width: 639px) {
+    .chatw.is-open { inset: 0; }
+    .chatw.is-open .chatw-panel { width: 100%; height: 100%; border-radius: 0; padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
+    :global(html.chat-open) { overflow: hidden; }
+  }
+</style>

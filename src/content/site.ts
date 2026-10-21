@@ -334,6 +334,43 @@ export const content = {
     ],
   },
 
+  /**
+   * The website chat (enableChat; worker/chat.ts, docs/chat.md). EC, 21 Oct 2026: an AI receptionist on Claude Haiku that answers
+   * questions from this page's copy and passes the visitor's details to a person. It always says it's an AI. The replies below are
+   * fixed text the Worker or the page sends; everything else it says is written by the AI from this file.
+   */
+  chat: {
+    button: 'Questions? Ask us',
+    title: 'Ask {SITE_NAME}',
+    /** Under the title, always on show. */
+    who: 'Automatic assistant (AI). A person follows up.',
+    close: 'Close chat',
+    /** The first message, from the page, not the AI. */
+    intro: "Hi. I'm the {SITE_NAME} website's automatic assistant, an AI. Ask me what we do, or leave your details and a person from our team will get back to you.",
+    label: 'Your message',
+    placeholder: 'Type a question',
+    send: 'Send',
+    logLabel: 'Conversation',
+    youLabel: 'You',
+    themLabel: 'Assistant',
+    typing: 'The assistant is typing',
+    note: "Please don't share client or customer details. See our privacy policy.",
+    privacyLink: 'privacy policy',
+    tooLong: 'Keep each message under 1,000 characters.',
+    /** After the details reach hello@ (from the Worker). */
+    passedOn: "Thanks, that's with our team now. A person will reply to your email, usually within 2 hours.",
+    passOnFailed: "Sorry, your details didn't reach the team. Please email us at {CONTACT_EMAIL} instead.",
+    /** When the AI declines to answer. */
+    refusal: "I can't help with that here. A person from our team can: email {CONTACT_EMAIL}.",
+    /** When the AI returns nothing to say. */
+    unsure: "I'm not sure about that one. A person from our team can answer it: email {CONTACT_EMAIL}, or leave your details here.",
+    /** When the chat can't be reached (from the page). */
+    failure: "The chat isn't working right now. Email us at {CONTACT_EMAIL}, or use the form at the foot of the page.",
+    busy: "You're sending messages faster than we can answer. Wait a minute, then try again.",
+    limit: "That's as far as this chat goes. Email us at {CONTACT_EMAIL}, or use the form at the foot of the page, and a person will pick it up.",
+    done: 'Your details are with our team.',
+  },
+
   footer: {
     contactHeading: 'Contact',
     /** Shown while WHATSAPP_NUMBER is set in site.config.ts. */
@@ -364,6 +401,7 @@ export const content = {
    * EC, 19 Oct 2026: "the Me² team is only in Phnom Penh", so Adelaide was taken out.
    * EC, 21 Oct 2026: "Who we are" describes Me² people first, as the home page does (no change to what is collected or how it is used).
    * EC, 20 Oct 2026: WhatsApp, call backs and automatic first replies added (EC signs off privacy changes).
+   * 21 Oct 2026: the website chat and Anthropic added (DRAFT: needs EC's sign-off before it goes live).
    */
   privacy: {
     h1: 'Privacy',
@@ -380,6 +418,7 @@ export const content = {
           'If you email us, we collect your email address and whatever your email contains.',
           'If you message us on WhatsApp, we collect your phone number, your WhatsApp profile name and what you send us.',
           'If you ask us to call you back, we collect the number and the time you give us, and use them only to call you about your enquiry.',
+          'If you use the chat on our home page, what you type is sent to Anthropic, which provides the AI that writes the replies. We don\'t keep a copy of the conversation. If you ask the assistant to pass your details on, we receive your name, your email address, what you need, and your business name, phone number and a time to call if you give them.',
           'Our hosting provider, Cloudflare, processes technical information such as your IP address and browser type to deliver this site and protect it from abuse. This site doesn\'t set cookies of its own and doesn\'t use advertising or tracking tools.',
         ],
       },
@@ -387,6 +426,7 @@ export const content = {
         h: 'How we use it',
         p: [
           'We use your details to reply to your enquiry, to discuss and provide our services if you go ahead, and to keep a record of our correspondence.',
+          'The chat on our home page is answered by an AI, and it says so. It can answer questions about {SITE_NAME} and pass your details to our team, and a person then follows up.',
           'When you send an enquiry through the form, we email you an automatic confirmation. The first reply to a WhatsApp message or an email may also be automatic, and it says so. A person from our team then follows up.',
           'We don\'t sell personal information and we don\'t add you to a mailing list.',
         ],
@@ -405,7 +445,7 @@ export const content = {
         p: [
           'Enquiries are emailed to our team by Resend, an email delivery service, and kept in our business email system, which is provided by Google.',
           'WhatsApp messages are kept in WhatsApp, which is provided by Meta, and on the phone and computers our team uses to reply.',
-          'Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia. Our service providers, Cloudflare, Resend, Google and Meta (for WhatsApp), may store or process information on servers outside Australia.',
+          'Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia. Our service providers, Cloudflare, Resend, Google, Meta (for WhatsApp) and Anthropic (for the chat), may store or process information on servers outside Australia. Anthropic doesn\'t use chat messages to train its AI models.',
         ],
       },
       {
