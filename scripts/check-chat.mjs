@@ -83,6 +83,7 @@ const run = async (req, { handler = chat, e = env(), queue = [] } = {}) => {
   check('prompt: no prices or figures beyond the facts', s.includes('No prices, figures, discounts or promises beyond the facts.'));
   check('prompt: people first, never AI on its own', s.includes('never describe Me² as an AI service, and never offer AI on its own.'));
   check('prompt: a main contact, with specialists doing the work in each field', s.includes('as their main contact') && s.includes("done by Me²'s specialist in it") && s.includes('Never say one person does everything'));
+  check('prompt: property management only when asked, never as our market', s.includes('a specialist in property management admin') && s.includes("Don't bring it up yourself"));
   check('prompt: the data rule', s.includes('Never ask for or accept financial, health or identity information'));
 }
 
