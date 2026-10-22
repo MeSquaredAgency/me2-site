@@ -24,7 +24,7 @@ Don't give custom styles class names that are Tailwind utilities (ring, shadow, 
 
 ## Dependencies
 Allowed: astro, typescript, @astrojs/check, tailwindcss, @tailwindcss/vite, @fontsource-variable/instrument-sans, @fontsource/instrument-serif, sharp; dev: @playwright/test, @axe-core/playwright, lighthouse, linkinator, wrangler; Phase 2: resend; the website chat: @anthropic-ai/sdk (Worker only, EC, 21 Oct 2026). Anything else needs a line in DECISIONS.md.
-Out of scope: CMS, auth, database, client-side routing, UI frameworks, animation/icon libraries, carousels, third-party chat widgets (the one chat is our own AI receptionist, docs/chat.md: EC, 21 Oct 2026), cookie banners, newsletter signup, Google Fonts CDN, third-party scripts.
+Out of scope: CMS, auth, database, client-side routing, UI frameworks, animation/icon libraries, carousels, third-party chat widgets (the one chat is our own AI receptionist, docs/chat.md: EC, 21 Oct 2026), cookie banners, newsletter signup, Google Fonts CDN, third-party scripts (the one exception is the Google Analytics 4 tag, docs/analytics.md: EC, 22 Oct 2026).
 
 ## Git and deploys
 - **Public since 15 Oct 2026**: EC removed the Cloudflare Access sign-in (private 10–15 Oct), so the live site and previews can be fetched and checked directly; previews send `X-Robots-Tag: noindex` but anyone with the link can open them. See DEPLOY.md.

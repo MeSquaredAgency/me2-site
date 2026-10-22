@@ -4,7 +4,7 @@ import '../styles/global.css';
 import fontUrl from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-standard-normal.woff2?url';
 import routes from '../data/routes.json';
 import logoLight from '../assets/brand/me2-logo-light.svg?raw';
-import { config, isFixture, siteUrl } from '../config';
+import { config, flags, isFixture, siteUrl } from '../config';
 
 interface Props {
   /** Path as listed in src/data/routes.json */
@@ -52,6 +52,22 @@ const fontFace = `@font-face{font-family:'Instrument Sans Variable';font-style:n
     <meta name="twitter:description" content={route.description} />
     <meta name="twitter:image" content={ogImage} />
     {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+    {flags.enableTracking && config.GA4_MEASUREMENT_ID && (
+      <script define:vars={{ ga4Id: config.GA4_MEASUREMENT_ID, liveHost: config.SITE_DOMAIN }}>
+        // Google Analytics 4 (EC, 22 Oct 2026; docs/analytics.md): Google's gtag snippet, run only on the live domain so
+        // previews and local checks never count as visits. The Google hosts it talks to are allowed in public/_headers.
+        if (location.hostname === liveHost) {
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () { window.dataLayer.push(arguments); };
+          window.gtag('js', new Date());
+          window.gtag('config', ga4Id);
+          const tag = document.createElement('script');
+          tag.async = true;
+          tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + ga4Id;
+          document.head.appendChild(tag);
+        }
+      </script>
+    )}
   </head>
   <body>
     <!-- The logo's paths, once. Logo.astro points at this group, so the large traced path isn't repeated in every logo. -->

@@ -75,7 +75,7 @@ Copy in Appendix A writes `{SITE_NAME}`, `{SITE_NAME_PLAIN}`, `{CONTACT_EMAIL}`,
 - Host: Cloudflare Workers static assets ("Pages, now part of Workers"), project `mesquared` in the Me² Cloudflare account, live at https://mesquaredagency.com since 9 Oct 2026 (see DEPLOY.md). Build command: `npm run build`. Output dir: `dist`. Phase 2 form handler: Pages Function at `functions/api/enquiry.ts`.
 - Allowed dependencies: `astro`, `typescript`, `@astrojs/check`, `tailwindcss`, `@tailwindcss/vite`, `@fontsource-variable/instrument-sans`, `@fontsource-variable/outfit`, `sharp` (logo and OG image generation at build time). Dev only: `@playwright/test`, `@axe-core/playwright`, `lighthouse`, `linkinator`, `wrangler`. Phase 2 only: `resend`. Any other dependency needs a one-line justification in `DECISIONS.md`.
 - The sitemap is written by a small build step reading the routes file (one page; no `@astrojs/sitemap` needed).
-- Out of scope: CMS, auth, database, client-side routing, Preact/React/Vue, animation libraries, icon libraries, carousels, chat widgets (exception, EC 21 Oct 2026: our own AI receptionist on the home page, served by the Worker with no third-party script; docs/chat.md), cookie banners, newsletter signup, Google Fonts CDN links, any third-party script in Phase 1.
+- Out of scope: CMS, auth, database, client-side routing, Preact/React/Vue, animation libraries, icon libraries, carousels, chat widgets (exception, EC 21 Oct 2026: our own AI receptionist on the home page, served by the Worker with no third-party script; docs/chat.md), cookie banners, newsletter signup, Google Fonts CDN links, any third-party script in Phase 1 (exception, EC 22 Oct 2026: the Google Analytics 4 tag; docs/analytics.md).
 
 ## 4. Repo structure
 ```
@@ -186,13 +186,13 @@ All flags live in `src/config/flags.ts`. The site must build and look complete w
 | `showPrivacyPage` | false | `/privacy/` page and footer link | lawyer-reviewed policy text supplied | Patrick + lawyer |
 | `enableContactForm` | false | enquiry form in final CTA | privacy page live, Resend domain verified, Turnstile keys set | EC |
 | `enableBooking` | false | "Book a call" button | `BOOKING_URL` set and privacy page live | EC |
-| `enableTracking` | false | any analytics script beyond Cloudflare Web Analytics | privacy page live and tool chosen | EC |
+| `enableTracking` | false (on since 22 Oct 2026) | the Google Analytics 4 tag on every page, live domain only | privacy page live and tool chosen | EC |
 
 `enableContactForm`, `enableBooking` and `enableTracking` also require `showPrivacyPage`; if it's false they stay off and the build logs a warning.
 
 ## 8. Integrations
 - Email CTA (Phase 1): `mailto:{CONTACT_EMAIL}?subject=...` using subjects in A.ui, URL-encoded, through one `EmailLink` component.
-- Analytics: Cloudflare Web Analytics, enabled by the owner in the dashboard; no code. Nothing else unless `enableTracking`. No conversion events in v1 (the CTA is a mailto); `docs/gtm-events.md` is N/A until a form or booking ships.
+- Analytics: Google Analytics 4 since 22 Oct 2026 (EC): Google's gtag snippet in `src/layouts/Base.astro` behind `enableTracking`, measurement ID `GA4_MEASUREMENT_ID` in site.config.ts, run only on the live domain; the CSP in `public/_headers` allows Google's hosts (docs/analytics.md). Cloudflare Web Analytics can still be enabled by the owner in the dashboard; no code. No conversion events yet; `docs/gtm-events.md` is N/A until events are chosen.
 - Booking (Phase 2): plain link to `BOOKING_URL`, no embed. Missing value → hidden.
 - Form (Phase 2): one form, source name `Website enquiry`. Pages Function `functions/api/enquiry.ts`. Env vars: `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, public `TURNSTILE_SITE_KEY`, plus `FORM_FROM_EMAIL` / `FORM_TO_EMAIL` from config. Protections: hidden honeypot (silently drop), Turnstile verified server-side, server-side validation (required fields, email format, max 2,000 characters for the task), and a Cloudflare rate-limiting rule documented in `DEPLOY.md`. Without JS (Turnstile can't run) the visible fallback is the email link. Missing env var → form not rendered, mailto shows.
 - Lead destination: email only to `FORM_TO_EMAIL` (low volume; a sheet or CRM is a later decision).
@@ -207,7 +207,7 @@ All flags live in `src/config/flags.ts`. The site must build and look complete w
 - Schema.org JSON-LD: `Organization` (`name`, `alternateName`, `url`, `email`, `logo` → `/logo.png`), one `Service` per offer (name + description; no `offers`/price unless `showPricing`), `FAQPage` matching the visible FAQ items exactly (respecting `showLocations`). No address, no `LocalBusiness`.
 - `robots.txt` allows all, declares Content Signals (`search=yes, ai-input=yes, ai-train=yes`, EC 20 Oct 2026) and points to `/sitemap.xml`, written at the end of the build from the routes file (indexable pages only). Fixture build: `noindex` + `Disallow: /`.
 - OG/Twitter tags with `/og-image.png`. `llms.txt`: what Me² is, the two offers, first market, contact email, key URL, also-known-as "Me Squared". IndexNow key file plus `npm run indexnow`.
-- Performance: no images apart from the logo (served as WebP/PNG with width/height); fonts self-hosted and preloaded; zero third-party requests; inline critical CSS is fine. Targets: Lighthouse ≥ 90 / 95 / 95 / 95, CLS < 0.1.
+- Performance: no images apart from the logo (served as WebP/PNG with width/height); fonts self-hosted and preloaded; zero third-party requests apart from Google Analytics (EC, 22 Oct 2026); inline critical CSS is fine. Targets: Lighthouse ≥ 90 / 95 / 95 / 95, CLS < 0.1.
 - `public/_headers`: HSTS (`max-age=31536000`), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`, `X-Frame-Options: DENY`, and a CSP of `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self' mailto:` (Phase 2 adds Turnstile and Cloudflare Analytics hosts). Turn off Cloudflare Email Obfuscation for the zone (it rewrites the mailtos into `/cdn-cgi/l/email-protection` links).
 - WCAG 2.1 AA: only §5 pairs, visible focus everywhere, one H1, logical heading order, skip link, `<html lang="en-AU">`, reduced motion respected, tap targets ≥ 44px.
 
@@ -233,7 +233,7 @@ Every check names how to run it. Put Phase 1b checks in `npm run verify` (`scrip
 - [ ] `npx linkinator http://localhost:4321 --recurse --skip "mesquaredagency.com" --skip "^mailto:"`: no broken internal links; `#how` resolves
 - [ ] Every "Talk to us" and offer button is a `mailto:` to `CONTACT_EMAIL` with the A.ui subject
 - [ ] No hardcoded identity: `grep -rn "mesquaredagency\|hello@" src/ functions/ public/ scripts/` matches only `src/config/site.config.ts` (generated `llms.txt` excepted if built from config)
-- [ ] No third-party requests on load (Playwright network log: all same-origin)
+- [ ] No third-party requests on load (Playwright network log: all same-origin; from 22 Oct 2026 Google Analytics is the one exception, and it loads only on the live domain)
 - [ ] Layout checks (section alternation, no two same-colour sections touching, equal card heights, no empty gaps) with all flags off, all on, and each of `showPricing`, `showProof`, `showLocations`, `enableContactForm` on alone
 - [ ] Banned-words and brand-naming checks on rendered text, titles, alt text and aria labels (case-insensitive, whole word)
 - [ ] Head check over `dist/`: unique title and description within length limits, one H1, canonical; sitemap lists only indexable pages

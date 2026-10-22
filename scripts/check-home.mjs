@@ -87,7 +87,7 @@ check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide',
 const privacyHtml = decode(readFileSync('dist/privacy/index.html', 'utf8'));
 check('privacy: team in Phnom Penh only', privacyHtml.includes('Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia.') && !/Adelaide/.test(privacyHtml));
 // EC, 20 Oct 2026: WhatsApp on +855 69 713 244, automatic first replies, call backs (spec: docs/superpowers/specs/2026-10-19-reply-bots.md).
-check('privacy: WhatsApp, call backs, automatic replies, Meta, dated 21 Oct', ['If you message us on WhatsApp, we collect your phone number', 'If you ask us to call you back', 'we email you an automatic confirmation', 'Cloudflare, Resend, Google, Meta (for WhatsApp) and Anthropic (for the chat)', 'Last updated 21 October 2026'].every((t) => privacyHtml.includes(t)));
+check('privacy: WhatsApp, call backs, automatic replies, Meta, dated 22 Oct', ['If you message us on WhatsApp, we collect your phone number', 'If you ask us to call you back', 'we email you an automatic confirmation', 'Cloudflare, Resend, Google (for email and Google Analytics), Meta (for WhatsApp) and Anthropic (for the chat)', 'Last updated 22 October 2026'].every((t) => privacyHtml.includes(t)));
 const { siteConfig: idConfig } = await import('../src/config/site.config.ts');
 const waNumber = idConfig.WHATSAPP_NUMBER;
 const waUrl = `https://wa.me/${waNumber.replace(/\D/g, '')}`;
@@ -96,6 +96,17 @@ check(waNumber ? 'WhatsApp: linked in the contact section and footer, and in llm
 // The website chat (EC, 21 Oct 2026; docs/chat.md): our own, hidden until its script runs, and it says it's an AI.
 check('chat: says it is an AI, and the privacy policy covers it', has('Automatic assistant (AI). A person follows up.') && /data-chatw[^>]*hidden/.test(html) && privacyHtml.includes('If you use the chat on our home page, what you type is sent to Anthropic'));
 check('no chat widget or WhatsApp script on the page', !/<script[^>]+src="https?:\/\//.test(html) && !/<iframe/.test(html));
+// Google Analytics 4 (EC, 22 Oct 2026; docs/analytics.md): Google's tag on every page, run only on the live domain (so the browser
+// checks below, on localhost, load nothing from Google), its hosts allowed by the CSP, and the privacy policy says what it collects.
+const { flags: realFlags } = await import('../src/config/flags.ts');
+const ga4Id = realFlags.enableTracking ? idConfig.GA4_MEASUREMENT_ID : '';
+const csp = readFileSync('dist/_headers', 'utf8');
+check(ga4Id ? 'analytics: GA4 tag on the home and privacy pages, live domain only, allowed by the CSP, in the privacy policy' : 'analytics: no Google tag while enableTracking is off',
+  ga4Id
+    ? [html, privacyHtml].every((h) => h.includes(ga4Id) && h.includes('googletagmanager.com/gtag/js') && h.includes(`location.hostname === liveHost`) && h.includes(`"${idConfig.SITE_DOMAIN}"`))
+      && ['script-src', 'connect-src', 'img-src'].every((d) => new RegExp(`${d}[^;]*googletagmanager\\.com`).test(csp)) && /connect-src[^;]*google-analytics\.com/.test(csp)
+      && privacyHtml.includes('We use Google Analytics to see how many people visit this site')
+    : !html.includes('googletagmanager') && !privacyHtml.includes('We use Google Analytics'));
 // EC's terms, 16 Oct 2026 ("Yes, all good terms").
 for (const q of ['How soon can you start?', 'Is there a lock-in contract?', 'What if your team gets something wrong?', 'What happens to our data, and who can see it?']) check(`FAQ: ${q}`, has(q) && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === q)));
 // Facebook and LinkedIn: in the footer, the structured data and llms.txt once set in site.config.ts, and nowhere while empty.
