@@ -49,6 +49,6 @@ It then emails the application through Resend, from "Me Squared careers" `<websi
 - **CPU:** the Me² Cloudflare account is on Workers Free, which allows 10 ms of CPU per request. The form is always posted as multipart (by the page's script, or by the browser without JavaScript), and the Worker encodes the CV with the built-in `toBase64()`, which takes about 1 ms for 4 MB. `check-applications.mjs` times a 4 MB CV both ways. After a change to the route, send a near-4 MB CV from a preview and read the CPU time in Workers Logs.
 
 ## Testing
-- `node scripts/check-applications.mjs`: the route, with Resend stubbed. It covers every refusal, bots, size limits, previews, no-JavaScript posts and logs.
+- `node scripts/check-applications.mjs`: the route, with Resend stubbed. It covers every refusal, bots, size limits, previews, no-JavaScript posts and logs. Node 22 and 24 (`.node-version`) lack the `toBase64()` the route uses, so the script fills it in with `Buffer` for the test; Workers and Node 25+ have it built in.
 - `npm run build && node scripts/check-careers.mjs`: the content, the built pages, JobPosting, the sitemap and llms.txt, and in Edge: axe, sideways scroll at six sizes, and the form's errors, success and failure. Add `--static` to skip the browser, and `--flag-off` to also build with careers switched off.
 - **End to end:** push the branch, open the preview, and apply with a real PDF. It arrives in people@ with "[Preview]" in the subject. Ask EC first: it lands in a real inbox.
