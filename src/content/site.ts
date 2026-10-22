@@ -425,7 +425,7 @@ export const content = {
    */
   privacy: {
     h1: 'Privacy',
-    updated: 'Last updated 21 October 2026',
+    updated: 'Last updated 22 October 2026',
     sections: [
       {
         h: 'Who we are',
@@ -439,7 +439,9 @@ export const content = {
           'If you message us on WhatsApp, we collect your phone number, your WhatsApp profile name and what you send us.',
           'If you ask us to call you back, we collect the number and the time you give us, and use them only to call you about your enquiry.',
           'If you use the chat on our home page, what you type is sent to Anthropic, which provides the AI that writes the replies. We don\'t keep a copy of the conversation. If you ask the assistant to pass your details on, we receive your name, your email address, what you need, and your business name, phone number and a time to call if you give them.',
-          'Our hosting provider, Cloudflare, processes technical information such as your IP address and browser type to deliver this site and protect it from abuse. This site doesn\'t set cookies of its own and doesn\'t use advertising or tracking tools.',
+          'Our hosting provider, Cloudflare, processes technical information such as your IP address and browser type to deliver this site and protect it from abuse.',
+          /** EC, 22 Oct 2026: Google Analytics 4 on every page (enableTracking, docs/analytics.md). Remove this paragraph if the flag goes off. */
+          'We use Google Analytics to see how many people visit this site, which pages they read and where they came from. It sets cookies in your browser so that it can tell a returning visitor from a new one, and sends Google your IP address, your browser and device type and the pages you view. It doesn\'t tell us who you are, and we don\'t use it for advertising. You can block it in your browser\'s cookie settings or with Google\'s opt-out add-on.',
         ],
       },
       {
@@ -465,7 +467,7 @@ export const content = {
         p: [
           'Enquiries are emailed to our team by Resend, an email delivery service, and kept in our business email system, which is provided by Google.',
           'WhatsApp messages are kept in WhatsApp, which is provided by Meta, and on the phone and computers our team uses to reply.',
-          'Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia. Our service providers, Cloudflare, Resend, Google, Meta (for WhatsApp) and Anthropic (for the chat), may store or process information on servers outside Australia. Anthropic doesn\'t use chat messages to train its AI models.',
+          'Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia. Our service providers, Cloudflare, Resend, Google (for email and Google Analytics), Meta (for WhatsApp) and Anthropic (for the chat), may store or process information on servers outside Australia. Anthropic doesn\'t use chat messages to train its AI models.',
         ],
       },
       {

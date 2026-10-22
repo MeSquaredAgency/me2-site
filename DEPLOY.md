@@ -80,6 +80,7 @@ From 10 to 15 Oct 2026 EC kept the site behind **Cloudflare Access** (Zero Trust
 - **Email Address Obfuscation:** currently not rewriting the site's email links (checked 9 Oct: the live page has 9 normal `mailto:` links and no `/cdn-cgi/l/email-protection` links). If someone turns Scrape Shield on later, turn this off again.
 - **Always Use HTTPS:** off in the zone, but the site redirects itself, so it doesn't matter. Turning it on is harmless.
 - **Web Analytics:** not yet on. Turn it on in the dashboard (Analytics & Logs → Web Analytics → add mesquaredagency.com). The security headers in `public/_headers` allow only the site's own scripts. If Cloudflare injects its beacon automatically, add `https://static.cloudflareinsights.com` to `script-src` and `https://cloudflareinsights.com` to `connect-src` there.
+- **Google Analytics 4:** on since 22 Oct 2026 (EC). Google's tag is in the page (`enableTracking`; measurement ID in `src/config/site.config.ts`) and runs only when the address is mesquaredagency.com, so previews and local checks send Google nothing. `public/_headers` allows Google's tag, analytics and image hosts; if Google adds a host the browser console shows a CSP error, add it there. See [docs/analytics.md](docs/analytics.md).
 - The DNS records for `mesquaredagency.com` and `www` are now managed by the Workers project. Don't edit or delete them in the DNS page; change domains in `wrangler.jsonc` instead.
 
 ## Enquiry form email

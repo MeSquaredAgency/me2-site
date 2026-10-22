@@ -19,6 +19,8 @@ export const siteConfig = {
   LINKEDIN_URL: 'https://www.linkedin.com/company/mesquaredagency',
   /** Me²'s WhatsApp Business number (EC, 20 Oct 2026), written as shown on the page; the wa.me link is made from its digits. Empty hides every WhatsApp link. */
   WHATSAPP_NUMBER: '+855 69 713 244',
+  /** Google Analytics 4 measurement ID (EC, 22 Oct 2026). Used only with enableTracking, and only on this domain; empty keeps tracking off. */
+  GA4_MEASUREMENT_ID: 'G-E2VZ6MW5SF',
   LOCALE: 'en-AU',
   /** Footer entity line, shown only with showLegalEntity. */
   LEGAL_ENTITY: '[[TBC: legal entity name and registration number — Patrick + lawyer]]',

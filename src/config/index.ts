@@ -32,6 +32,7 @@ for (const key of ['enableContactForm', 'enableChat', 'enableBooking', 'enableTr
   }
 }
 if (merged.enableBooking && !config.BOOKING_URL) merged.enableBooking = false;
+if (merged.enableTracking && !config.GA4_MEASUREMENT_ID) merged.enableTracking = false;
 export const flags: Flags = merged;
 
 /** Copy items that name a flag (e.g. a menu link to a hidden section) are kept only while that flag is on. */

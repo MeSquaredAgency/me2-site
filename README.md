@@ -68,6 +68,7 @@ Tick only what has been checked.
 - [x] Google email DNS records (MX, SPF, DKIM, DMARC, verification) unchanged after the switch (checked 9 Oct 2026)
 - [x] Email links not rewritten by Cloudflare Email Obfuscation (checked on the live page)
 - [ ] Cloudflare Web Analytics turned on
+- [ ] Google Analytics 4 receiving visits from the live site (tag on since 22 Oct 2026, `enableTracking`; check the Realtime report after the merge; [docs/analytics.md](docs/analytics.md))
 - [x] Sitemap submitted in Google Search Console; `npm run indexnow` run (19 Oct 2026)
 - [x] Site added in Bing Webmaster Tools (import it from Search Console); Bing's index feeds ChatGPT search and Copilot (EC, 19 Oct 2026)
 - [x] Cloudflare's "Block AI bots" setting checked for mesquaredagency.com (EC, 19 Oct 2026; [docs/search-and-ai.md](docs/search-and-ai.md))

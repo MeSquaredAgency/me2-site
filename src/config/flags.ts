@@ -31,8 +31,11 @@ export const flags = {
   enableChat: true,
   /** "Book a call" button. Needs BOOKING_URL and showPrivacyPage (EC). */
   enableBooking: false,
-  /** Any analytics beyond Cloudflare Web Analytics. Needs showPrivacyPage (EC). */
-  enableTracking: false,
+  /**
+   * Google Analytics 4 on every page (the tag in src/layouts/Base.astro, docs/analytics.md). It runs only on the live domain,
+   * never on previews or local checks. Needs showPrivacyPage and GA4_MEASUREMENT_ID. On since 22 Oct 2026 (EC: "We seriously require that").
+   */
+  enableTracking: true,
   /**
    * Careers: /careers/, a page per listed role (src/content/careers.ts), the footer link, and the /api/applications route.
    * The application form also needs showPrivacyPage; without it each role page says to email a CV instead. On since 16 Oct 2026 (EC).
