@@ -24,4 +24,22 @@ writeFileSync('public/favicon.svg', fav);
 await sharp(Buffer.from(fav), { density: 300 }).resize(180, 180).png().toFile('public/apple-touch-icon.png');
 await sharp(Buffer.from(fav), { density: 300 }).resize(32, 32).png().toFile('public/favicon-32.png');
 
-console.log(`public/logo.png 1200×${mh + 200}, favicon.svg, apple-touch-icon.png, favicon-32.png`);
+// 3. /favicon.ico for everything that asks for that path instead of reading the <link> tags (older browsers,
+// bookmark and link-preview services, Google's icon crawler). An .ico container holding PNG images at 16, 32
+// and 48px; every current browser reads PNG-in-ICO, so no extra dependency is needed.
+const icoSizes = [16, 32, 48];
+const pngs = await Promise.all(icoSizes.map((n) => sharp(Buffer.from(fav), { density: 300 }).resize(n, n).png().toBuffer()));
+const header = Buffer.alloc(6);
+header.writeUInt16LE(0, 0); header.writeUInt16LE(1, 2); header.writeUInt16LE(icoSizes.length, 4);
+let offset = 6 + 16 * icoSizes.length;
+const dir = icoSizes.map((n, i) => {
+  const e = Buffer.alloc(16);
+  e.writeUInt8(n, 0); e.writeUInt8(n, 1); e.writeUInt8(0, 2); e.writeUInt8(0, 3);
+  e.writeUInt16LE(1, 4); e.writeUInt16LE(32, 6);
+  e.writeUInt32LE(pngs[i].length, 8); e.writeUInt32LE(offset, 12);
+  offset += pngs[i].length;
+  return e;
+});
+writeFileSync('public/favicon.ico', Buffer.concat([header, ...dir, ...pngs]));
+
+console.log(`public/logo.png 1200×${mh + 200}, favicon.svg, apple-touch-icon.png, favicon-32.png, favicon.ico`);

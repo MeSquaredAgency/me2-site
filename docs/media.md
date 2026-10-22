@@ -24,7 +24,7 @@ Never use a screenshot that shows or names an individual person (team pages, age
 | `src/assets/brand/me2-logo.svg` | Vector version traced from that PNG (navy "me", coral "2"). Used on light backgrounds |
 | `src/assets/brand/me2-logo-light.svg` | The same with a white "me", for the header, footer and dark backgrounds |
 | `public/logo.png` | 1200px-wide PNG at a fixed address (`/logo.png`) for email signatures, partners and search engines |
-| `public/favicon.svg`, `favicon-32.png`, `apple-touch-icon.png` | Browser tab and phone home-screen icons |
+| `public/favicon.svg`, `favicon-32.png`, `favicon.ico`, `apple-touch-icon.png` | Browser tab and phone home-screen icons. `favicon.ico` (16, 32 and 48px) is for anything that asks for that path instead of reading the page, such as bookmark and link-preview services and Google's icon crawler |
 
 The SVGs were traced from the small PNG, so at very large sizes the edges are slightly soft. When the designer supplies a master SVG, replace both SVGs (keep the `viewBox`, `role="img"` and `aria-label` attributes) and run `npm run brand`. That regenerates `logo.png`, the favicons and the link-preview image.
 
