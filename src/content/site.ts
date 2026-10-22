@@ -421,7 +421,7 @@ export const content = {
    * EC, 19 Oct 2026: "the Me² team is only in Phnom Penh", so Adelaide was taken out.
    * EC, 21 Oct 2026: "Who we are" describes Me² people first, as the home page does (no change to what is collected or how it is used).
    * EC, 20 Oct 2026: WhatsApp, call backs and automatic first replies added (EC signs off privacy changes).
-   * 21 Oct 2026: the website chat and Anthropic added (DRAFT: needs EC's sign-off before it goes live).
+   * 21 Oct 2026: the website chat and Anthropic added; EC signed off the wording on 22 Oct 2026 ("privacy wording is fine").
    */
   privacy: {
     h1: 'Privacy',

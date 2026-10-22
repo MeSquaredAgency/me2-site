@@ -90,5 +90,5 @@ Tick only what has been checked.
 - [x] `mesquared.co.uk` redirected to `https://mesquaredagency.com` (EC's Redirect Rule, checked 20 Oct 2026; DEPLOY.md)
 - [ ] Rate-limiting rule on /api/enquiry and /api/applications added in Cloudflare (DEPLOY.md); it matters more now each enquiry also emails the visitor a confirmation
 - [ ] Automatic first replies (docs/auto-replies.md): WhatsApp Business greeting on +855 69 713 244 set up; hello@ group auto-reply on for people outside Me²; a live test enquiry from EC's own address gets exactly one confirmation
-- [ ] Website chat (docs/chat.md): Anthropic Console account with a monthly spend limit, `ANTHROPIC_API_KEY` set as a Worker secret, a preview chat that passes details to hello@, and the chat's privacy policy wording signed off by EC, all before it goes live
+- [ ] Website chat (docs/chat.md): `ANTHROPIC_API_KEY` set as a Worker secret and the chat answering on the live site (21 Oct 2026); privacy wording signed off by EC (22 Oct 2026: "privacy wording is fine"). Still to do: a monthly spend limit in the Anthropic Console, and a live chat that passes EC's own details to hello@
 - [x] A preview application reaches people@ with the CV attached and "[Preview]" in the subject (docs/careers.md; EC confirmed 16 Oct 2026, with a 4.17 MB PDF)
