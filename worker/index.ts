@@ -15,6 +15,7 @@ import { flags } from '../src/config/flags.ts';
 import { content } from '../src/content/site.ts';
 import { application } from './applications.ts';
 import { chatWith, type ChatEnv } from './chat.ts';
+import { brandedHtml, footerText, sender } from './email.ts';
 
 interface AssessmentPreparedStatement {
   bind(...values: unknown[]): AssessmentPreparedStatement;
@@ -237,7 +238,7 @@ export async function enquiry(request: Request, env: Env, ctx: Ctx): Promise<Res
       method: 'POST',
       headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: `${siteConfig.SITE_NAME_PLAIN} website <${siteConfig.FORM_FROM_EMAIL}>`,
+        from: sender(`${siteConfig.SITE_NAME} website`, siteConfig.FORM_FROM_EMAIL),
         to: [siteConfig.FORM_TO_EMAIL],
         reply_to: email,
         subject: `Website enquiry: ${topic} (${name})`,
@@ -265,20 +266,20 @@ export async function enquiry(request: Request, env: Env, ctx: Ctx): Promise<Res
 
 // The automatic confirmation (copy in content.enquiryConfirmation). Fixed text: never the visitor's name, message or
 // topic, since anyone can type someone else's address, and the form must not become a way to send words from our domain.
-// Marked as an automatic reply so other autoresponders don't answer it; replies go to hello@.
+// Marked as an automatic reply so other autoresponders don't answer it; replies go to hello@. It leaves Me², so it
+// carries the Workspace compliance footer and logo (./email.ts).
 async function confirmEnquiry(to: string, apiKey: string): Promise<void> {
   const c = content.enquiryConfirmation;
   const paragraphs = c.paragraphs.map((p) => p.replaceAll('{SITE_NAME}', siteConfig.SITE_NAME));
-  const site = `https://${siteConfig.SITE_DOMAIN}`;
-  const text = [...paragraphs, `${siteConfig.SITE_NAME}\n${site}`].join('\n\n');
-  const html = `${paragraphs.map((p) => `<p>${esc(p)}</p>`).join('')}<p>${esc(siteConfig.SITE_NAME)}<br><a href="${site}">${esc(site)}</a></p>`;
+  const text = [...paragraphs, footerText()].join('\n\n');
+  const html = brandedHtml(paragraphs);
   let failed = '';
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: `${siteConfig.SITE_NAME_PLAIN} <${siteConfig.CONTACT_EMAIL}>`,
+        from: sender(siteConfig.SITE_NAME, siteConfig.CONTACT_EMAIL),
         to: [to],
         reply_to: siteConfig.CONTACT_EMAIL,
         subject: c.subject,

@@ -8,6 +8,7 @@ import { siteConfig } from '../src/config/site.config.ts';
 import { flags } from '../src/config/flags.ts';
 import { content } from '../src/content/site.ts';
 import { MAX_MESSAGE, MAX_TURNS } from './chat-limits.ts';
+import { sender } from './email.ts';
 
 export interface ChatEnv {
   /** Anthropic API key (a Worker secret, never in the code). Missing until it's set in Cloudflare (DEPLOY.md). */
@@ -229,7 +230,7 @@ async function passOn(
       method: 'POST',
       headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: `${siteConfig.SITE_NAME_PLAIN} website <${siteConfig.FORM_FROM_EMAIL}>`,
+        from: sender(`${siteConfig.SITE_NAME} website`, siteConfig.FORM_FROM_EMAIL),
         to: [siteConfig.FORM_TO_EMAIL],
         reply_to: email,
         subject: `${live ? '' : '[Preview] '}Website chat: ${name}`,

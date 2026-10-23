@@ -391,6 +391,14 @@ export const content = {
     done: 'Your details are with our team.',
   },
 
+  /**
+   * The compliance footer on email the site sends outside Me² (worker/email.ts): the same wording as the footer
+   * Google Workspace adds to the team's own mail (EC, 23 Oct 2026). The tagline line uses hero.h1.
+   */
+  emailFooter: {
+    disclaimer: 'This email and any attachments are confidential and intended only for the named recipient. If you received it in error, please tell the sender and delete it.',
+  },
+
   footer: {
     contactHeading: 'Contact',
     /** Shown while WHATSAPP_NUMBER is set in site.config.ts. */
@@ -421,7 +429,7 @@ export const content = {
    * EC, 19 Oct 2026: "the Me² team is only in Phnom Penh", so Adelaide was taken out.
    * EC, 21 Oct 2026: "Who we are" describes Me² people first, as the home page does (no change to what is collected or how it is used).
    * EC, 20 Oct 2026: WhatsApp, call backs and automatic first replies added (EC signs off privacy changes).
-   * 21 Oct 2026: the website chat and Anthropic added (DRAFT: needs EC's sign-off before it goes live).
+   * 21 Oct 2026: the website chat and Anthropic added; EC signed off the wording on 22 Oct 2026 ("privacy wording is fine").
    */
   privacy: {
     h1: 'Privacy',

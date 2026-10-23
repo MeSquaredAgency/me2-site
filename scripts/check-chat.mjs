@@ -5,6 +5,8 @@ const { chatWith, systemPrompt } = await import('../worker/chat.ts');
 const { MAX_TURNS } = await import('../worker/chat-limits.ts');
 const { content } = await import('../src/content/site.ts');
 
+// From headers carry the name as an RFC 2047 encoded-word (worker/email.ts); this reads it back.
+const readFrom = (f = '') => f.replace(/=\?UTF-8\?B\?([^?]+)\?=/, (_, b) => Buffer.from(b, 'base64').toString('utf8'));
 let failed = 0;
 const check = (name, ok, detail = '') => {
   if (!ok) failed++;
@@ -95,7 +97,7 @@ const details = { name: 'Zelda Visitor', email: 'zelda@example.com', need: 'Chas
   check('pass-on: fixed confirmation, done', res.status === 200 && body?.ok && body.done === true && body.reply === content.chat.passedOn, JSON.stringify(body));
   const r = resendCalls();
   check('pass-on: one email to hello@, Reply-To the visitor', r.length === 1 && JSON.stringify(r[0].body.to) === '["hello@mesquaredagency.com"]' && r[0].body.reply_to === 'zelda@example.com', JSON.stringify(r[0]?.body.to));
-  check('pass-on: from the website address, subject names the chat', r[0]?.body.from === 'Me Squared website <website@mesquaredagency.com>' && r[0].body.subject === 'Website chat: Zelda Visitor', `${r[0]?.body.from} / ${r[0]?.body.subject}`);
+  check('pass-on: from the website address, subject names the chat', readFrom(r[0]?.body.from) === 'Me² website <website@mesquaredagency.com>' && r[0].body.subject === 'Website chat: Zelda Visitor', `${r[0]?.body.from} / ${r[0]?.body.subject}`);
   check('pass-on: every detail in the email', ['Chasing overdue invoices XYZZY.', 'Zelda Co', '0400 000 000', 'Tuesday morning'].every((t) => r[0]?.body.text.includes(t)));
   check('pass-on: the email says only these details are kept', r[0]?.body.text.includes('Only these details are kept, not the conversation.'));
   check('pass-on: live site sends the visitor the usual confirmation', JSON.stringify(confirmed) === '["zelda@example.com"]', JSON.stringify(confirmed));

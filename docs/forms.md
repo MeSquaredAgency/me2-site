@@ -36,3 +36,7 @@ All the form's words are in `form` (and `thanks`, and `enquiryConfirmation` for 
 
 ## Testing it
 Locally: `npm run build`, then `npx wrangler dev --local --local-protocol https`. Without a `RESEND_API_KEY` the form reports "didn't send" (by design); to send real test emails locally, put the key in a git-ignored `.dev.vars` file as `RESEND_API_KEY=…`. On a preview link or the live site, once the secret is set in Cloudflare, real emails arrive in hello@. The confirmation to the visitor only goes from the live site, so test it there, from your own address, after the change is live.
+
+## Sender names and the footer
+
+Every email the site sends names Me² as the sender: "Me²" for the visitor's confirmation, "Me² website" for enquiries and chat hand-overs to hello@, "Me² careers" for applications to people@ (EC, 23 Oct 2026; the name goes out as an RFC 2047 encoded-word so the ² survives every mail program). The confirmation is the one email that leaves Me², so it carries the same compliance footer Google Workspace adds to the team's mail, with the logo (`worker/email.ts`; wording in `content.emailFooter`). Google can't add its own footer here: these emails go out through Resend, never through Gmail.

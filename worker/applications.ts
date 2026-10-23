@@ -7,6 +7,7 @@
 import { findRole } from '../src/content/careers.ts';
 import { siteConfig } from '../src/config/site.config.ts';
 import { flags } from '../src/config/flags.ts';
+import { sender } from './email.ts';
 
 export interface ApplicationEnv {
   /** Resend API key (a Worker secret, never in the code). See DEPLOY.md. */
@@ -117,7 +118,7 @@ export function applicationWith(on: { showCareers: boolean; showPrivacyPage: boo
         method: 'POST',
         headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: `${siteConfig.SITE_NAME_PLAIN} careers <${siteConfig.FORM_FROM_EMAIL}>`,
+          from: sender(`${siteConfig.SITE_NAME} careers`, siteConfig.FORM_FROM_EMAIL),
           to: [siteConfig.CAREERS_EMAIL],
           reply_to: email,
           subject: `${preview ? '[Preview] ' : ''}Application: ${role.title} (${name})`,

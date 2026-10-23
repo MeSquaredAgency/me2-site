@@ -9,6 +9,8 @@ if (!Uint8Array.prototype.toBase64) {
 }
 const { application, applicationWith, MAX_CV_BYTES } = await import('../worker/applications.ts');
 
+// From headers carry the name as an RFC 2047 encoded-word (worker/email.ts); this reads it back.
+const readFrom = (f = '') => f.replace(/=\?UTF-8\?B\?([^?]+)\?=/, (_, b) => Buffer.from(b, 'base64').toString('utf8'));
 let failed = 0;
 const check = (name, ok, detail = '') => {
   if (!ok) failed++;
@@ -58,7 +60,7 @@ const run = async (req, e = env) => { calls = []; const res = await send(req, e)
   const c = calls[0]?.body ?? {};
   check('one Resend call', calls.length === 1 && calls[0].url === 'https://api.resend.com/emails');
   check('to people@', JSON.stringify(c.to) === JSON.stringify(['people@mesquaredagency.com']), JSON.stringify(c.to));
-  check('from Me Squared careers', c.from === 'Me Squared careers <website@mesquaredagency.com>', c.from);
+  check('from Me² careers', readFrom(c.from) === 'Me² careers <website@mesquaredagency.com>', c.from);
   check('reply to the applicant', c.reply_to === 'test@example.com');
   check('subject names the role and the applicant', c.subject === 'Application: Operations Executive (Property Management) (Test Person)', c.subject);
   check('CV attached unchanged', c.attachments?.length === 1 && c.attachments[0].content === small.toString('base64'));
