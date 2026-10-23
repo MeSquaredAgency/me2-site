@@ -11,7 +11,7 @@
 | Redirects | Every `http://` and `www.` address goes to `https://mesquaredagency.com` in one 301 (done in `worker/index.ts`, because the zone's "Always Use HTTPS" setting is off) |
 | Email | Google Workspace. MX, SPF, DKIM, DMARC and verification records are separate from the site's records; connecting the site didn't touch them |
 | Code | GitHub **MeSquaredAgency/me2-site** (private). A GitHub Actions workflow builds and publishes it (below) |
-| Node | Builds use Node 24 (`.node-version`, read by the workflow). The build imports `.ts` config files directly, which needs Node 23.6 or later |
+| Node | Builds use Node 26 (`.node-version`, read by the workflow), which has the `toBase64()` the job application route uses, as Workers do. The build imports `.ts` config files directly, which needs Node 23.6 or later |
 
 **Never publish from the APN Real Estate Cloudflare account.** `account_id` in `wrangler.jsonc` pins every command to the Me² account.
 
