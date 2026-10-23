@@ -1,6 +1,12 @@
 // Checks the job application route (worker/applications.ts) without a network: Resend is stubbed, and each
 // case builds the request a browser would send. Spec: docs/superpowers/specs/2026-10-16-careers-design.md.
 // Usage: node scripts/check-applications.mjs
+// The route encodes the CV with Uint8Array's built-in toBase64(), which Workers and Node 25+ have (builds use 26,
+// .node-version) but Node 22 and 24 don't. Fill it in for this test only, with Buffer, which is as quick, so the timing
+// checks still count.
+if (!Uint8Array.prototype.toBase64) {
+  Uint8Array.prototype.toBase64 = function () { return Buffer.from(this.buffer, this.byteOffset, this.byteLength).toString('base64'); };
+}
 const { application, applicationWith, MAX_CV_BYTES } = await import('../worker/applications.ts');
 
 let failed = 0;
@@ -9,11 +15,13 @@ const check = (name, ok, detail = '') => {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${!ok && detail ? `  (${detail})` : ''}`);
 };
 
-// Resend stub: records each call and answers with the status the case sets.
+// Resend stub: records each call and answers with the status the case sets. The body is parsed when a check reads it,
+// so the 4 MB timing below counts the handler's work, not the stub's.
 let calls = [];
 let resendStatus = 200;
 globalThis.fetch = async (url, init) => {
-  calls.push({ url: String(url), body: JSON.parse(init.body), headers: init.headers });
+  let parsed;
+  calls.push({ url: String(url), get body() { return (parsed ??= JSON.parse(init.body)); }, headers: init.headers });
   return new Response(JSON.stringify(resendStatus === 200 ? { id: 'test' } : { name: 'rate_limit_exceeded' }), { status: resendStatus });
 };
 // Everything the handler logs, to prove no personal details reach the logs.

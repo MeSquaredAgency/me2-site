@@ -87,7 +87,7 @@ check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide',
 const privacyHtml = decode(readFileSync('dist/privacy/index.html', 'utf8'));
 check('privacy: team in Phnom Penh only', privacyHtml.includes('Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia.') && !/Adelaide/.test(privacyHtml));
 // EC, 20 Oct 2026: WhatsApp on +855 69 713 244, automatic first replies, call backs (spec: docs/superpowers/specs/2026-10-19-reply-bots.md).
-check('privacy: WhatsApp, call backs, automatic replies, Meta, dated 22 Oct', ['If you message us on WhatsApp, we collect your phone number', 'If you ask us to call you back', 'we email you an automatic confirmation', 'Cloudflare, Resend, Google (for email and Google Analytics), Meta (for WhatsApp) and Anthropic (for the chat)', 'Last updated 22 October 2026'].every((t) => privacyHtml.includes(t)));
+check('privacy: WhatsApp, call backs, automatic replies, Meta, dated 23 Oct', ['If you message us on WhatsApp, we collect your phone number', 'If you ask us to call you back', 'we email you an automatic confirmation', 'Cloudflare, Resend, Google (for email and Google Analytics), Meta (for WhatsApp) and Anthropic (for the chat)', 'Last updated 23 October 2026'].every((t) => privacyHtml.includes(t)));
 const { siteConfig: idConfig } = await import('../src/config/site.config.ts');
 const waNumber = idConfig.WHATSAPP_NUMBER;
 const waUrl = `https://wa.me/${waNumber.replace(/\D/g, '')}`;
@@ -107,6 +107,9 @@ check(ga4Id ? 'analytics: GA4 tag on the home and privacy pages, live domain onl
       && ['script-src', 'connect-src', 'img-src'].every((d) => new RegExp(`${d}[^;]*googletagmanager\\.com`).test(csp)) && /connect-src[^;]*google-analytics\.com/.test(csp)
       && privacyHtml.includes('We use Google Analytics to see how many people visit this site')
     : !html.includes('googletagmanager') && !privacyHtml.includes('We use Google Analytics'));
+// Cloudflare Web Analytics (EC, 23 Oct 2026): Cloudflare injects its beacon into the live pages, so the CSP must allow it, and the policy says it sets no cookies.
+check('analytics: CSP allows the Cloudflare Web Analytics beacon, and the privacy policy covers it',
+  /script-src[^;]*https:\/\/static\.cloudflareinsights\.com/.test(csp) && /connect-src[^;]*https:\/\/cloudflareinsights\.com/.test(csp) && privacyHtml.includes('Its visit counting (Cloudflare Web Analytics) sets no cookies.'));
 // EC's terms, 16 Oct 2026 ("Yes, all good terms").
 for (const q of ['How soon can you start?', 'Is there a lock-in contract?', 'What if your team gets something wrong?', 'What happens to our data, and who can see it?']) check(`FAQ: ${q}`, has(q) && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === q)));
 // Facebook and LinkedIn: in the footer, the structured data and llms.txt once set in site.config.ts, and nowhere while empty.
