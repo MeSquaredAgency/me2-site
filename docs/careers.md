@@ -33,7 +33,7 @@ It never asks for date of birth, a photo, gender, nationality, ID or salary hist
 - the CV is 4 MB or under
 - bots are dropped (a hidden field, and a form filled in under 2.5 seconds)
 
-It then emails the application through Resend, from "Me Squared careers" `<website@…>` to people@. Reply-To is the applicant, so pressing Reply answers them, and the subject is `Application: <role> (<name>)`. Applications sent from a preview link have `[Preview] ` at the start of the subject. The Worker's logs record only the outcome and the role, never who applied.
+It then emails the application through Resend, from "Me² careers" `<website@…>` to people@. Reply-To is the applicant, so pressing Reply answers them, and the subject is `Application: <role> (<name>)`. Applications sent from a preview link have `[Preview] ` at the start of the subject. The Worker's logs record only the outcome and the role, never who applied.
 
 | Situation | What the applicant sees |
 | --- | --- |

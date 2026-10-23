@@ -4,6 +4,8 @@
 // Usage: node scripts/check-enquiry.mjs
 const { enquiry } = await import('../worker/index.ts');
 const { content } = await import('../src/content/site.ts');
+// From headers carry the name as an RFC 2047 encoded-word (worker/email.ts); this reads it back.
+const readFrom = (f = '') => f.replace(/=\?UTF-8\?B\?([^?]+)\?=/, (_, b) => Buffer.from(b, 'base64').toString('utf8'));
 
 let failed = 0;
 const check = (name, ok, detail = '') => {
@@ -60,12 +62,13 @@ const conf = content.enquiryConfirmation;
   check('enquiry still goes to hello@, Reply-To the visitor', JSON.stringify(e.to) === JSON.stringify(['hello@mesquaredagency.com']) && e.reply_to === 'zelda@example.com');
   const c = calls[1]?.body ?? {};
   check('confirmation to the visitor only', JSON.stringify(c.to) === JSON.stringify(['zelda@example.com']), JSON.stringify(c.to));
-  check('confirmation from Me Squared <hello@>, Reply-To hello@', c.from === 'Me Squared <hello@mesquaredagency.com>' && c.reply_to === 'hello@mesquaredagency.com', `${c.from} / ${c.reply_to}`);
+  check('confirmation from Me² <hello@> (never "Me Squared"), Reply-To hello@', readFrom(c.from) === 'Me² <hello@mesquaredagency.com>' && !c.from.includes('Squared') && c.reply_to === 'hello@mesquaredagency.com', `${c.from} / ${c.reply_to}`);
   check('confirmation subject', c.subject === conf.subject, c.subject);
   check('confirmation marked as an automatic reply', c.headers?.['Auto-Submitted'] === 'auto-replied' && c.headers?.['X-Auto-Response-Suppress'] === 'All', JSON.stringify(c.headers));
   check('confirmation says it is automatic, a person will reply usually within 2 hours, and offers a call back',
     ['This is an automatic reply', 'A person from our team will reply to this email, usually within 2 hours.', "If you'd rather talk"].every((t) => c.text?.includes(t)));
-  check('confirmation signs off as Me² with the site address', c.text?.includes('Me²\nhttps://mesquaredagency.com') && !c.text?.includes('{SITE_NAME}') && c.html?.includes('https://mesquaredagency.com'));
+  check('confirmation carries the Workspace footer: Me², the line, site and email, the confidentiality note', ['Me² | We run the back office. You run the business.', 'mesquaredagency.com • hello@mesquaredagency.com', content.emailFooter.disclaimer].every((t) => c.text?.includes(t)) && !c.text?.includes('{SITE_NAME}'));
+  check('confirmation HTML has the footer and the logo', c.html?.includes(content.emailFooter.disclaimer) && c.html?.includes('src="https://mesquaredagency.com/email/me2-logo.png"') && c.html?.includes('href="mailto:hello@mesquaredagency.com"'));
   // Anyone can type someone else's address, so the confirmation is fixed text: nothing the visitor typed goes back out.
   check('confirmation never repeats the name, message or topic', ['Zelda', 'XYZZY', 'overdue invoices', 'Extra set of hands'].every((t) => !JSON.stringify(c).includes(t)));
 }

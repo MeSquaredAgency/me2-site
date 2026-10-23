@@ -391,6 +391,14 @@ export const content = {
     done: 'Your details are with our team.',
   },
 
+  /**
+   * The compliance footer on email the site sends outside Me² (worker/email.ts): the same wording as the footer
+   * Google Workspace adds to the team's own mail (EC, 23 Oct 2026). The tagline line uses hero.h1.
+   */
+  emailFooter: {
+    disclaimer: 'This email and any attachments are confidential and intended only for the named recipient. If you received it in error, please tell the sender and delete it.',
+  },
+
   footer: {
     contactHeading: 'Contact',
     /** Shown while WHATSAPP_NUMBER is set in site.config.ts. */
