@@ -9,7 +9,7 @@
 | Config | `wrangler.jsonc` (project, account, domains) and `worker/index.ts` (redirects, the forms, and markdown for AI agents that ask for it: [docs/search-and-ai.md](docs/search-and-ai.md)) |
 | Domains | `mesquaredagency.com` (the site) and `www.mesquaredagency.com` (redirects to it). Cloudflare manages their DNS records and HTTPS certificates |
 | Redirects | Every `http://` and `www.` address goes to `https://mesquaredagency.com` in one 301 (done in `worker/index.ts`, because the zone's "Always Use HTTPS" setting is off) |
-| Email | Google Workspace. MX, SPF, DKIM, DMARC and verification records are separate from the site's records; connecting the site didn't touch them |
+| Email | Google Workspace. MX, SPF, DKIM, DMARC and verification records are separate from the site's records; connecting the site didn't touch them. DMARC enforces (`p=quarantine`) since 24 Oct 2026: see "Email authentication" |
 | Code | GitHub **MeSquaredAgency/me2-site** (private). A GitHub Actions workflow builds and publishes it (below) |
 | Node | Builds use Node 26 (`.node-version`, read by the workflow), which has the `toBase64()` the job application route uses, as Workers do. The build imports `.ts` config files directly, which needs Node 23.6 or later |
 
@@ -89,7 +89,7 @@ The enquiry form posts to `/api/enquiry` (in `worker/index.ts`), which emails ea
 One-time setup:
 
 1. **Create a Resend account** at resend.com (the free plan), ideally signed up with a business address such as tech@ so it isn't tied to one person.
-2. **Resend → Domains → Add domain → `mesquaredagency.com`.** Resend lists the DNS records to add: a DKIM record (`resend._domainkey`) and, for bounces, an MX and an SPF record on the `send` subdomain. None of them touch the bare domain's MX or SPF, so Google Workspace mail is unaffected. **The domain already has a DMARC record** (`_dmarc`, `p=none`): if Resend suggests one, keep the existing record and don't add a second.
+2. **Resend → Domains → Add domain → `mesquaredagency.com`.** Resend lists the DNS records to add: a DKIM record (`resend._domainkey`) and, for bounces, an MX and an SPF record on the `send` subdomain. None of them touch the bare domain's MX or SPF, so Google Workspace mail is unaffected. **The domain already has a DMARC record** (`_dmarc`, `p=quarantine` since 24 Oct 2026; see "Email authentication" below): if Resend suggests one, keep the existing record and don't add a second.
 3. **Add those records in Cloudflare** (Me² account → Domains → mesquaredagency.com → DNS → Records → Add record), copying each name and value exactly; leave proxying off ("DNS only"). Back in Resend, press **Verify**; it usually turns green within minutes.
 4. **Resend → API Keys → Create API key**: permission **Sending access**, domain **mesquaredagency.com**. Copy it (Resend shows it once).
 5. **Give the key to the site as a secret**, not in the code. Safest, in a terminal in this folder: `npx wrangler versions secret put RESEND_API_KEY` (paste the key when asked). That adds the secret without publishing anything; the next push to `main` goes live with it. Secrets stay in place across future deploys. **See the warning below before using the dashboard.**
@@ -118,6 +118,26 @@ One-time setup (EC; about 15 minutes):
 **Rate limit:** `CHAT_LIMIT` in `wrangler.jsonc` (Workers rate limiting, no dashboard step) allows 8 messages a minute from one address. The chat also stops after 12 visitor messages.
 
 **Changing the key:** create a new key in the Console, replace the secret with `npx wrangler versions secret put ANTHROPIC_API_KEY` and push `main`, then delete the old key in the Console.
+
+## Email authentication (DMARC) and the inbox logo (BIMI)
+**DMARC is `p=quarantine; pct=100`** since 24 Oct 2026 (it was `p=none`, report-only). Mail claiming to be from @mesquaredagency.com that fails both SPF and DKIM alignment now goes to spam instead of the inbox, which stops others sending fake Me² email. EC asked for it; it is also step 1 towards BIMI. Before the change, Cloudflare's DMARC reports for the four weeks from 27 Sep showed every message passing: Google Workspace (144), Resend (11, listed as Amazon) and 3 forwarded copies.
+
+The record (Cloudflare → mesquaredagency.com → DNS, `_dmarc` TXT):
+
+```
+v=DMARC1; p=quarantine; pct=100; rua=mailto:4d52e8048e194fabb6acd2a450df49d0@dmarc-reports.cloudflare.net
+```
+
+- **Adding a new service that sends as @mesquaredagency.com** (a newsletter tool, a CRM, a booking system): set up its DKIM (and SPF, if it asks) for mesquaredagency.com *before* it sends, or its mail will land in spam. Check Cloudflare → Email → DMARC Management a few days later: every source should show DMARC pass.
+- **Undo:** change `p=quarantine` back to `p=none` in that record. It takes effect within minutes.
+- **Later:** once a month or so of reports stays clean, `p=reject` is the stricter next step (failing mail is refused rather than sent to spam). BIMI works with either.
+
+**BIMI** (Me²'s logo as the sender's picture in Gmail and others) also needs a square SVG Tiny PS version of the logo, a `default._bimi` TXT record, and a paid mark certificate (about US$650–1,500 a year). Neither certificate is available to Me² yet:
+
+- **CMC** (Common Mark Certificate, no trademark needed): the logo must have been public on a domain Me² controls for at least 12 months, checked against web archive snapshots. The site went live on 9 Oct 2026, so about **October 2027**.
+- **VMC** (Verified Mark Certificate, adds Gmail's blue tick): needs a **registered** trademark (pending doesn't count) from an accepted office such as IP Australia (about A$250 a class, 7+ months). A trademark is a decision for EC, Patrick and the lawyer.
+
+Revisit in late 2027. Google's requirements: https://knowledge.workspace.google.com/admin/security/set-up-bimi
 
 ## After launch
 - Submit `https://mesquaredagency.com/sitemap.xml` in Google Search Console (add the domain as a property first).
