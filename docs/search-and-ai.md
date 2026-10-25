@@ -26,6 +26,11 @@ Audited 17 Oct 2026 (two days after the site went public). Recheck on **17 Nov 2
 - **Reply time on the page:** "Usually within 2 hours, evenings and weekends included." (EC, 20 Oct 2026; before that "within 2 hours, day or night"), as a FAQ answer.
 - **LinkedIn company page:** links to mesquaredagency.com, uses a description that matches the site and lists Phnom Penh (checked 19 Oct 2026).
 
+## SEO audit, 25 Oct 2026
+- **Search Console (19–24 Oct):** 22 impressions and 7 clicks, all for the name ("me²", "mesquared", "me squared"), at an average position of about 3. No impressions for any service search yet: with one sales page there is nothing else for a service search to land on.
+- **Changed (branch `seo/audit-quick-wins`):** home title now says what Me² is and who it's for (`Me²: outsourced back office for Australian businesses`), the description adds "Australian", the privacy title is `Privacy policy | Me²`, the footer's column labels are no longer `h2`s (the page outline now holds only real sections), the footer's Careers and Privacy links are at least 24px tall, and each `Service` has a `serviceType` and a `url`.
+- **Drafts for review, not on the site:** service pages, guides, comparisons and directory listing copy in `docs/seo/drafts/`. Publishing any of them means moving from one page to several, which is EC's call (BRIEF).
+
 ## Still to do (owners)
 - **Patrick and lawyer: legal entity.** Name and registration number behind `showLegalEntity` once confirmed.
 - **EC: Facebook page.** It can't be checked without signing in. Make sure it links to mesquaredagency.com and uses the same description as LinkedIn.
