@@ -1,6 +1,7 @@
 // Runs after `astro build`: writes sitemap.xml, robots.txt and llms.txt into the
 // build output from the routes file, flags and config, so none of them are hand-edited.
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 
 const fixture = process.env.SITE_FIXTURE === '1';
 const outDir = process.env.OUT_DIR ?? (fixture ? '.verify/fixture/dist' : 'dist');
@@ -24,9 +25,16 @@ const routes = JSON.parse(readFileSync('src/data/routes.json', 'utf8'));
 // A role page is only built (and only in the sitemap) while its role is listed in src/content/careers.ts.
 const indexable = routes.filter((r) => !r.noindex && (!r.flag || flagOn(r.flag)) && (!r.role || listed.has(r.role)) && !fixture);
 
+// lastmod is the date of the last commit that changed the site's pages or files, not the build date, so it only moves when the site does.
+// The publish workflow checks out the full history for this; without git it falls back to today.
+let lastmod = new Date().toISOString().slice(0, 10);
+try {
+  lastmod = execFileSync('git', ['log', '-1', '--format=%cs', '--', 'src', 'public'], { encoding: 'utf8' }).trim() || lastmod;
+} catch {}
+
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${indexable.map((r) => `  <url><loc>${base}${r.path}</loc></url>`).join('\n')}
+${indexable.map((r) => `  <url><loc>${base}${r.path}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n')}
 </urlset>
 `;
 writeFileSync(`${outDir}/sitemap.xml`, sitemap);

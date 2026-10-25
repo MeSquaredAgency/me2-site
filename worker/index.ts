@@ -1,6 +1,7 @@
 // Edge entry point for the Me² site (Cloudflare Workers static assets).
 // Almost everything is a static file from dist/. The worker:
-//  1. sends every visitor to https:// and the bare domain (no www), in a single 301;
+//  1. sends every visitor to https:// and the bare domain (no www), in a single 301, and turns the asset handler's
+//     trailing-slash 307s (/careers -> /careers/) into 301s;
 //  2. stores completed assessment submissions in D1 (POST /api/assessments);
 //  3. handles the enquiry form (POST /api/enquiry): checks it, drops bots, and emails it to
 //     FORM_TO_EMAIL through Resend (its HTTP API; the RESEND_API_KEY secret, set in Cloudflare, see DEPLOY.md), then,
@@ -65,6 +66,11 @@ export default {
       if (page) return page;
     }
     const res = await env.ASSETS.fetch(request);
+    // The asset handler sends /careers to /careers/ (and /index.html to /) with a 307; these are permanent, so say so with a 301.
+    if (res.status === 307) {
+      const to = res.headers.get('location');
+      if (to) return Response.redirect(new URL(to, url).toString(), 301);
+    }
     // Pages now come in two versions at one address, so caches must keep them apart by the Accept header.
     if (!(res.headers.get('content-type') ?? '').startsWith('text/html')) return res;
     const html = new Response(res.body, res);
