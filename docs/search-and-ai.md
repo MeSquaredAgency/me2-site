@@ -29,6 +29,7 @@ Audited 17 Oct 2026 (two days after the site went public). Recheck on **17 Nov 2
 ## SEO audit, 25 Oct 2026
 - **Search Console (19–24 Oct):** 22 impressions and 7 clicks, all for the name ("me²", "mesquared", "me squared"), at an average position of about 3. No impressions for any service search yet: with one sales page there is nothing else for a service search to land on.
 - **Changed (branch `seo/audit-quick-wins`):** home title now says what Me² is and who it's for (`Me²: outsourced back office for Australian businesses`), the description adds "Australian", the privacy title is `Privacy policy | Me²`, the footer's column labels are no longer `h2`s (the page outline now holds only real sections), the footer's Careers and Privacy links are at least 24px tall, and each `Service` has a `serviceType` and a `url`.
+- **Google Business Profile (through Windsor, 25 Oct 2026):** a verified Me² profile already exists (category Business-to-Business service, service area Australia, website set). It had no description. It now has one built only from the site's copy, and its services list matches the site (8 items, replacing "Business Operations Consultancy", since consulting is still "coming next"). The eligibility question under Still to do still stands.
 - **Drafts for review, not on the site:** service pages, guides, comparisons and directory listing copy in `docs/seo/drafts/`. Publishing any of them means moving from one page to several, which is EC's call (BRIEF).
 
 ## Still to do (owners)
