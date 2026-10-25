@@ -9,7 +9,7 @@ import RolePage from '../../components/careers/RolePage.astro';
 import ApplicationOutcome from '../../components/careers/ApplicationOutcome.astro';
 import { flags } from '../../config';
 import { findRole, listedRoles } from '../../content/careers';
-import { jobPostingSchema } from '../../lib/schema';
+import { careersBreadcrumbSchema, jobPostingSchema } from '../../lib/schema';
 
 export function getStaticPaths() {
   if (!flags.showCareers) return [];
@@ -25,7 +25,7 @@ const { slug } = Astro.params;
 const role = slug ? findRole(slug) : undefined;
 const path = slug ? `/careers/${slug}/` : '/careers/';
 ---
-<Base path={path} schema={role ? [jobPostingSchema(role)] : []}>
+<Base path={path} schema={role ? [jobPostingSchema(role), careersBreadcrumbSchema(role)] : !slug ? [careersBreadcrumbSchema()] : []}>
   <Header tone="paper" />
   {!slug ? <CareersIndex /> : role ? <RolePage role={role} /> : <ApplicationOutcome kind={slug === 'thanks' ? 'thanks' : 'not-sent'} />}
   <Footer />

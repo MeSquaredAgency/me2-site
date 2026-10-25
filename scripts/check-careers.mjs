@@ -64,7 +64,7 @@ for (const r of [pm, accounts, marketing]) {
   const html = read(`dist/careers/${r.slug}/index.html`);
   const text = textOf(html);
   check(`${r.slug}: built`, html.length > 0);
-  check(`${r.slug}: heading is the area`, h1Of(html) === r.area, h1Of(html));
+  check(`${r.slug}: heading is the full job title`, h1Of(html).replace(' ,', ',') === `${careers.role.kicker}, ${r.area}`, h1Of(html));
   check(`${r.slug}: facts`, text.includes('Starting at US$600 per month, depending on experience') && text.includes('44 hours per week') && text.includes('Phnom Penh, Cambodia'));
   check(`${r.slug}: section headings are h2`, r.sections.every((s) => decode(html).includes(`>${s.h}</h2>`)));
   check(`${r.slug}: LinkedIn link only where the role is on LinkedIn`, r.linkedinUrl ? html.includes(`href="${r.linkedinUrl}"`) && text.includes('Apply on LinkedIn') : !html.includes('linkedin.com/jobs') && !text.includes('Apply on LinkedIn'));

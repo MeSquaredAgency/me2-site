@@ -306,7 +306,7 @@ Needs professional review (never resolved by this brief): #3 GST, #4, #6, #7 num
 - OG title: `We run the back office. You run the business.`
 - OG image text: logo + `We run the back office. You run the business.`
 - 404 title: `Page not found | Me²` · 404 description: `This page doesn't exist or has moved. Go back to the Me² home page.`
-- Privacy title: `Privacy policy | Me²` · Privacy description: `How Me² collects, uses and protects personal information sent through this website, and who to contact with a privacy question.`
+- Privacy title: `Privacy policy | Me²` · Privacy description: `How Me² collects, uses, stores and protects the personal information you send through this website, including enquiries and job applications, and who to ask.`
 
 ### A.1 Header
 - Logo (links home, aria-label `{SITE_NAME_PLAIN} home`)

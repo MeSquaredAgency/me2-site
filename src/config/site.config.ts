@@ -22,6 +22,9 @@ export const siteConfig = {
   /** Google Analytics 4 measurement ID (EC, 22 Oct 2026). Used only with enableTracking, and only on this domain; empty keeps tracking off. */
   GA4_MEASUREMENT_ID: 'G-E2VZ6MW5SF',
   LOCALE: 'en-AU',
+  /** The founder named in the Organization structured data, and when Me² was founded (YYYY or YYYY-MM-DD). Empty until EC confirms them; empty leaves them out. */
+  FOUNDER_NAME: '',
+  FOUNDING_DATE: '',
   /** Footer entity line, shown only with showLegalEntity. */
   LEGAL_ENTITY: '[[TBC: legal entity name and registration number — Patrick + lawyer]]',
 };
