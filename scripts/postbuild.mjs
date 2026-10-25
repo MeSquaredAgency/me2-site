@@ -1,6 +1,7 @@
 // Runs after `astro build`: writes sitemap.xml, robots.txt and llms.txt into the
 // build output from the routes file, flags and config, so none of them are hand-edited.
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 
 const fixture = process.env.SITE_FIXTURE === '1';
 const outDir = process.env.OUT_DIR ?? (fixture ? '.verify/fixture/dist' : 'dist');
@@ -18,9 +19,15 @@ const base = `https://${domain}`;
 const routes = JSON.parse(readFileSync('src/data/routes.json', 'utf8'));
 const indexable = routes.filter((r) => !r.noindex && (!r.flag || flagOn(r.flag)) && !fixture);
 
+// lastmod is the date of the last commit that changed the site's source, not the build date, so it only moves when a page does.
+let lastmod = new Date().toISOString().slice(0, 10);
+try {
+  lastmod = execFileSync('git', ['log', '-1', '--format=%cs', '--', 'src', 'public'], { encoding: 'utf8' }).trim() || lastmod;
+} catch {}
+
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${indexable.map((r) => `  <url><loc>${base}${r.path}</loc></url>`).join('\n')}
+${indexable.map((r) => `  <url><loc>${base}${r.path}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n')}
 </urlset>
 `;
 writeFileSync(`${outDir}/sitemap.xml`, sitemap);

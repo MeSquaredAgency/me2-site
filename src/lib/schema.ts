@@ -13,6 +13,7 @@ export function homeSchema() {
     url: `${siteUrl}/`,
     email: config.CONTACT_EMAIL,
     logo: `${siteUrl}/logo.png`,
+    areaServed: { '@type': 'Country', name: 'Australia' },
   };
   const services = content.offers.cards.map((card) => ({
     '@context': 'https://schema.org',

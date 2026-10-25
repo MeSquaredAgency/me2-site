@@ -16,6 +16,14 @@ export default {
       if (isWww) url.hostname = url.hostname.slice(4);
       return Response.redirect(url.toString(), 301);
     }
+    // One canonical URL per page: /privacy -> /privacy/ as a permanent 301 (the asset handler's own redirect is a 307).
+    const last = url.pathname.split('/').pop() ?? '';
+    if ((request.method === 'GET' || request.method === 'HEAD') && last && !last.includes('.')) {
+      const slashed = new URL(url);
+      slashed.pathname += '/';
+      const probe = await env.ASSETS.fetch(new Request(slashed, { method: 'HEAD' }));
+      if (probe.ok) return Response.redirect(slashed.toString(), 301);
+    }
     return env.ASSETS.fetch(request);
   },
 };
