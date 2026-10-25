@@ -82,7 +82,7 @@ check('FAQ: reply time, in the page, FAQ schema and llms.txt', has('Usually with
 check('no "day or night" promise left (page, structured data, llms.txt)', lacks('day or night') && !JSON.stringify(ld).includes('day or night') && !llms.includes('day or night'));
 const thanksHtml = decode(readFileSync('dist/thanks/index.html', 'utf8'));
 check('/thanks/: usually within 2 hours, on the page and in its description', thanksHtml.includes("We'll reply to the email you gave us, usually within 2 hours.") && thanksHtml.includes('We will reply to the email you gave us, usually within 2 hours.'));
-check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide', has('Our team is based in Phnom Penh, Cambodia.') && has('In Phnom Penh, Cambodia, at our Command Centre.') && ld.find((x) => x['@type'] === 'Organization')?.address?.addressLocality === 'Phnom Penh' && llms.includes('Where is the team based?') && lacks('Adelaide'));
+check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide', has('Our team is based in Phnom Penh, Cambodia.') && has('In Phnom Penh, Cambodia, at our Command Centre.') && ld.find((x) => x['@type'] === 'Organization')?.address?.addressLocality === 'Phnom Penh' && llms.includes('Where is the team based?') && !text.replace(/Selected work.*?More projects are being added\./s, '').includes('Adelaide')); // APN's offices are named in the work section; Me² itself is never placed in Adelaide
 // EC, 19 Oct 2026: the team is only in Phnom Penh, so the privacy page's overseas disclosure says so.
 const privacyHtml = decode(readFileSync('dist/privacy/index.html', 'utf8'));
 check('privacy: team in Phnom Penh only', privacyHtml.includes('Our team works from Phnom Penh, Cambodia, so your enquiry is read and answered by people in Cambodia.') && !/Adelaide/.test(privacyHtml));
@@ -119,7 +119,7 @@ for (const [label, url] of [['Facebook', siteConfig.FACEBOOK_URL], ['LinkedIn', 
   const inFooter = new RegExp(`<a href="${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*>${label}</a>`).test(html);
   check(`${label} link ${url ? 'in footer, sameAs and llms.txt' : 'left out while its address is empty'}`, url ? inFooter && sameAs.includes(url) && llms.includes(url) : !new RegExp(`>${label}</a>`).test(html));
 }
-for (const a of ['Business operations', 'Admin', 'Customer service and support', 'Finance and accounting', 'Marketing', 'Social media', 'Paid ads']) check(`area: ${a}`, new RegExp(`<span class="area"[^>]*>${a}</span>`).test(offerHtml));
+for (const a of ['Business operations', 'Admin', 'Customer service and support', 'Finance and accounting', 'Marketing', 'Social media', 'Paid ads']) check(`area: ${a}`, new RegExp(`<span class="area"[^>]*><a href="/services/[a-z-]+/"[^>]*>${a}</a></span>`).test(offerHtml));
 check('coming next line', offerText.includes('Coming next: legal, tech development, consulting and strategy.'));
 check('extra set of hands panel', offerText.includes('An extra set of hands') && offerText.includes('Quoted per job') && offerText.includes("Don't need a whole team?") && offerText.includes('Ask about an extra set of hands'));
 check('old one-job wording gone', lacks('Start with one job') && lacks('your own team reviews'));

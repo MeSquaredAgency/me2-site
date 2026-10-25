@@ -119,7 +119,8 @@ function join(children, base) {
     if (!s) continue;
     const isElement = !('text' in c);
     if (isElement && lastWasElement && /[\p{L}0-9.!?:;,)\]]$/u.test(out) && /^[\p{L}0-9[]/u.test(s)) {
-      out += /[.!?:;,)\]]$/.test(out) || s.startsWith('[') ? ' ' : ': ';
+      // A span that ends in a link ("[Admin](…)") still takes the colon, like the plain-text span it replaced.
+      out += (/[.!?:;,)\]]$/.test(out) && !/\]\([^)\s]*\)$/.test(out)) || s.startsWith('[') ? ' ' : ': ';
     }
     out += s;
     lastWasElement = isElement;

@@ -36,7 +36,7 @@ const onePrice = price(c.one.price);
       </div>
       <ul class="areas">
         {c.office.areas.map((a) => (
-          <li><span class="area">{a.name}</span><span class="area-eg">{a.example}</span></li>
+          <li><span class="area"><a href={a.href} class="tlink">{a.name}</a></span><span class="area-eg">{a.example}</span></li>
         ))}
       </ul>
       <p class="coming">{c.office.coming}</p>

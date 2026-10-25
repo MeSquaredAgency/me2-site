@@ -65,7 +65,7 @@ ${faq}
 - [Home](${base}/): what ${name} does, the offer and common questions
 ${flagOn('showProof') ? `- [Work](${base}/#work): projects ${name} has designed and built\n` : ''}- [Start here](${base}/#services): the whole back office, an extra set of hands and websites, and how each is quoted
 - [How we work](${base}/#how): a person owns every task; one accountable team
-${flagOn('showCareers') && listed.size ? `- [Careers](${base}/careers/): open roles in ${name}'s Command Centre in Phnom Penh, and how to apply\n` : ''}${flagOn('showPrivacyPage') ? `- [Privacy](${base}/privacy/): how enquiries and job applications are handled\n` : ''}
+${routes.filter((r) => r.llms && !r.noindex).map((r) => `- [${r.llms}](${base}${r.path}): ${r.description.replace(/ \| .*$/, '')}\n`).join('')}${flagOn('showCareers') && listed.size ? `- [Careers](${base}/careers/): open roles in ${name}'s Command Centre in Phnom Penh, and how to apply\n` : ''}${flagOn('showPrivacyPage') ? `- [Privacy](${base}/privacy/): how enquiries and job applications are handled\n` : ''}
 ## Contact
 - [Email ${email}](mailto:${email})
 ${fixture || !siteConfig.WHATSAPP_NUMBER ? '' : `- [WhatsApp ${siteConfig.WHATSAPP_NUMBER}](https://wa.me/${siteConfig.WHATSAPP_NUMBER.replace(/\D/g, '')})\n`}${fixture ? '' : [['Facebook', siteConfig.FACEBOOK_URL], ['LinkedIn', siteConfig.LINKEDIN_URL]].filter(([, url]) => url).map(([label, url]) => `- [${name} on ${label}](${url})\n`).join('')}`;

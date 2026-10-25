@@ -1,0 +1,52 @@
+---
+/** One service or use-case page: a heading like the privacy page's, the copy from its markdown file, links to the other pages, and the home page's enquiry section (form and dialog). */
+import EnquireLink from './EnquireLink.astro';
+import Contact from './Contact.astro';
+import { servicePages, pagePath } from '../lib/servicePages';
+interface Props { page: (typeof servicePages)[number] }
+const { page } = Astro.props;
+const { Content } = page;
+const others = servicePages.filter((p) => p.slug !== page.slug);
+---
+<main id="main">
+  <section class="head on-paper">
+    <div class="wrap head-inner">
+      <p class="crumb"><a href="/#services" class="tlink">Start here</a></p>
+      <p class="kicker">{page.kicker}</p>
+      <h1>{page.h1}</h1>
+      <EnquireLink topic={page.topic} source={`page:${page.slug}`} class="btn btn-dark"><span class="dot" aria-hidden="true"></span>Talk to us</EnquireLink>
+    </div>
+  </section>
+  <section class="section on-paper">
+    <div class="wrap prose">
+      <Content />
+    </div>
+  </section>
+  <nav aria-label="Other services" class="section on-paper others">
+    <div class="wrap others-inner">
+      <p class="others-title">Also from Me²</p>
+      <ul>{others.map((p) => <li><a href={pagePath(p)} class="tlink">{p.kicker}</a></li>)}</ul>
+    </div>
+  </nav>
+  <Contact />
+</main>
+<style>
+  /* Warm paper, like the privacy and careers pages; a hairline parts the title from the copy. */
+  .head { padding: 170px 0 72px; border-bottom: 1px solid var(--color-line); }
+  .head-inner { display: grid; gap: 22px; justify-items: start; }
+  .crumb { font-size: 0.95rem; color: var(--color-slate); }
+  .crumb a { color: var(--color-ink); }
+  h1 { font-size: clamp(2.6rem, 6.5vw, 6rem); line-height: 0.95; letter-spacing: -0.05em; max-width: 16ch; }
+  .prose { display: grid; gap: 18px; max-width: calc(68ch + 2 * var(--gutter)); margin-inline: 0; }
+  .prose :global(h2) { font-size: clamp(1.5rem, 2.4vw, 2.1rem); letter-spacing: -0.025em; line-height: 1.15; margin-top: 28px; }
+  .prose :global(p), .prose :global(li) { color: var(--color-slate); font-size: 1.08rem; line-height: 1.65; max-width: 68ch; }
+  .prose :global(strong) { color: var(--color-ink); font-weight: 600; }
+  .prose :global(ul), .prose :global(ol) { display: grid; gap: 10px; padding-left: 1.2em; margin: 0; }
+  .prose :global(a) { color: var(--color-ink); text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+  .prose :global(em) { color: var(--color-ink); }
+  .others { border-top: 1px solid var(--color-line); }
+  .others-inner { display: grid; gap: 10px; }
+  .others-title { color: var(--color-slate); font-size: 0.95rem; }
+  .others ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 28px; }
+  .others a { display: inline-flex; align-items: center; min-height: 44px; }
+</style>

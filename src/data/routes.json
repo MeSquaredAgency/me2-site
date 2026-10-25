@@ -86,5 +86,45 @@
     "description": "Your enquiry didn't send. Email Me² directly instead.",
     "ogImage": "/og-image.png",
     "noindex": true
+  },
+  {
+    "path": "/services/finance/",
+    "title": "Outsourced bookkeeping support and invoice chasing | Me²",
+    "description": "Me² chases overdue invoices, codes your bills and sends a weekly report, done by a trained finance specialist backed by AI. Quoted for your business.",
+    "ogImage": "/og-image.png",
+    "noindex": false,
+    "llms": "Finance and accounting"
+  },
+  {
+    "path": "/services/admin/",
+    "title": "Outsourced admin and operations support | Me²",
+    "description": "Data entry, scheduling, the inbox, client intake and quote follow-up, run by a trained Me² person backed by AI. Start with one job. Quoted per business.",
+    "ogImage": "/og-image.png",
+    "noindex": false,
+    "llms": "Admin and operations"
+  },
+  {
+    "path": "/services/customer-service/",
+    "title": "Outsourced customer service, evenings and weekends | Me²",
+    "description": "Customer emails and messages answered in your voice by a trained Me² person, usually within 2 hours, evenings and weekends included. Quoted per business.",
+    "ogImage": "/og-image.png",
+    "noindex": false,
+    "llms": "Customer service and support"
+  },
+  {
+    "path": "/services/marketing/",
+    "title": "Outsourced marketing, social media and ads | Me²",
+    "description": "Newsletters, social posts and paid ads run as part of your back office: drafted in your voice for you to approve, and reported monthly. Quoted per business.",
+    "ogImage": "/og-image.png",
+    "noindex": false,
+    "llms": "Marketing, social media and paid ads"
+  },
+  {
+    "path": "/use-cases/property-management-admin/",
+    "title": "Property management admin support: an example | Me²",
+    "description": "An example of Me² at work: arrears follow-up, lease paperwork, maintenance and inspections handled for a property management team, with agents approving.",
+    "ogImage": "/og-image.png",
+    "noindex": false,
+    "llms": "Use-case example"
   }
 ]

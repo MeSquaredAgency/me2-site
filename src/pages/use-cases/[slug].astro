@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ServicePage from '../../components/ServicePage.astro';
+import { servicePages, pagePath } from '../../lib/servicePages';
+import { servicePageSchema } from '../../lib/schema';
+// /use-cases/<slug>/: one page per markdown file in src/content/services/ with section 'use-cases'.
+export function getStaticPaths() {
+  return servicePages.filter((p) => p.section === 'use-cases').map((page) => ({ params: { slug: page.slug }, props: { page } }));
+}
+const { page } = Astro.props;
+---
+<Base path={pagePath(page)} schema={servicePageSchema(page)}>
+  <Header tone="paper" />
+  <ServicePage page={page} />
+  <Footer />
+</Base>

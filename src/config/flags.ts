@@ -7,9 +7,9 @@ export const flags = {
   showPricing: true,
   /**
    * Selected work: the portfolio case studies (and the "Work" link in the menu and footer).
-   * Off since 10 Oct 2026 (EC: "get rid of the proof section for now"). On once each project is confirmed with the client's OK.
+   * Off since 10 Oct 2026 (EC: "get rid of the proof section for now"). On since 26 Oct 2026: EC confirmed APN Real Estate's OK.
    */
-  showProof: false,
+  showProof: true,
   /** Hero location line, the "Where is the team based?" FAQ item and the city in the structured data. On since 19 Oct 2026 (EC: "Based in Phnom Penh"). */
   showLocations: true,
   /** Footer entity and registration line, once the contracting entity is confirmed (Patrick + lawyer). */

@@ -44,6 +44,22 @@ export function careersBreadcrumbSchema(role?: Role) {
   };
 }
 
+/** JSON-LD for a service or use-case page: the Service it describes, and breadcrumbs Home › the page. */
+export function servicePageSchema(page: { slug: string; section?: string; h1: string; kicker: string; description: string; serviceType: string }) {
+  const url = `${siteUrl}/${page.section ?? 'services'}/${page.slug}/`;
+  return [
+    { '@context': 'https://schema.org', '@type': 'Service', name: page.kicker, serviceType: page.serviceType, description: page.description, url, provider: { '@id': `${siteUrl}/#organization` }, areaServed: 'AU' },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: config.SITE_NAME, item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: page.kicker, item: url },
+      ],
+    },
+  ];
+}
+
 /** JSON-LD for the home page: Organization, WebSite, one Service per offer (the whole back office, one job, websites), and the visible FAQ. */
 export function homeSchema() {
   // Me²'s own social pages, when set in site.config.ts.

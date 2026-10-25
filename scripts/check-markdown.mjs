@@ -81,7 +81,7 @@ for (const path of pages) {
 // The home page says what the visitor's page says.
 const home = readFileSync('dist/index.html.md', 'utf8');
 check('home: hero line as the top heading', home.includes(`\n# ${content.hero.h1}\n`));
-check('home: services listed with their examples', /^- Admin: \S/m.test(home));
+check('home: services listed with their examples', /^- (\[Admin\]\([^)]+\)|Admin): \S/m.test(home));
 check('home: FAQ answers included', home.includes('Usually within 2 hours, evenings and weekends included.'));
 check('home: the contact email linked', home.includes(`(mailto:${siteConfig.CONTACT_EMAIL})`));
 check('careers: each role links to its page', (readFileSync('dist/careers/index.html.md', 'utf8').match(/^\s*### \[[^\]]+\]\(https:/gm) ?? []).length >= 1);
