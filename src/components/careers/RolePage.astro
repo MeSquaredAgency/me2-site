@@ -22,8 +22,8 @@ const facts = [
   <section class="head on-paper">
     <div class="wrap head-inner">
       <p class="crumb"><a href="/careers/" class="tlink">{c.crumb}</a></p>
-      <p class="kicker">{c.kicker}</p>
-      <h1>{role.area}</h1>
+      <!-- The heading is the full job title (kicker + area), so search engines read "Operations Executive, Property Management"; it looks as before. -->
+      <h1 class="role-title"><span class="kicker">{c.kicker}</span><span class="sr-only">, </span><span class="area">{role.area}</span></h1>
       <dl class="facts">
         {facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
       </dl>
@@ -84,7 +84,9 @@ const facts = [
   .head-inner { display: grid; gap: 22px; justify-items: start; }
   .crumb { font-size: 0.95rem; color: var(--color-slate); }
   .crumb a { color: var(--color-ink); }
-  h1 { font-size: clamp(3rem, 8vw, 8.5rem); line-height: 0.92; letter-spacing: -0.05em; max-width: 14ch; }
+  .role-title { display: grid; gap: 22px; justify-items: start; font-size: inherit; line-height: inherit; letter-spacing: normal; }
+  .role-title .kicker { font-stretch: 100%; line-height: 1.4; }
+  .area { font-size: clamp(3rem, 8vw, 8.5rem); line-height: 0.92; letter-spacing: -0.05em; max-width: 14ch; }
   .facts { display: grid; gap: 18px 40px; margin: 18px 0 0; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; max-width: 980px; }
   @media (min-width: 900px) { .facts { grid-template-columns: repeat(4, max-content); } }
   .facts div { display: grid; gap: 4px; align-content: start; padding-top: 14px; border-top: 1px solid var(--color-line); }

@@ -1,6 +1,7 @@
 // Runs after `astro build`: writes sitemap.xml, robots.txt and llms.txt into the
 // build output from the routes file, flags and config, so none of them are hand-edited.
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 
 const fixture = process.env.SITE_FIXTURE === '1';
 const outDir = process.env.OUT_DIR ?? (fixture ? '.verify/fixture/dist' : 'dist');
@@ -24,9 +25,25 @@ const routes = JSON.parse(readFileSync('src/data/routes.json', 'utf8'));
 // A role page is only built (and only in the sitemap) while its role is listed in src/content/careers.ts.
 const indexable = routes.filter((r) => !r.noindex && (!r.flag || flagOn(r.flag)) && (!r.role || listed.has(r.role)) && !fixture);
 
+// <lastmod>: the date of the last commit that changed the files a page is made from, so the date only moves when the
+// page really changed (search engines ignore lastmod that moves on every deploy). Needs the git history: the publish
+// workflow checks out with fetch-depth 0. Outside a git checkout, today's date.
+const shared = ['src/layouts', 'src/styles', 'src/config', 'src/data/routes.json', 'src/components/Header.astro', 'src/components/Footer.astro'];
+const sourcesOf = (path) =>
+  path === '/' ? [...shared, 'src/pages/index.astro', 'src/content/site.ts', 'src/components', 'src/lib', ':!src/components/careers']
+  : path.startsWith('/careers/') ? [...shared, 'src/pages/careers', 'src/content/careers.ts', 'src/components/careers']
+  : [...shared, 'src/pages/[page].astro', 'src/content/site.ts'];
+const today = new Date().toISOString().slice(0, 10);
+const lastmod = (path) => {
+  try {
+    const args = sourcesOf(path).map((p) => `'${p}'`).join(' ');
+    return execSync(`git log -1 --format=%cs -- ${args}`, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim() || today;
+  } catch { return today; }
+};
+
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${indexable.map((r) => `  <url><loc>${base}${r.path}</loc></url>`).join('\n')}
+${indexable.map((r) => `  <url><loc>${base}${r.path}</loc><lastmod>${lastmod(r.path)}</lastmod></url>`).join('\n')}
 </urlset>
 `;
 writeFileSync(`${outDir}/sitemap.xml`, sitemap);

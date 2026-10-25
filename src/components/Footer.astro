@@ -39,16 +39,17 @@ const social = c.social.map((s) => ({ label: s.label, url: config[s.key] })).fil
   .top { display: grid; gap: 48px; padding-top: 88px; padding-bottom: 72px; }
   .col { display: grid; gap: 14px; align-content: start; }
   .col-title { font-size: 0.95rem; font-weight: 500; font-stretch: 100%; letter-spacing: 0; line-height: 1.4; color: var(--color-haze); }
-  .mail { font-size: clamp(1.3rem, 2vw, 1.8rem); font-weight: 520; letter-spacing: -0.02em; justify-self: start; }
-  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-  ul a { display: inline-flex; min-height: 34px; align-items: center; color: var(--color-mist); text-decoration: none; font-weight: 500; }
+  .mail { font-size: clamp(1.3rem, 2vw, 1.8rem); font-weight: 520; letter-spacing: -0.02em; justify-self: start; display: inline-flex; align-items: center; min-height: 44px; }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  /* Every footer link is at least 44px tall, the comfortable tap size (WCAG 2.5.5). */
+  ul a { display: inline-flex; min-height: 44px; align-items: center; color: var(--color-mist); text-decoration: none; font-weight: 500; }
   @media (hover: hover) and (pointer: fine) { ul a:hover { text-decoration: underline; text-underline-offset: 0.25em; text-decoration-thickness: 1px; } }
   .bottom {
     position: relative; display: flex; flex-wrap: wrap; gap: 8px 32px; align-items: center;
     padding-top: 24px; padding-bottom: 32px; font-size: var(--text-small); color: var(--color-haze);
   }
   .bottom::before { content: ''; position: absolute; top: 0; left: var(--gutter); right: var(--gutter); border-top: 1px solid var(--color-line-dark); }
-  .bottom a { color: var(--color-mist); }
+  .bottom a { color: var(--color-mist); display: inline-flex; align-items: center; min-height: 44px; }
   .giant { padding-top: clamp(24px, 4vw, 56px); overflow: hidden; height: calc(min(100vw, var(--content-max) + 2 * var(--gutter)) * 0.36); box-sizing: border-box; }
   .giant :global(.logo) { display: block; opacity: 0.06; }
   .giant :global(.logo .logo-svg) { width: 100%; height: auto; }

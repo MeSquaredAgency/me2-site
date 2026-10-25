@@ -1,7 +1,7 @@
 [
   {
     "path": "/",
-    "title": "Me²: back-office teams and websites for established businesses",
+    "title": "Back-office teams & websites for established businesses | Me²",
     "description": "Me² runs the back office for established businesses: admin, accounts, customer service and marketing, done by trained people backed by AI agents. Websites too.",
     "ogTitle": "We run the back office. You run the business.",
     "ogImage": "/og-image.png",
@@ -17,7 +17,7 @@
   {
     "path": "/privacy/",
     "title": "Privacy | Me²",
-    "description": "How Me² collects, uses and protects personal information sent through this website, and who to contact with a privacy question.",
+    "description": "How Me² collects, uses, stores and protects the personal information you send through this website, including enquiries and job applications, and who to ask.",
     "ogImage": "/og-image.png",
     "noindex": false,
     "flag": "showPrivacyPage"
@@ -25,7 +25,7 @@
   {
     "path": "/careers/",
     "title": "Careers at Me²: join our team in Phnom Penh",
-    "description": "Join Me²'s team in Phnom Penh. Open roles in property management, accounting and marketing, starting at US$600 a month.",
+    "description": "Join Me²'s team in Phnom Penh. Full-time roles in property management, accounting and marketing for Australian businesses, starting at US$600 a month.",
     "ogImage": "/og-image.png",
     "noindex": false,
     "flag": "showCareers"
@@ -33,7 +33,7 @@
   {
     "path": "/careers/operations-executive-property-management/",
     "title": "Operations Executive (Property Management) | Me² careers",
-    "description": "Property management administration for APN Real Estate, an Australian agency, from Me²'s Command Centre in Phnom Penh. From US$600 a month.",
+    "description": "Property management administration for APN Real Estate, a multi-office Australian agency, at Me²'s Command Centre in Phnom Penh. Full time, from US$600 a month.",
     "ogImage": "/og-image.png",
     "noindex": false,
     "flag": "showCareers",
@@ -41,7 +41,7 @@
   },
   {
     "path": "/careers/operations-executive-accounting/",
-    "title": "Operations Executive (Accounting & Bookkeeping) | Me² careers",
+    "title": "Accounting & Bookkeeping Executive, Phnom Penh | Me² careers",
     "description": "Bookkeeping and accounting for Australian businesses and Me²'s own Cambodian finances, from our Command Centre in Phnom Penh. From US$600 a month.",
     "ogImage": "/og-image.png",
     "noindex": false,
@@ -51,7 +51,7 @@
   {
     "path": "/careers/operations-executive-marketing/",
     "title": "Operations Executive (Marketing) | Me² careers",
-    "description": "Me²'s first dedicated marketing hire: content, campaigns and reporting for Me² and its clients, from Phnom Penh. From US$600 a month.",
+    "description": "Me²'s first dedicated marketing hire: content, campaigns, website updates and reporting for Me² and its clients, in Phnom Penh. Full time, from US$600 a month.",
     "ogImage": "/og-image.png",
     "noindex": false,
     "flag": "showCareers",

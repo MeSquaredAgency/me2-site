@@ -30,6 +30,20 @@ export function jobPostingSchema(role: Role) {
   };
 }
 
+/** JSON-LD breadcrumbs for the careers pages: Home › Careers, and › the role on a role page. */
+export function careersBreadcrumbSchema(role?: Role) {
+  const items = [
+    { name: config.SITE_NAME, item: `${siteUrl}/` },
+    { name: content.footer.careers, item: `${siteUrl}/careers/` },
+    ...(role ? [{ name: role.title, item: `${siteUrl}/careers/${role.slug}/` }] : []),
+  ];
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((x, i) => ({ '@type': 'ListItem', position: i + 1, ...x })),
+  };
+}
+
 /** JSON-LD for the home page: Organization, WebSite, one Service per offer (the whole back office, one job, websites), and the visible FAQ. */
 export function homeSchema() {
   // Me²'s own social pages, when set in site.config.ts.
@@ -43,7 +57,14 @@ export function homeSchema() {
     url: `${siteUrl}/`,
     description: fill(content.hero.subhead),
     email: config.CONTACT_EMAIL,
-    contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: config.CONTACT_EMAIL, availableLanguage: 'English' },
+    // The WhatsApp Business number is Me²'s published phone number (site.config.ts); left out while it's empty.
+    ...(config.WHATSAPP_NUMBER ? { telephone: config.WHATSAPP_NUMBER.replace(/\s+/g, '') } : {}),
+    contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: config.CONTACT_EMAIL, availableLanguage: 'English', areaServed: 'AU', ...(config.WHATSAPP_NUMBER ? { telephone: config.WHATSAPP_NUMBER.replace(/\s+/g, '') } : {}) },
+    // Me² serves Australian businesses (the same areaServed as each Service below).
+    areaServed: { '@type': 'Country', name: 'Australia', identifier: 'AU' },
+    // Only once EC supplies them (site.config.ts); never guessed.
+    ...(config.FOUNDER_NAME ? { founder: { '@type': 'Person', name: config.FOUNDER_NAME } } : {}),
+    ...(config.FOUNDING_DATE ? { foundingDate: config.FOUNDING_DATE } : {}),
     logo: `${siteUrl}/logo.png`,
     // Where the team is, only while the page says so (showLocations): the same city as the job postings.
     ...(flags.showLocations ? { address: { '@type': 'PostalAddress', addressLocality: jobPlace.locality, addressCountry: jobPlace.country } } : {}),

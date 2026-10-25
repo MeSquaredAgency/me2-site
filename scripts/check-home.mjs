@@ -142,7 +142,7 @@ check('llms.txt: the FAQ terms, as on the page', llms.includes('## Common questi
 const robots = readFileSync('dist/robots.txt', 'utf8');
 check('robots.txt: Content Signals yes to search, AI answers and AI training (EC, 20 Oct 2026)', /^User-agent: \*\nContent-Signal: search=yes, ai-input=yes, ai-train=yes\nAllow: \/$/m.test(robots) && /^Sitemap: https:\/\/\S+\/sitemap\.xml$/m.test(robots), robots);
 check('og:title is the hero', html.includes('<meta property="og:title" content="We run the back office. You run the business."'));
-check('page title', /<title>Me²: back-office teams and websites for established businesses<\/title>/.test(html));
+check('page title', /<title>Back-office teams &amp; websites for established businesses \| Me²<\/title>/.test(html));
 // Final review fixes
 check('no "AI role" left, visible or in structured data', lacks('AI role') && !JSON.stringify(ld).includes('AI role'));
 check('pain section has a heading', /<h2 id="pain-title"/.test(html));
