@@ -39,6 +39,9 @@ jobs:
 
       - uses: actions/checkout@v5
         if: steps.token.outputs.ok == 'true'
+        with:
+          # Full history, so scripts/postbuild.mjs can date the sitemap's lastmod from the last commit that changed the site.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v5
         if: steps.token.outputs.ok == 'true'

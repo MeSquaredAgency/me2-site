@@ -45,6 +45,8 @@ export function homeSchema() {
     email: config.CONTACT_EMAIL,
     contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: config.CONTACT_EMAIL, availableLanguage: 'English' },
     logo: `${siteUrl}/logo.png`,
+    // The team is in Phnom Penh; the clients are in Australia (the same areaServed as each Service below).
+    areaServed: 'AU',
     // Where the team is, only while the page says so (showLocations): the same city as the job postings.
     ...(flags.showLocations ? { address: { '@type': 'PostalAddress', addressLocality: jobPlace.locality, addressCountry: jobPlace.country } } : {}),
     ...(sameAs.length ? { sameAs } : {}),
