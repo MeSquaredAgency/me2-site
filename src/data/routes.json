@@ -1,8 +1,8 @@
 [
   {
     "path": "/",
-    "title": "Me²: back-office teams and websites for established businesses",
-    "description": "Me² runs the back office for established businesses: admin, accounts, customer service and marketing, done by trained people backed by AI agents. Websites too.",
+    "title": "Me²: outsourced back office for Australian businesses",
+    "description": "Me² runs the back office for established Australian businesses: admin, accounts, customer service and marketing, by trained people backed by AI. Websites too.",
     "ogTitle": "We run the back office. You run the business.",
     "ogImage": "/og-image.png",
     "noindex": false
@@ -16,7 +16,7 @@
   },
   {
     "path": "/privacy/",
-    "title": "Privacy | Me²",
+    "title": "Privacy policy | Me²",
     "description": "How Me² collects, uses and protects personal information sent through this website, and who to contact with a privacy question.",
     "ogImage": "/og-image.png",
     "noindex": false,

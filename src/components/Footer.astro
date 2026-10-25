@@ -9,7 +9,7 @@ const social = c.social.map((s) => ({ label: s.label, url: config[s.key] })).fil
   <div class="wrap top">
     <div class="brand"><Logo tone="light" height={44} /></div>
     <div class="col">
-      <h2 class="col-title">{c.contactHeading}</h2>
+      <p class="col-title">{c.contactHeading}</p>
       <a href={`mailto:${config.CONTACT_EMAIL}`} class="tlink mail">{config.CONTACT_EMAIL}</a>
       {(whatsappUrl || social.length > 0) && (
         <ul>
@@ -19,7 +19,7 @@ const social = c.social.map((s) => ({ label: s.label, url: config[s.key] })).fil
       )}
     </div>
     <nav class="col" aria-label={c.navHeading}>
-      <h2 class="col-title">{c.navHeading}</h2>
+      <p class="col-title">{c.navHeading}</p>
       <ul>
         {shown(content.header.nav).map((item) => <li><a href={`/${item.href}`}>{item.label}</a></li>)}
       </ul>
@@ -48,7 +48,8 @@ const social = c.social.map((s) => ({ label: s.label, url: config[s.key] })).fil
     padding-top: 24px; padding-bottom: 32px; font-size: var(--text-small); color: var(--color-haze);
   }
   .bottom::before { content: ''; position: absolute; top: 0; left: var(--gutter); right: var(--gutter); border-top: 1px solid var(--color-line-dark); }
-  .bottom a { color: var(--color-mist); }
+  /* At least 24px tall, so Careers and Privacy meet the WCAG 2.2 target size (SEO audit, 25 Oct 2026). */
+  .bottom a { display: inline-flex; min-height: 24px; align-items: center; color: var(--color-mist); }
   .giant { padding-top: clamp(24px, 4vw, 56px); overflow: hidden; height: calc(min(100vw, var(--content-max) + 2 * var(--gutter)) * 0.36); box-sizing: border-box; }
   .giant :global(.logo) { display: block; opacity: 0.06; }
   .giant :global(.logo .logo-svg) { width: 100%; height: auto; }

@@ -70,11 +70,12 @@ export function homeSchema() {
     const min = Number(description.match(/\$([\d,]+)/)?.[1].replaceAll(',', ''));
     return flags.showPricing && min ? { offers: { '@type': 'Offer', priceCurrency: 'AUD', description, priceSpecification: { '@type': 'PriceSpecification', minPrice: min, priceCurrency: 'AUD', valueAddedTaxIncluded: false } } } : {};
   };
+  // serviceType is the plain category a search engine files each offer under; url is the offer on the page (SEO audit, 25 Oct 2026).
   const services = [
-    { name: o.office.name, description: fill(o.office.body), ...offerFrom(o.office.price) },
-    { name: o.one.name, description: fill(o.one.body), ...offerFrom(o.one.price) },
-    { name: o.web.name, description: o.web.body },
-  ].map((s) => ({ '@context': 'https://schema.org', '@type': 'Service', ...s, provider, areaServed: 'AU' }));
+    { name: o.office.name, serviceType: 'Outsourced back office', description: fill(o.office.body), ...offerFrom(o.office.price) },
+    { name: o.one.name, serviceType: 'Outsourced administrative support', description: fill(o.one.body), ...offerFrom(o.one.price) },
+    { name: o.web.name, serviceType: 'Website design and development', description: o.web.body },
+  ].map((s) => ({ '@context': 'https://schema.org', '@type': 'Service', ...s, url: `${siteUrl}/#services`, provider, areaServed: 'AU' }));
   const faq = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
