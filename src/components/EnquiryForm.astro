@@ -4,7 +4,7 @@
  * description only). Posts to /api/enquiry (worker/index.ts), which emails the business inbox (FORM_TO_EMAIL).
  * One form on the page: it lives at the foot of the page, and moves into a dialog when someone presses
  * "Talk to us" or "Ask about…" anywhere else, carrying what they clicked as the topic.
- * Without JavaScript: native validation, a normal POST, and a thank-you page.
+ * Once sent it goes to /thanks/; without JavaScript: native validation, a normal POST, and the same page.
  * The dialog itself is EnquiryDialog.astro, kept outside the (lazily laid out) contact section.
  */
 import { config, fill } from '../config';
@@ -13,7 +13,7 @@ const f = content.form;
 const privacyBefore = f.privacy.slice(0, f.privacy.indexOf(f.privacyLink));
 ---
 <form class="enquiry" method="post" action="/api/enquiry" data-enquiry
-  data-msg={JSON.stringify({ requiredName: f.requiredName, requiredEmail: f.requiredEmail, requiredMessage: f.requiredMessage, emailError: f.emailError, tooLong: f.tooLong, sending: f.sending, submit: f.submit, success: f.success, failure: fill(f.failure), email: config.CONTACT_EMAIL })}>
+  data-msg={JSON.stringify({ requiredName: f.requiredName, requiredEmail: f.requiredEmail, requiredMessage: f.requiredMessage, emailError: f.emailError, tooLong: f.tooLong, sending: f.sending, submit: f.submit, failure: fill(f.failure), email: config.CONTACT_EMAIL })}>
   <input type="hidden" name="topic" value={f.generalTopic} data-topic />
   <input type="hidden" name="source" value="contact" data-source />
   <input type="hidden" name="started" value="" data-started />
@@ -90,7 +90,7 @@ const privacyBefore = f.privacy.slice(0, f.privacy.indexOf(f.privacyLink));
         dialog.showModal();
         document.documentElement.classList.add('dialog-open');
       }
-      if (!form.classList.contains('is-sent')) form.querySelector<HTMLInputElement>('#enq-name')!.focus();
+      form.querySelector<HTMLInputElement>('#enq-name')!.focus();
     });
     dialog.addEventListener('close', () => { home.append(form); document.documentElement.classList.remove('dialog-open'); });
     dialog.querySelector('[data-dialog-close]')!.addEventListener('click', () => dialog.close());
@@ -134,9 +134,9 @@ const privacyBefore = f.privacy.slice(0, f.privacy.indexOf(f.privacyLink));
         });
         const body = (await res.json().catch(() => ({}))) as { ok?: boolean };
         if (!res.ok || !body.ok) throw new Error(String(res.status));
-        form.classList.add('is-sent');
-        status.textContent = msg.success;
-        status.focus();
+        // Sent: go to /thanks/, the same page the no-JavaScript post lands on (and the Google Ads "contact received" page).
+        location.assign('/thanks/');
+        return;
       } catch {
         // Say what happened and give the way round it: the email address, as a link.
         const [before, after] = msg.failure.split(msg.email);
@@ -188,9 +188,6 @@ const privacyBefore = f.privacy.slice(0, f.privacy.indexOf(f.privacyLink));
   .status:empty { display: none; }
   .status:focus { outline: none; }
   .status :global(a) { color: var(--color-mist); }
-  .is-sent .fields, .is-sent .about { display: none; }
-  .is-sent .status { font-size: clamp(1.3rem, 2vw, 1.7rem); font-weight: 520; letter-spacing: -0.02em; line-height: 1.3; padding-block: 16px; }
-  .is-sent .status::before { content: ''; display: block; width: 12px; height: 12px; background: var(--color-coral); margin-bottom: 18px; box-shadow: 0 0 24px 4px rgb(var(--glow) / 0.5); }
 
 
 </style>

@@ -17,3 +17,6 @@ Since 22 Oct 2026 the site carries **Google Analytics 4** (EC: "We seriously req
 
 ## Turning it off
 Set `enableTracking: false` in `src/config/flags.ts`, remove the Google Analytics paragraph from `privacy.sections` in `src/content/site.ts` (and the "(for email and Google Analytics)" words), and update the date. The CSP hosts can stay or go.
+
+## Counting enquiries (Google Ads)
+A sent enquiry always lands on `https://mesquaredagency.com/thanks/` (since 27 Oct 2026; before that the form showed its thanks in place and the address stayed on the home page). Nothing else links there, so in Google Ads use that address as the "contact received" page; in GA4 it's a page view of `/thanks/`. Never use the home page: every visit would count.

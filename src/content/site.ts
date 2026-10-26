@@ -307,8 +307,6 @@ export const content = {
     requiredMessage: 'Tell us a little about what you need.',
     emailError: 'Enter an email address like name@business.com.au.',
     tooLong: 'Keep this under 2,000 characters.',
-    /** EC, 16 Oct 2026: "Within 2 hours."; 20 Oct 2026: "usually", since nobody is on shift overnight. */
-    success: "Enquiry sent. We'll reply to the email you gave us, usually within 2 hours.",
     /** The form keeps what they typed when sending fails, so say so. */
     failure: "Your enquiry didn't send. What you wrote is still here: try again, or email us at {CONTACT_EMAIL}.",
     privacy: "We use these details to reply to you, and we won't add you to a mailing list. See our privacy policy.",
@@ -316,10 +314,20 @@ export const content = {
     close: 'Close form',
   },
 
-  /** The page the form lands on without JavaScript. */
+  /**
+   * The page the form lands on once sent (/thanks/), with or without JavaScript.
+   * EC, 16 Oct 2026: "Within 2 hours."; 20 Oct 2026: "usually", since nobody is on shift overnight.
+   */
   thanks: {
     h1: 'Enquiry sent.',
     body: "We'll reply to the email you gave us, usually within 2 hours.",
+    /** EC, 27 Oct 2026: a short, animated "what happens next". Grounded in the confirmation email's promises. */
+    nextHeading: 'What happens next',
+    next: [
+      { title: "It's with us", body: 'Your enquiry is in our inbox now.' },
+      { title: 'A person reads it', body: "Someone on our team reads what you need and works out who's best placed to help." },
+      { title: 'We reply', body: 'By email, usually within 2 hours. Rather talk? Reply with a good time and a number, and we’ll ring you.' },
+    ],
     failH1: "Your enquiry didn't send.",
     failBody: 'Email us at {CONTACT_EMAIL} instead.',
     button: 'Back to the home page',

@@ -15,7 +15,7 @@ Once the enquiry has reached hello@, the live site emails the visitor a confirma
 
 - **Fixed text only.** It never repeats the visitor's name, message or topic: anyone can type someone else's address into the form, and echoing what they typed would let strangers send their words from Me²'s domain.
 - **Live site only.** Preview links and local runs send the enquiry to hello@ as before, but no confirmation.
-- It's sent after the visitor sees "Enquiry sent", so a failed confirmation never makes a delivered enquiry look failed. The logs show `enquiry-confirmation` `sent` or `send-failed`, never who.
+- It's sent after the visitor is told "Enquiry sent", so a failed confirmation never makes a delivered enquiry look failed. The logs show `enquiry-confirmation` `sent` or `send-failed`, never who.
 - It carries `Auto-Submitted: auto-replied`, so well-behaved autoresponders don't answer it.
 - When the visitor replies, the reply reaches hello@, where the Google Group's own auto-reply may answer it too (see [auto-replies.md](auto-replies.md)).
 - Each enquiry now uses two of Resend's free 100 emails a day (shared with job applications).
@@ -26,7 +26,7 @@ Once the enquiry has reached hello@, the live site emails the visitor a confirma
 | --- | --- |
 | A "Talk to us" or "Ask about…" button anywhere on the page | The form opens in place (a dialog), with the topic shown at the top |
 | A field missing or the email not an email address | The message under that field, naming the field ("Enter your name.", "Enter your email address.", "Tell us a little about what you need."), and the cursor goes to it |
-| Sent | "Enquiry sent. We'll reply to the email you gave us, usually within 2 hours." (EC, 20 Oct 2026: "usually", since nobody is on shift overnight; the no-JavaScript /thanks/ page says the same). On the live site, the automatic confirmation email follows |
+| Sent | The page goes to `/thanks/` (with or without JavaScript): "Enquiry sent. We'll reply to the email you gave us, usually within 2 hours." (EC, 20 Oct 2026: "usually", since nobody is on shift overnight), then an animated "What happens next" in three steps (EC, 27 Oct 2026; words in `thanks` in `src/content/site.ts`). `/thanks/` is noindex and only reached by sending, so it is the Google Ads "contact received" page and a GA4 page view. On the live site, the automatic confirmation email follows |
 | Couldn't send (not set up yet, Cloudflare error, no connection) | "Your enquiry didn't send. What you wrote is still here: try again, or email us at hello@….", with the address as a link; what they typed stays in the form |
 | No JavaScript | The buttons jump to the form at the foot of the page; it posts normally and lands on `/thanks/` or `/not-sent/` |
 | A bot (fills the hidden field, or submits within 2.5 seconds) | Told it worked; nothing is sent |
