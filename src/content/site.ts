@@ -126,7 +126,8 @@ export const content = {
           { file: 'apnre-phone-2', kind: 'phone' },
           { file: 'apnre-explore', kind: 'wide' },
         ],
-        confirmed: false,
+        /** EC, 26 Oct 2026: APN's OK confirmed. */
+        confirmed: true,
       },
     ],
     note: 'More projects are being added.',
@@ -147,13 +148,13 @@ export const content = {
        * the examples for operations, finance, marketing and social media come from the confirmed jobs, the rest are new (EC to confirm).
        */
       areas: [
-        { name: 'Business operations', example: 'Client intake, quote follow-up and the processes that hold it together.' },
-        { name: 'Admin', example: 'Data entry, scheduling, filing and the inbox.' },
-        { name: 'Customer service and support', example: 'Customer emails and messages answered in your voice.' },
-        { name: 'Finance and accounting', example: 'Debtor follow-up, bill coding and weekly reporting.' },
-        { name: 'Marketing', example: 'Newsletters, website updates, enquiry follow-up and a monthly report.' },
-        { name: 'Social media', example: 'Posts drafted on schedule in your voice, for you to approve.' },
-        { name: 'Paid ads', example: 'Campaigns set up, watched and reported on.' },
+        { name: 'Business operations', href: '/services/admin/', example: 'Client intake, quote follow-up and the processes that hold it together.' },
+        { name: 'Admin', href: '/services/admin/', example: 'Data entry, scheduling, filing and the inbox.' },
+        { name: 'Customer service and support', href: '/services/customer-service/', example: 'Customer emails and messages answered in your voice.' },
+        { name: 'Finance and accounting', href: '/services/finance/', example: 'Debtor follow-up, bill coding and weekly reporting.' },
+        { name: 'Marketing', href: '/services/marketing/', example: 'Newsletters, website updates, enquiry follow-up and a monthly report.' },
+        { name: 'Social media', href: '/services/marketing/', example: 'Posts drafted on schedule in your voice, for you to approve.' },
+        { name: 'Paid ads', href: '/services/marketing/', example: 'Campaigns set up, watched and reported on.' },
       ],
       /** EC: "eventually legal, tech dev, consulting, strategy". */
       coming: 'Coming next: legal, tech development, consulting and strategy.',

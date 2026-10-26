@@ -23,7 +23,7 @@ export const siteConfig = {
   GA4_MEASUREMENT_ID: 'G-E2VZ6MW5SF',
   LOCALE: 'en-AU',
   /** The founder named in the Organization structured data, and when Me² was founded (YYYY or YYYY-MM-DD). Empty until EC confirms them; empty leaves them out. */
-  FOUNDER_NAME: '',
+  FOUNDER_NAME: 'Patrick Nhim',
   FOUNDING_DATE: '',
   /** Footer entity line, shown only with showLegalEntity. */
   LEGAL_ENTITY: '[[TBC: legal entity name and registration number — Patrick + lawyer]]',
