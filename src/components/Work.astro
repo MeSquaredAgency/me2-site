@@ -84,7 +84,8 @@ const rows = (shots: Shot[]) => shots.reduce<Shot[][]>((acc, s) => {
 
 <style>
   .work { padding-block: clamp(24px, 4vw, 64px) var(--section-y); }
-  .head { display: grid; gap: 28px; margin-bottom: clamp(56px, 7vw, 104px); }
+  /* Label above the headline, both on the left, like every other section head (EC, 27 Oct 2026). */
+  .head { display: grid; justify-items: start; gap: 24px; margin-bottom: clamp(56px, 7vw, 104px); }
   .head h2 { max-width: 14ch; }
 
   .case { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; padding-top: 40px; border-top: 1px solid var(--color-line-dark); }
@@ -114,8 +115,6 @@ const rows = (shots: Shot[]) => shots.reduce<Shot[][]>((acc, s) => {
   .note { margin-top: 56px; color: var(--color-haze); font-size: var(--text-small); }
 
   @media (min-width: 1000px) {
-    .head { grid-template-columns: 1fr 2.4fr; align-items: start; }
-    .head .kicker { margin-top: 0.9em; }
     .case { grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr); column-gap: clamp(40px, 5vw, 96px); }
     .info { position: sticky; top: 120px; align-self: start; }
   }
