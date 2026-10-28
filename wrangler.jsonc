@@ -33,6 +33,10 @@
   "ratelimits": [
     { "name": "CHAT_LIMIT", "namespace_id": "1001", "simple": { "limit": 8, "period": 60 } }
   ],
+  // Run the worker in the US, not at the visitor's nearest data centre. The Anthropic API refuses calls from
+  // unsupported regions: visitors routed through Hong Kong got a 403 and a broken chat (EC, 28 Oct 2026).
+  // The pages themselves are still served from the edge; only the worker's code moves.
+  "placement": { "region": "aws:us-east-1" },
   // Workers Logs: each enquiry logs one line (sent / dropped / failed, the topic, never the person's details).
   "observability": { "enabled": true },
   // The live site is only on mesquaredagency.com; previews come from `npx wrangler versions upload`.
