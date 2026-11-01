@@ -57,28 +57,14 @@ const rows = (shots: Shot[]) => shots.reduce<Shot[][]>((acc, s) => {
 <script>
   const media = [...document.querySelectorAll<HTMLElement>('[data-media]')];
   if (media.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const shots = media.flatMap((m) => [...m.querySelectorAll<HTMLElement>('[data-shot]')]);
     // Each picture opens from the bottom as it arrives. Watch its row: a clipped-shut picture never counts as on screen.
     const show = new IntersectionObserver((entries) => {
       for (const e of entries) if (e.isIntersecting) { e.target.querySelectorAll('[data-shot]').forEach((s) => s.classList.add('is-in')); show.unobserve(e.target); }
     }, { rootMargin: '0px 0px -10% 0px' });
-    shots.forEach((s) => s.classList.add('will-reveal'));
-    media.forEach((m) => m.querySelectorAll('.row').forEach((r) => show.observe(r)));
-
-    // Pictures drift a little slower than the page.
-    let ticking = false;
-    const drift = () => {
-      ticking = false;
-      for (const s of shots) {
-        const r = s.getBoundingClientRect();
-        if (r.bottom < 0 || r.top > innerHeight) continue;
-        s.style.setProperty('--drift', `${(((r.top + r.height / 2 - innerHeight / 2) / (innerHeight + r.height)) * 8).toFixed(2)}%`);
-      }
-    };
-    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(drift); } };
-    new IntersectionObserver(([e]) => {
-      e.isIntersecting ? addEventListener('scroll', onScroll, { passive: true }) : removeEventListener('scroll', onScroll);
-    }).observe(document.querySelector('#work')!);
+    media.forEach((m) => {
+      m.querySelectorAll('[data-shot]').forEach((s) => s.classList.add('will-reveal'));
+      m.querySelectorAll('.row').forEach((r) => show.observe(r));
+    });
   }
 </script>
 
@@ -100,18 +86,23 @@ const rows = (shots: Shot[]) => shots.reduce<Shot[][]>((acc, s) => {
 
   .media { display: grid; gap: clamp(20px, 2.4vw, 36px); }
   .row.phone { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 2.4vw, 36px); padding-inline: clamp(0px, 6%, 80px); }
+  /* Each screenshot is shown whole: no zoom, no parallax, no crop. The frame takes the picture's own shape. */
   .shot { position: relative; margin: 0; overflow: hidden; isolation: isolate; background: var(--color-abyss-2); }
-  .shot :global(picture), .shot :global(img) { display: block; width: 100%; height: 100%; }
-  .shot :global(img) { object-fit: cover; object-position: top center; transform: translateY(var(--drift, 0%)) scale(1.1); }
-  .wide { aspect-ratio: 16 / 10; border-radius: 10px; box-shadow: 0 40px 100px -40px rgb(0 0 0 / 0.8), inset 0 0 0 1px rgb(244 239 231 / 0.06); }
+  .shot :global(picture) { display: block; }
+  .shot :global(img) { display: block; width: 100%; height: auto; }
+  .wide { border-radius: 10px; box-shadow: 0 40px 100px -40px rgb(0 0 0 / 0.8), inset 0 0 0 1px rgb(244 239 231 / 0.06); }
   /* Phone shots in a plain phone-shaped frame (no device artwork). */
-  .shot.phone { aspect-ratio: 390 / 844; border-radius: 30px; border: 7px solid #142433; box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.8); }
-  .shot.phone :global(img) { transform: translateY(var(--drift, 0%)) scale(1.04); }
-  @media (prefers-reduced-motion: reduce) { .shot :global(img) { transform: none; } }
+  .shot.phone { border-radius: 30px; border: 7px solid #142433; box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.8); }
   .shot.will-reveal { clip-path: inset(100% 0 0 0 round 10px); transition: clip-path 1400ms var(--ease-out); }
   .shot.phone.will-reveal { clip-path: inset(100% 0 0 0 round 30px); transition-delay: 150ms; }
   .shot.will-reveal:global(.is-in) { clip-path: inset(0 0 0 0 round 10px); }
   .shot.phone.will-reveal:global(.is-in) { clip-path: inset(0 0 0 0 round 30px); }
+  @media (max-width: 999px) {
+    .row.phone { padding-inline: 0; gap: 14px; }
+    .shot.phone { border-width: 4px; border-radius: 20px; }
+    .shot.phone.will-reveal { clip-path: inset(100% 0 0 0 round 20px); }
+    .shot.phone.will-reveal:global(.is-in) { clip-path: inset(0 0 0 0 round 20px); }
+  }
   .note { margin-top: 56px; color: var(--color-haze); font-size: var(--text-small); }
 
   @media (min-width: 1000px) {
