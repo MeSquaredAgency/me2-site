@@ -418,6 +418,10 @@ export const content = {
       { label: 'LinkedIn', key: 'LINKEDIN_URL' },
     ],
     navHeading: 'On this page',
+    /** The same links on every other page, where they lead back to the home page (audit, 2 Nov 2026). */
+    navHeadingElsewhere: 'On the home page',
+    /** The service and use-case pages, linked from every page (SEO audit, 2 Nov 2026). */
+    servicesHeading: 'Services',
     copyright: '© {YEAR} {SITE_NAME}',
     /** showCareers */
     careers: 'Careers',

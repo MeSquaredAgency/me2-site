@@ -34,3 +34,4 @@ See [DEPLOY.md](../DEPLOY.md#website-chat-ai). Until `ANTHROPIC_API_KEY` is set,
 `node scripts/check-chat.mjs` runs the route against stubbed Anthropic and Resend APIs: the request sent to Haiku, the prompt's rules, passing details on (live and preview), refusal, API errors, no key, rate limit (and the IPv6 /64 key), signed and forged replies, other sites, bot field, bad conversations, the flag, and logs free of personal details.
 
 - **Spending cap:** set a monthly spend limit on the Anthropic API key in the Anthropic Console (Settings → Limits). It's the only overall cap: the Worker stores nothing, so it can't count a day's messages.
+- **No greeting on phones** (under 640px wide, since 2 Nov 2026): the greeting bubble covered the text being read. Phones get the launcher only.

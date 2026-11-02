@@ -90,8 +90,9 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
     const place = () => {
       const away = [...seen.values()].some(Boolean);
       root.classList.toggle('is-away', away);
-      // Say hello once per visit, a moment after the launcher first shows, unless the chat has been opened.
-      if (!away && !helloTimer && !store.get('me2-chat-hello')) {
+      // Say hello once per visit, a moment after the launcher first shows, unless the chat has been opened. Not on a
+      // phone: there the greeting would sit over the text being read (audit, 2 Nov 2026); the launcher is enough.
+      if (!away && !helloTimer && !store.get('me2-chat-hello') && !matchMedia('(max-width: 639px)').matches) {
         helloTimer = window.setTimeout(() => {
           if (!panel.hidden || root.classList.contains('is-away')) { helloTimer = 0; return; }
           hello.hidden = false;

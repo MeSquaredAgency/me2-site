@@ -182,6 +182,11 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
     .actions { order: 4; }
     .location { order: 5; }
   }
+  /* Tablets: the card fills more of the column, so the first screen isn't a small card beside empty space (audit, 2 Nov 2026). */
+  @media (min-width: 640px) and (max-width: 999px) {
+    .chat-fig { max-width: 580px; }
+    .bubble { font-size: 1.02rem; }
+  }
   @media (max-width: 639px) {
     .lines { font-size: clamp(2.6rem, 13.4vw, 4.2rem); }
     .chat { padding: 16px 14px 12px; border-radius: 26px; }
