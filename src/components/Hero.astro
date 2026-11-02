@@ -69,11 +69,12 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
   // The conversation plays once, a message at a time, starting just after the headline has risen.
   const chat = document.querySelector<HTMLElement>('[data-chat]');
   if (chat && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const msgs = [...chat.querySelectorAll<HTMLElement>('[data-chat-msg]')];
+    // The first message is there from the start (it is the page's largest early text on a phone); the rest play.
+    const msgs = [...chat.querySelectorAll<HTMLElement>('[data-chat-msg]')].slice(1);
     chat.classList.add('is-live');
     const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
     (async () => {
-      await wait(1100);
+      await wait(600);
       for (const m of msgs) {
         if (m.dataset.chatMsg === 'them') {
           m.classList.add('is-typing');
@@ -142,7 +143,7 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
 
   /* Playing: each message waits its turn; theirs shows a moment of typing first. Space is kept, so nothing jumps. */
   .dots { display: none; }
-  .chat-fig:global(.is-live) .msg { opacity: 0; transform: translateY(8px); transition: opacity 450ms var(--ease-out), transform 600ms var(--ease-out); }
+  .chat-fig:global(.is-live) .msg:not(:first-child) { opacity: 0; transform: translateY(8px); transition: opacity 450ms var(--ease-out), transform 600ms var(--ease-out); }
   .chat-fig:global(.is-live) .msg:global(.is-typing) { opacity: 1; transform: none; }
   .chat-fig:global(.is-live) .msg:global(.is-typing) :is(.bubble, .time) { visibility: hidden; }
   .chat-fig:global(.is-live) .msg:global(.is-typing) .dots {
@@ -158,12 +159,14 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
   /* One entrance: the lines rise out of their masks, then the rest settles in. */
   @media (prefers-reduced-motion: no-preference) {
     .text { animation: rise 1300ms var(--ease-out) both; animation-delay: calc(120ms + var(--i) * 130ms); }
-    .subhead, .actions, .location { animation: fade 1100ms var(--ease-out) 800ms both; }
-    .chat-fig { animation: lift 1200ms var(--ease-out) 500ms both; }
+    .subhead, .actions, .location { animation: fade 900ms var(--ease-out) 350ms both; }
+    .chat-fig { animation: lift 1200ms var(--ease-out) both; }
   }
+  /* Nothing in the hero starts fully transparent: what is there on the first frame is the page's first paint, not a
+     second or two later (mobile LCP was 4 s, 2 Nov 2026). */
   @keyframes rise { from { transform: translateY(105%); } }
-  @keyframes fade { from { opacity: 0; } }
-  @keyframes lift { from { opacity: 0; transform: translateY(24px); } }
+  @keyframes fade { from { opacity: 0.2; } }
+  @keyframes lift { from { transform: translateY(24px); } }
 
   @media (min-width: 1000px) {
     .inner { grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr); }
@@ -178,6 +181,11 @@ const lines = c.h1.split(/(?<=\.)\s+/).flatMap((sentence, s) => {
     .subhead { order: 3; margin-top: 40px; }
     .actions { order: 4; }
     .location { order: 5; }
+  }
+  /* Tablets: the card fills more of the column, so the first screen isn't a small card beside empty space (audit, 2 Nov 2026). */
+  @media (min-width: 640px) and (max-width: 999px) {
+    .chat-fig { max-width: 580px; }
+    .bubble { font-size: 1.02rem; }
   }
   @media (max-width: 639px) {
     .lines { font-size: clamp(2.6rem, 13.4vw, 4.2rem); }

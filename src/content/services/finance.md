@@ -4,7 +4,7 @@ order: 1
 kicker: Finance and accounting
 title: "Outsourced bookkeeping support and invoice chasing | Me²"
 description: "Me² chases overdue invoices, codes your bills and sends a weekly report, done by a trained finance specialist backed by AI. Quoted for your business."
-h1: Finance and accounting, off your plate
+h1: Finance and accounting, off your plate.
 serviceType: Outsourced bookkeeping and accounts support
 topic: The whole back office
 ---
@@ -33,7 +33,7 @@ We support your bookkeeping and your accountant; we don't replace them. Tax advi
 
 We can start within 2 weeks of you saying yes.
 
-## People first, with AI doing the heavy lifting
+## People first, backed by AI agents
 
 Finance work punishes small mistakes. One wrong invoice can cost a customer relationship. So a person owns every task. AI agents built for your business draft the reminder emails, suggest the codes and pull the numbers together. Our specialist checks it all before it reaches your customers, your suppliers or you. We don't sell AI on its own.
 

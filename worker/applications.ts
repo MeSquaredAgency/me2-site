@@ -8,15 +8,16 @@ import { findRole } from '../src/content/careers.ts';
 import { siteConfig } from '../src/config/site.config.ts';
 import { flags } from '../src/config/flags.ts';
 import { sender } from './email.ts';
+import { allowed, fillTime, fromOurPage, readCapped, type RateLimit } from './guard.ts';
 
 export interface ApplicationEnv {
   /** Resend API key (a Worker secret, never in the code). See DEPLOY.md. */
   RESEND_API_KEY?: string;
+  /** Workers rate limiting binding (wrangler.jsonc), shared with the enquiry form, counted per form. */
+  FORM_LIMIT?: RateLimit;
 }
 
 export const MAX_CV_BYTES = 4 * 1024 * 1024;
-// Real people take longer than this to fill in a form; most form bots don't.
-const MIN_FILL_MS = 2500;
 const MAX_BODY = 6_000_000;
 const LIMITS = { name: 100, email: 254, phone: 60, location: 160, linkedin: 300, workLinks: 1000, why: 1000 };
 // The first bytes of each kind of file we accept: PDF, Word (.docx, a zip), and old Word (.doc).
@@ -27,7 +28,7 @@ const SIGNATURES: Record<string, number[]> = {
 };
 
 type Fields = Record<string, string>;
-interface Cv { name: string; base64: string; size: number; head: Uint8Array }
+interface Cv { name: string; base64: string; size: number; head: Uint8Array; word: boolean }
 
 export function applicationWith(on: { showCareers: boolean; showPrivacyPage: boolean }) {
   return async (request: Request, env: ApplicationEnv): Promise<Response> => {
@@ -43,12 +44,24 @@ export function applicationWith(on: { showCareers: boolean; showPrivacyPage: boo
     const log = (result: string, role: string, extra: Record<string, string> = {}) =>
       console.log(JSON.stringify({ event: 'application', result, role, ...extra }));
 
+    // Only this site's own careers pages may post here, and only a few times a minute from one address.
+    if (!fromOurPage(request)) {
+      log('wrong-origin', 'unknown');
+      return done(false, 403);
+    }
+    if (!(await allowed(env.FORM_LIMIT, 'application', request))) {
+      log('rate-limited', 'unknown');
+      return done(false, 429);
+    }
     if (Number(request.headers.get('content-length') ?? 0) > MAX_BODY) return done(false, 413);
 
     let data: Fields;
     let cv: Cv | null;
     try {
-      ({ data, cv } = await fromForm(await request.formData()));
+      // A chunked upload sends no Content-Length, so read it with a cap; otherwise the length was checked above.
+      const form = request.headers.has('content-length') ? await request.formData() : await capped(request);
+      if (!form) return done(false, 413);
+      ({ data, cv } = await fromForm(form));
     } catch {
       log('invalid', 'unknown');
       return done(false);
@@ -56,9 +69,10 @@ export function applicationWith(on: { showCareers: boolean; showPrivacyPage: boo
 
     const role = findRole(data.role ?? '');
     const roleSlug = role?.slug ?? 'unknown';
-    // Bots: a hidden field people never see, and a form filled faster than anyone can type. Pretend it worked.
-    const startedAt = Number(data.started);
-    if (data.website || (startedAt && Date.now() - startedAt < MIN_FILL_MS)) {
+    // Bots: a hidden field people never see, and a form filled faster than anyone can type (or with a made-up time).
+    // The page's script always sets the timer, so a script-sent post without it is a bot too. Pretend it worked.
+    const timer = fillTime(data.started);
+    if (data.website || timer === 'bot' || (timer === 'missing' && wantsJson)) {
       log('dropped', roleSlug);
       return done(true);
     }
@@ -149,8 +163,8 @@ async function fromForm(form: FormData): Promise<{ data: Fields; cv: Cv | null }
   for (const [k, v] of form.entries()) {
     if (typeof v === 'string') data[k] = v;
     else if (k === 'cv' && v.size > 0) {
-      const head = new Uint8Array(await v.slice(0, 8).arrayBuffer());
-      cv = { name: v.name, base64: v.size > MAX_CV_BYTES ? '' : new Uint8Array(await v.arrayBuffer()).toBase64(), size: v.size, head };
+      const bytes = v.size > MAX_CV_BYTES ? new Uint8Array(await v.slice(0, 8).arrayBuffer()) : new Uint8Array(await v.arrayBuffer());
+      cv = { name: v.name, base64: v.size > MAX_CV_BYTES ? '' : bytes.toBase64(), size: v.size, head: bytes.slice(0, 8), word: /\.docx$/i.test(v.name) && isWordZip(bytes) };
     }
   }
   return { data, cv };
@@ -161,7 +175,37 @@ function cvKind(cv: Cv | null): string | null {
   if (!cv || cv.size === 0) return null;
   const ext = cv.name.toLowerCase().match(/\.(pdf|docx|doc)$/)?.[1];
   if (!ext) return null;
-  return SIGNATURES[ext].every((b, i) => cv.head[i] === b) ? ext : null;
+  if (!SIGNATURES[ext].every((b, i) => cv.head[i] === b)) return null;
+  // Any zip starts like a .docx: also ask for Word's own parts, and turn away macro-enabled files.
+  return ext !== 'docx' || cv.word || cv.size > MAX_CV_BYTES ? ext : null; // too big: refused as too big below
+}
+
+/**
+ * True when a zip holds a Word document and no macros. A zip lists each file's name in plain text (in its local
+ * headers and its central directory), so looking for the names is enough without unzipping anything.
+ */
+export function isWordZip(bytes: Uint8Array): boolean {
+  // The central directory (every name in the zip) sits at the end, so the last 256 KB is plenty and keeps this quick.
+  const tail = bytes.subarray(Math.max(0, bytes.byteLength - 256 * 1024));
+  return has(tail, 'word/document.xml') && has(tail, '[Content_Types].xml') && !has(tail, 'vbaProject.bin');
+}
+
+/** True when the bytes contain this ASCII text. */
+function has(bytes: Uint8Array, text: string): boolean {
+  const needle = new TextEncoder().encode(text);
+  const first = needle[0];
+  for (let i = bytes.indexOf(first); i !== -1 && i <= bytes.byteLength - needle.byteLength; i = bytes.indexOf(first, i + 1)) {
+    let j = 1;
+    while (j < needle.byteLength && bytes[i + j] === needle[j]) j++;
+    if (j === needle.byteLength) return true;
+  }
+  return false;
+}
+
+/** The form, read with a size cap (for uploads that don't say their length up front), or null when it's too big. */
+async function capped(request: Request): Promise<FormData | null> {
+  const bytes = await readCapped(request, MAX_BODY);
+  return bytes && new Response(bytes, { headers: { 'content-type': request.headers.get('content-type') ?? '' } }).formData();
 }
 
 function clean(v: string | undefined, max: number) {

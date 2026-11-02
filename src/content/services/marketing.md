@@ -4,7 +4,7 @@ order: 4
 kicker: Marketing, social media and paid ads
 title: "Outsourced marketing, social media and ads | Me²"
 description: "Newsletters, social posts and paid ads run as part of your back office: drafted in your voice for you to approve, and reported monthly. Quoted per business."
-h1: Marketing, social media and paid ads, kept going every week
+h1: Marketing, social media and paid ads, kept going every week.
 serviceType: Outsourced marketing support
 topic: The whole back office
 ---

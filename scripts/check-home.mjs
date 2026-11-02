@@ -26,7 +26,7 @@ const browserChecks = [];
 // Task 1: human first, hero chosen by EC (14 Oct 2026)
 check('hero line', /<h1[^>]*>[\s\S]*<\/h1>/.test(html) && decode(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim() === 'We run the back office. You run the business.');
 check('old hero line gone', lacks('AI does the volume'));
-check('hero subhead leads with your own person, with specialists behind them', has('Me² gives your business its own trained person, dedicated to you, with our specialists in admin, finance, customer service and marketing behind them. They report back to you like part of your team.') && lacks('works for nobody else') && lacks('working exclusively'));
+check('hero subhead says what Me² is, then leads with your own person, with specialists behind them', has('Me² is the outsourced back office for established Australian businesses. You get your own trained person, dedicated to you, with our specialists in admin, finance, customer service and marketing behind them. They report back to you like part of your team.') && lacks('works for nobody else') && lacks('working exclusively'));
 check('hero picture: a conversation with your Me² person, labelled as sample', has('Your Me² person') && has('Looking after your back office') && has('Illustration with sample messages.') && has("Done. I've let them know, and it's in this week's report."));
 check('hero: no AI, no dashboard, no WebGL', (() => { const hero = html.slice(html.indexOf('<section class="hero'), html.indexOf('data-pain')); return !/\bAI\b/.test(decode(hero.replace(/<[^>]+>/g, ' '))) && !hero.includes('<canvas') && !hero.includes('data-screen'); })() && lacks('Agent drafting'));
 // Copy review, 16 Oct 2026: no "trained on your business" (invites "are you training AI on my data?"), no real-estate "tenant", and one sentence said once.
@@ -77,11 +77,11 @@ check('main panel name and quote line', offerText.includes('The whole back offic
 check('no price figures on the page', !/\$\s?\d/.test(text) && !JSON.stringify(ld).includes('minPrice'));
 check('FAQ: cost answer says it is quoted', has('Every quote is built around what your business needs.'));
 // EC, 20 Oct 2026: nobody is on shift overnight ("No - but we are often awake"), so the reply time is "usually within 2 hours".
-check('form promises a reply, usually within 2 hours', decode(html).includes("We'll reply to the email you gave us, usually within 2 hours."));
+// Since 27 Oct 2026 a sent enquiry lands on /thanks/, so the form's reply promise is checked there (below), not on the home page.
 check('FAQ: reply time, in the page, FAQ schema and llms.txt', has('Usually within 2 hours, evenings and weekends included.') && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === 'How quickly will you reply?' && e.acceptedAnswer?.text === 'Usually within 2 hours, evenings and weekends included.')) && llms.includes('How quickly will you reply? Usually within 2 hours, evenings and weekends included.'));
 check('no "day or night" promise left (page, structured data, llms.txt)', lacks('day or night') && !JSON.stringify(ld).includes('day or night') && !llms.includes('day or night'));
 const thanksHtml = decode(readFileSync('dist/thanks/index.html', 'utf8'));
-check('/thanks/: usually within 2 hours, on the page and in its description', thanksHtml.includes("We'll reply to the email you gave us, usually within 2 hours.") && thanksHtml.includes('We will reply to the email you gave us, usually within 2 hours.'));
+check('form promise, on /thanks/ where a sent enquiry lands: usually within 2 hours, on the page and in its description', thanksHtml.includes("We'll reply to the email you gave us, usually within 2 hours.") && thanksHtml.includes('We will reply to the email you gave us, usually within 2 hours.'));
 check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide', has('Our team is based in Phnom Penh, Cambodia.') && has('In Phnom Penh, Cambodia, at our Command Centre.') && ld.find((x) => x['@type'] === 'Organization')?.address?.addressLocality === 'Phnom Penh' && llms.includes('Where is the team based?') && !text.replace(/Selected work.*?More projects are being added\./s, '').includes('Adelaide')); // APN's offices are named in the work section; Me² itself is never placed in Adelaide
 // EC, 19 Oct 2026: the team is only in Phnom Penh, so the privacy page's overseas disclosure says so.
 const privacyHtml = decode(readFileSync('dist/privacy/index.html', 'utf8'));

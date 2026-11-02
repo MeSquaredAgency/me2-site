@@ -25,16 +25,31 @@ const routes = JSON.parse(readFileSync('src/data/routes.json', 'utf8'));
 // A role page is only built (and only in the sitemap) while its role is listed in src/content/careers.ts.
 const indexable = routes.filter((r) => !r.noindex && (!r.flag || flagOn(r.flag)) && (!r.role || listed.has(r.role)) && !fixture);
 
-// lastmod is the date of the last commit that changed the site's pages or files, not the build date, so it only moves when the site does.
+// lastmod is the date of the last commit that changed what a page is built from, not the build date, so each page's
+// date only moves when that page does (SEO audit, 2 Nov 2026: every page used to carry the site-wide date).
+// Shared parts (layout, header, footer, styles, config, routes) count for every page.
 // The publish workflow checks out the full history for this; without git it falls back to today.
-let lastmod = new Date().toISOString().slice(0, 10);
-try {
-  lastmod = execFileSync('git', ['log', '-1', '--format=%cs', '--', 'src', 'public'], { encoding: 'utf8' }).trim() || lastmod;
-} catch {}
+const today = new Date().toISOString().slice(0, 10);
+const shared = ['src/layouts', 'src/styles', 'src/config', 'src/lib', 'src/data/routes.json', 'src/components/Header.astro', 'src/components/Footer.astro', 'src/components/Logo.astro', 'public'];
+const sourcesFor = (path) => {
+  const m = path.match(/^\/(services|use-cases)\/([^/]+)\/$/);
+  if (m) return [`src/content/services/${m[2]}.md`, 'src/components/ServicePage.astro', 'src/components/Contact.astro', `src/pages/${m[1]}`];
+  if (path.startsWith('/careers/')) return ['src/content/careers.ts', 'src/pages/careers', 'src/components/careers'];
+  if (path === '/') return ['src/content/site.ts', 'src/components', 'src/pages/index.astro', 'src/assets'];
+  return ['src/content/site.ts', 'src/pages'];
+};
+const lastChanged = (paths) => {
+  try {
+    return execFileSync('git', ['log', '-1', '--format=%cs', '--', ...paths], { encoding: 'utf8' }).trim() || today;
+  } catch {
+    return today;
+  }
+};
+const lastmodFor = (path) => lastChanged([...shared, ...sourcesFor(path)]);
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${indexable.map((r) => `  <url><loc>${base}${r.path}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n')}
+${indexable.map((r) => `  <url><loc>${base}${r.path}</loc><lastmod>${lastmodFor(r.path)}</lastmod></url>`).join('\n')}
 </urlset>
 `;
 writeFileSync(`${outDir}/sitemap.xml`, sitemap);
@@ -84,7 +99,31 @@ for (const r of withMarkdown) {
   markdownPages++;
 }
 
+// The security policy allows exactly the inline scripts the build wrote, by their SHA-256, instead of 'unsafe-inline'
+// (security audit, 2 Nov 2026): if anything ever slipped a script into a page, the browser wouldn't run it.
+// JSON-LD isn't run, and scripts with a src are covered by the host list.
+const { createHash } = await import('node:crypto');
+const { readdirSync, statSync } = await import('node:fs');
+const htmlFiles = [];
+const walk = (dir) => { for (const f of readdirSync(dir)) { const p = `${dir}/${f}`; statSync(p).isDirectory() ? walk(p) : p.endsWith('.html') && htmlFiles.push(p); } };
+walk(outDir);
+const hashes = new Set();
+for (const f of htmlFiles) {
+  for (const m of readFileSync(f, 'utf8').matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
+    const attrs = m[1] ?? '';
+    if (/\bsrc=/.test(attrs) || /application\/ld\+json/.test(attrs)) continue;
+    hashes.add(`'sha256-${createHash('sha256').update(m[2]).digest('base64')}'`);
+  }
+}
+const headersFile = `${outDir}/_headers`;
+if (existsSync(headersFile)) {
+  const headers = readFileSync(headersFile, 'utf8');
+  const next = headers.replace(/(script-src 'self') 'unsafe-inline'/, `$1 ${[...hashes].sort().join(' ')}`);
+  if (next === headers) console.warn("[postbuild] _headers: script-src has no 'unsafe-inline' to replace");
+  writeFileSync(headersFile, next);
+}
+
 for (const f of ['index.html', '404.html']) {
   if (!existsSync(`${outDir}/${f}`)) console.warn(`[postbuild] missing ${outDir}/${f}`);
 }
-console.log(`[postbuild] ${outDir}: sitemap (${indexable.length} url), robots.txt, llms.txt, markdown for ${markdownPages} page(s)`);
+console.log(`[postbuild] ${outDir}: sitemap (${indexable.length} url), robots.txt, llms.txt, markdown for ${markdownPages} page(s), ${hashes.size} inline script hash(es) in _headers`);

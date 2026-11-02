@@ -3,7 +3,13 @@ import Logo from './Logo.astro';
 import { config, fill, flags, shown, whatsappUrl } from '../config';
 import { content } from '../content/site';
 const c = content.footer;
+import { servicePages, pagePath } from '../lib/servicePages';
 const social = c.social.map((s) => ({ label: s.label, url: config[s.key] })).filter((s) => s.url);
+const onHome = Astro.url.pathname === '/';
+const navHeading = onHome ? c.navHeading : c.navHeadingElsewhere;
+// Services first, each by its kicker ("Admin and operations"), then the use-case example(s) by their headline, which
+// says they are an example (CLAUDE.md: kinds of business appear only as clearly labelled use-case examples).
+const services = [...servicePages].sort((a, b) => (a.section === b.section ? 0 : a.section === 'services' ? -1 : 1));
 ---
 <footer class="site-footer on-dark render-later">
   <div class="wrap top">
@@ -18,8 +24,16 @@ const social = c.social.map((s) => ({ label: s.label, url: config[s.key] })).fil
         </ul>
       )}
     </div>
-    <nav class="col" aria-label={c.navHeading}>
-      <p class="col-title">{c.navHeading}</p>
+    {services.length > 0 && (
+      <nav class="col" aria-label={c.servicesHeading}>
+        <p class="col-title">{c.servicesHeading}</p>
+        <ul>
+          {services.map((p) => <li><a href={pagePath(p)} aria-current={Astro.url.pathname === pagePath(p) ? 'page' : undefined}>{p.section === 'use-cases' ? p.h1 : p.kicker}</a></li>)}
+        </ul>
+      </nav>
+    )}
+    <nav class="col" aria-label={navHeading}>
+      <p class="col-title">{navHeading}</p>
       <ul>
         {shown(content.header.nav).map((item) => <li><a href={`/${item.href}`}>{item.label}</a></li>)}
       </ul>
@@ -54,5 +68,6 @@ const social = c.social.map((s) => ({ label: s.label, url: config[s.key] })).fil
   .giant { padding-top: clamp(24px, 4vw, 56px); overflow: hidden; height: calc(min(100vw, var(--content-max) + 2 * var(--gutter)) * 0.36); box-sizing: border-box; }
   .giant :global(.logo) { display: block; opacity: 0.06; }
   .giant :global(.logo .logo-svg) { width: 100%; height: auto; }
-  @media (min-width: 900px) { .top { grid-template-columns: 2fr 1.2fr 1fr; } }
+  @media (min-width: 640px) and (max-width: 1099px) { .top { grid-template-columns: 1fr 1fr; } .brand { grid-column: 1 / -1; } }
+  @media (min-width: 1100px) { .top { grid-template-columns: 1.4fr 1.2fr 1.3fr 1fr; } }
 </style>

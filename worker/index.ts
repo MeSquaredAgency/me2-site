@@ -17,6 +17,7 @@ import { content } from '../src/content/site.ts';
 import { application } from './applications.ts';
 import { chatWith, type ChatEnv } from './chat.ts';
 import { brandedHtml, footerText, sender } from './email.ts';
+import { allowed, fillTime, fromOurPage, label, readCapped, type RateLimit } from './guard.ts';
 
 interface AssessmentPreparedStatement {
   bind(...values: unknown[]): AssessmentPreparedStatement;
@@ -33,6 +34,8 @@ interface Env extends ChatEnv {
   DB?: AssessmentDatabase;
   /** Resend API key (a Worker secret, never in the code). Missing until it's set in Cloudflare (DEPLOY.md). */
   RESEND_API_KEY?: string;
+  /** Workers rate limiting binding (wrangler.jsonc): a few form posts a minute from each address, per form. */
+  FORM_LIMIT?: RateLimit;
 }
 
 /** The part of the Workers execution context the enquiry route uses: work that carries on after the response. */
@@ -41,43 +44,61 @@ interface Ctx {
 }
 
 const LIMITS = { name: 100, email: 254, message: 2000, topic: 120, source: 60 };
-// Real people take longer than this to type a message; most form bots don't.
-const MIN_FILL_MS = 2500;
+
+// The security headers public/_headers gives every static file, for the responses the Worker builds itself (redirects,
+// form and chat answers), which the asset rules never see (security audit, 2 Nov 2026). The CSP stays with the pages.
+const SECURITY_HEADERS: [string, string][] = [
+  ['Strict-Transport-Security', 'max-age=31536000; includeSubDomains'],
+  ['X-Content-Type-Options', 'nosniff'],
+  ['Referrer-Policy', 'strict-origin-when-cross-origin'],
+  ['X-Frame-Options', 'DENY'],
+];
+export function secured(res: Response): Response {
+  if (SECURITY_HEADERS.every(([k]) => res.headers.has(k))) return res;
+  // Response.redirect() and fetched responses can have immutable headers, so copy before adding.
+  const out = new Response(res.body, res);
+  for (const [k, v] of SECURITY_HEADERS) if (!out.headers.has(k)) out.headers.set(k, v);
+  return out;
+}
 
 export default {
   async fetch(request: Request, env: Env, ctx: Ctx): Promise<Response> {
-    const url = new URL(request.url);
-    const isWww = url.hostname.startsWith('www.');
-    // workers.dev and local previews are left alone; only real domains are redirected.
-    const isRealDomain = !url.hostname.endsWith('.workers.dev') && url.hostname !== 'localhost' && url.hostname !== '127.0.0.1';
-    if (isRealDomain && (isWww || url.protocol === 'http:')) {
-      url.protocol = 'https:';
-      if (isWww) url.hostname = url.hostname.slice(4);
-      return Response.redirect(url.toString(), 301);
-    }
-    if (url.pathname === '/api/assessments') return assessment(request, env);
-    if (url.pathname === '/api/enquiry') return enquiry(request, env, ctx);
-    if (url.pathname === '/api/applications') return application(request, env);
-    if (url.pathname === '/api/chat') return chat(request, env, ctx);
-    if (request.method === 'GET' || request.method === 'HEAD') {
-      const md = url.pathname.endsWith('/index.html.md') ? url.pathname
-        : url.pathname.endsWith('/') && prefersMarkdown(request.headers.get('accept')) ? `${url.pathname}index.html.md` : '';
-      const page = md && (await markdown(request, env, md));
-      if (page) return page;
-    }
-    const res = await env.ASSETS.fetch(request);
-    // The asset handler sends /careers to /careers/ (and /index.html to /) with a 307; these are permanent, so say so with a 301.
-    if (res.status === 307) {
-      const to = res.headers.get('location');
-      if (to) return Response.redirect(new URL(to, url).toString(), 301);
-    }
-    // Pages now come in two versions at one address, so caches must keep them apart by the Accept header.
-    if (!(res.headers.get('content-type') ?? '').startsWith('text/html')) return res;
-    const html = new Response(res.body, res);
-    html.headers.append('Vary', 'Accept');
-    return html;
+    return secured(await route(request, env, ctx));
   },
 };
+
+async function route(request: Request, env: Env, ctx: Ctx): Promise<Response> {
+  const url = new URL(request.url);
+  const isWww = url.hostname.startsWith('www.');
+  // workers.dev and local previews are left alone; only real domains are redirected.
+  const isRealDomain = !url.hostname.endsWith('.workers.dev') && url.hostname !== 'localhost' && url.hostname !== '127.0.0.1';
+  if (isRealDomain && (isWww || url.protocol === 'http:')) {
+    url.protocol = 'https:';
+    if (isWww) url.hostname = url.hostname.slice(4);
+    return Response.redirect(url.toString(), 301);
+  }
+  if (url.pathname === '/api/assessments') return assessment(request, env);
+  if (url.pathname === '/api/enquiry') return enquiry(request, env, ctx);
+  if (url.pathname === '/api/applications') return application(request, env);
+  if (url.pathname === '/api/chat') return chat(request, env, ctx);
+  if (request.method === 'GET' || request.method === 'HEAD') {
+    const md = url.pathname.endsWith('/index.html.md') ? url.pathname
+      : url.pathname.endsWith('/') && prefersMarkdown(request.headers.get('accept')) ? `${url.pathname}index.html.md` : '';
+    const page = md && (await markdown(request, env, md));
+    if (page) return page;
+  }
+  const res = await env.ASSETS.fetch(request);
+  // The asset handler sends /careers to /careers/ (and /index.html to /) with a 307; these are permanent, so say so with a 301.
+  if (res.status === 307) {
+    const to = res.headers.get('location');
+    if (to) return Response.redirect(new URL(to, url).toString(), 301);
+  }
+  // Pages now come in two versions at one address, so caches must keep them apart by the Accept header.
+  if (!(res.headers.get('content-type') ?? '').startsWith('text/html')) return res;
+  const html = new Response(res.body, res);
+  html.headers.append('Vary', 'Accept');
+  return html;
+}
 
 /** True when the Accept header ranks text/markdown at least as high as text/html (q-values; a bare type is q=1). */
 export function prefersMarkdown(accept: string | null): boolean {
@@ -128,6 +149,7 @@ async function assessment(request: Request, env: Env): Promise<Response> {
   if (url.hostname !== 'mesquaredagency.com' || request.headers.get('Origin') !== url.origin) {
     return json({ ok: false, error: 'origin_not_allowed' }, 403);
   }
+  if (!(await allowed(env.FORM_LIMIT, 'assessment', request))) return json({ ok: false, error: 'rate_limited' }, 429);
   if (!(request.headers.get('content-type') ?? '').toLowerCase().includes('application/json')) {
     return json({ ok: false, error: 'json_required' }, 415);
   }
@@ -138,11 +160,12 @@ async function assessment(request: Request, env: Env): Promise<Response> {
 
   let raw: string;
   try {
-    raw = await request.text();
+    const bytes = await readCapped(request, maxBytes);
+    if (!bytes) return json({ ok: false, error: 'request_too_large' }, 413);
+    raw = new TextDecoder().decode(bytes);
   } catch {
     return json({ ok: false, error: 'invalid_request' }, 400);
   }
-  if (new TextEncoder().encode(raw).byteLength > maxBytes) return json({ ok: false, error: 'request_too_large' }, 413);
 
   let parsed: unknown;
   try {
@@ -202,20 +225,35 @@ export async function enquiry(request: Request, env: Env, ctx: Ctx): Promise<Res
       ? Response.json({ ok }, { status })
       : Response.redirect(new URL(ok ? '/thanks/' : '/not-sent/', request.url).toString(), 303);
 
+  // Only this site's own pages may post here, and only a few times a minute from one address.
+  if (!fromOurPage(request)) {
+    console.log(JSON.stringify({ event: 'enquiry', result: 'wrong-origin' }));
+    return done(false, 403);
+  }
+  if (!(await allowed(env.FORM_LIMIT, 'enquiry', request))) {
+    console.log(JSON.stringify({ event: 'enquiry', result: 'rate-limited' }));
+    return done(false, 429);
+  }
+
   let data: Record<string, string> = {};
   try {
-    if ((request.headers.get('content-type') ?? '').includes('application/json')) {
-      data = Object.fromEntries(Object.entries((await request.json()) as Record<string, unknown>).map(([k, v]) => [k, String(v ?? '')]));
+    const type = request.headers.get('content-type') ?? '';
+    const bytes = await readCapped(request, 32 * 1024);
+    if (!bytes) return done(false, 413);
+    const body = new TextDecoder().decode(bytes);
+    if (type.includes('application/json')) {
+      data = Object.fromEntries(Object.entries(JSON.parse(body) as Record<string, unknown>).map(([k, v]) => [k, String(v ?? '')]));
     } else {
-      data = Object.fromEntries([...(await request.formData()).entries()].map(([k, v]) => [k, typeof v === 'string' ? v : '']));
+      data = Object.fromEntries([...(await new Response(bytes, { headers: { 'content-type': type } }).formData()).entries()].map(([k, v]) => [k, typeof v === 'string' ? v : '']));
     }
   } catch {
     return done(false);
   }
 
-  // Bots: a hidden field people never see, and a form filled faster than anyone can type. Pretend it worked.
-  const startedAt = Number(data.started);
-  if (data.website || (startedAt && Date.now() - startedAt < MIN_FILL_MS)) {
+  // Bots: a hidden field people never see, and a form filled faster than anyone can type (or with a made-up time).
+  // The page's script always sets the timer, so a script-sent (JSON) post without it is a bot too. Pretend it worked.
+  const timer = fillTime(data.started);
+  if (data.website || timer === 'bot' || (timer === 'missing' && wantsJson)) {
     console.log(JSON.stringify({ event: 'enquiry', result: 'dropped' }));
     return done(true);
   }
@@ -224,8 +262,10 @@ export async function enquiry(request: Request, env: Env, ctx: Ctx): Promise<Res
   const name = clean(data.name, LIMITS.name);
   const email = clean(data.email, LIMITS.email);
   const message = (data.message ?? '').trim();
-  const topic = clean(data.topic, LIMITS.topic) || 'General enquiry';
-  const source = clean(data.source, LIMITS.source) || 'unknown';
+  // Topic and source come from the page's own links, but anyone can post anything: words only, since they reach the
+  // email subject and the logs.
+  const topic = label(data.topic, LIMITS.topic) || 'General enquiry';
+  const source = label(data.source, LIMITS.source) || 'unknown';
   const valid = name && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && message && message.length <= LIMITS.message;
   if (!valid) return done(false);
 
@@ -263,8 +303,10 @@ export async function enquiry(request: Request, env: Env, ctx: Ctx): Promise<Res
   }
   console.log(JSON.stringify({ event: 'enquiry', result: 'sent', topic, source }));
   // The enquiry is with the team, so the visitor hears "sent" whatever happens next. The confirmation goes after the
-  // response, from the live site only (previews share this Worker and must never email the people who test them).
-  if (flags.sendEnquiryConfirmation && new URL(request.url).hostname === siteConfig.SITE_DOMAIN) {
+  // response, from the live site only (previews share this Worker and must never email the people who test them),
+  // and only when the page's fill timer passed: a post without it (no JavaScript, or a script) still reaches the
+  // team, but can't make us email an address someone else typed in.
+  if (flags.sendEnquiryConfirmation && timer === 'ok' && new URL(request.url).hostname === siteConfig.SITE_DOMAIN) {
     ctx.waitUntil(confirmEnquiry(email, env.RESEND_API_KEY));
   }
   return done(true);

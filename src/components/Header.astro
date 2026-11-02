@@ -54,7 +54,6 @@ const { tone = 'dark' } = Astro.props as { tone?: 'dark' | 'paper' };
   .tone-paper { color: var(--color-ink); }
   .tone-paper .nav a, .tone-paper.is-scrolled .nav a { color: var(--color-ink); }
   .tone-paper.is-scrolled { background: rgb(247 242 234 / 0.86); box-shadow: 0 1px 0 var(--color-line); }
-  .tone-paper :global(:focus-visible) { outline-color: var(--color-ink); }
   .site-header.is-tucked { transform: translateY(-100%); }
   @media (prefers-reduced-motion: reduce) { .site-header.is-tucked { transform: none; } }
   .bar { display: flex; align-items: center; gap: 28px; padding-block: 24px; transition: padding 500ms var(--ease-out); }
@@ -71,6 +70,8 @@ const { tone = 'dark' } = Astro.props as { tone?: 'dark' | 'paper' };
   .is-scrolled .nav a { color: var(--color-mist); }
   .bar :global(.cta) { min-height: 46px; padding: 0 20px 0 18px; font-size: 0.95rem; }
   .site-header :global(:focus-visible) { outline-color: var(--color-mist); }
+  /* On paper the ring is ink (mist on paper is 1.03:1, invisible). This must come after the line above, which it overrides. */
+  .site-header.tone-paper :global(:focus-visible) { outline-color: var(--color-ink); }
   @media (max-width: 899px) { .nav { display: none; } }
   @media (max-width: 639px) {
     .bar { padding-block: 14px; }

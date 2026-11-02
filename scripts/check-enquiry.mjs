@@ -34,8 +34,8 @@ const base = (over = {}) => ({
 });
 const post = (payload, url = LIVE, { js = true } = {}) =>
   js
-    ? new Request(url, { method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify(payload) })
-    : new Request(url, { method: 'POST', body: new URLSearchParams(payload) });
+    ? new Request(url, { method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json', origin: new URL(url).origin }, body: JSON.stringify(payload) })
+    : new Request(url, { method: 'POST', headers: { origin: new URL(url).origin }, body: new URLSearchParams(payload) });
 // Runs the handler as the Worker would, then waits for anything it handed to waitUntil (the confirmation).
 const run = async (req, statusList = []) => {
   calls = [];
@@ -86,6 +86,37 @@ const conf = content.enquiryConfirmation;
 for (const [name, over] of [['honeypot filled', { website: 'x' }], ['filled in 1 second', { started: String(Date.now() - 1000) }]]) {
   const { res, body } = await run(post(base(over)));
   check(`bot (${name}): ok, nothing sent, no confirmation`, res.status === 200 && body?.ok === true && calls.length === 0);
+}
+// The page's timer: a script-sent (JSON) post without it, or with a made-up time, is a bot.
+for (const [name, over] of [['no fill timer, sent by script', { started: '' }], ['fill timer from the future', { started: String(Date.now() + 60_000) }], ['fill timer not a number', { started: 'soon' }]]) {
+  const { res, body } = await run(post(base(over)));
+  check(`bot (${name}): ok, nothing sent`, res.status === 200 && body?.ok === true && calls.length === 0, String(calls.length));
+}
+// Without JavaScript there is no timer: the enquiry still reaches hello@, but no confirmation goes to the address typed in.
+{
+  const { res } = await run(post(base({ started: '' }), LIVE, { js: false }));
+  check('no JavaScript, no timer: 303 to /thanks/, enquiry sent, no confirmation', res.status === 303 && calls.length === 1 && calls[0].body.to[0] === 'hello@mesquaredagency.com', String(calls.length));
+}
+// Another site's page, or a script without our Origin: refused, nothing sent.
+for (const [name, headers] of [['another site', { origin: 'https://example.com' }], ['no Origin or Referer', {}]]) {
+  const { res } = await run(new Request(LIVE, { method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json', ...headers }, body: JSON.stringify(base()) }));
+  check(`${name}: 403, nothing sent`, res.status === 403 && calls.length === 0, String(res.status));
+}
+{
+  const { res } = await run(new Request(LIVE, { method: 'POST', headers: { referer: 'https://mesquaredagency.com/services/admin/' }, body: new URLSearchParams(base()) }));
+  check('older browser, Referer from our page but no Origin: sent', res.status === 303 && calls.length === 2, String(res.status));
+}
+// The rate limit: refused once the binding says no, nothing sent.
+{
+  const req = post(base());
+  calls = [];
+  const res = await enquiry(req, { RESEND_API_KEY: 'test', FORM_LIMIT: { limit: async () => ({ success: false }) } }, { waitUntil() {} });
+  check('rate limited: 429, nothing sent', res.status === 429 && calls.length === 0, String(res.status));
+}
+// The topic reaches the subject line and the logs: words only.
+{
+  await run(post(base({ topic: 'Reset your password at https://evil.example <b>now</b>' })));
+  check('topic: links and markup stripped from the subject', calls[0] && !/https?:|evil\.example\/|<|>/.test(calls[0].body.subject), calls[0]?.body.subject);
 }
 // Refused enquiries send nothing.
 check('bad email: refused, nothing sent', (await run(post(base({ email: 'not-an-email' })))).res.status === 400 && calls.length === 0);

@@ -62,6 +62,7 @@ const onePrice = price(c.one.price);
         <div class="panel-main">
           <p class="body">{c.web.body}</p>
           <ul class="includes">{c.web.includes.map((x) => <li>{x}</li>)}</ul>
+          <a href="/services/websites/" class="tlink web-more">{c.web.more}</a>
         </div>
         <div class="panel-foot"><EnquireLink topic={c.web.topic} source="start-here" class="btn btn-dark"><span class="dot" aria-hidden="true"></span>{c.web.button}</EnquireLink></div>
       </article>
@@ -119,6 +120,7 @@ const onePrice = price(c.one.price);
   .panel-main { width: 100%; }
   .includes { list-style: none; margin: 26px 0 0; padding: 0; width: 100%; max-width: 44ch; border-top: 1px solid var(--color-line); }
   .includes li { display: flex; align-items: flex-start; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--color-line); font-weight: 500; line-height: 1.5; }
+  .web-more { display: inline-block; margin-top: 20px; font-weight: 560; }
   .includes li::before { content: ''; width: 6px; height: 6px; margin-top: calc(0.75em - 3px); background: currentColor; flex: none; }
   .also { margin-top: clamp(32px, 4vw, 48px); max-width: 60ch; color: var(--color-slate); line-height: 1.6; }
 

@@ -312,7 +312,9 @@ export const roles: Role[] = [
 ];
 
 /** Where every role is based, for Google's job search (JobPosting). */
-export const jobPlace = { locality: 'Phnom Penh', country: 'KH' };
+// Phnom Penh is a city and also its own province, so it is the region too. No street address: the Command Centre's isn't
+// published (add streetAddress and postalCode here once EC approves showing it; Search Console asks for them).
+export const jobPlace = { locality: 'Phnom Penh', region: 'Phnom Penh', country: 'KH' };
 
 export const listedRoles = (): Role[] => roles.filter((r) => r.listed);
 export const findRole = (slug: string): Role | undefined => listedRoles().find((r) => r.slug === slug);

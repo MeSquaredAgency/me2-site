@@ -9,6 +9,7 @@ import { flags } from '../src/config/flags.ts';
 import { content } from '../src/content/site.ts';
 import { MAX_MESSAGE, MAX_TURNS } from './chat-limits.ts';
 import { sender } from './email.ts';
+import { allowed, signer, type RateLimit } from './guard.ts';
 
 export interface ChatEnv {
   /** Anthropic API key (a Worker secret, never in the code). Missing until it's set in Cloudflare (DEPLOY.md). */
@@ -16,7 +17,7 @@ export interface ChatEnv {
   /** Resend API key, shared with the enquiry form. */
   RESEND_API_KEY?: string;
   /** Workers rate limiting binding (wrangler.jsonc): a few messages a minute from each address. */
-  CHAT_LIMIT?: { limit(options: { key: string }): Promise<{ success: boolean }> };
+  CHAT_LIMIT?: RateLimit;
 }
 
 interface Ctx {
@@ -107,6 +108,7 @@ const PASS_TO_TEAM: Anthropic.Tool = {
 const SYSTEM = systemPrompt();
 
 type Turn = { role: 'user' | 'assistant'; content: string };
+type SignedTurn = Turn & { sig?: unknown };
 
 /** The conversation as the page sent it, or null when it isn't one: alternating turns, the visitor's first and last. */
 export function readTurns(value: unknown): Turn[] | null {
@@ -148,14 +150,24 @@ export function chatWith(on: { enableChat: boolean; sendEnquiryConfirmation: boo
     // The hidden field people never see; bots fill it in.
     if (!turns || data.website) return json({ ok: false, error: 'invalid_request' }, 400);
 
-    const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
-    if (env.CHAT_LIMIT && !(await env.CHAT_LIMIT.limit({ key: ip })).success) {
+    // A few messages a minute from one address (an IPv6 /64 counts as one).
+    if (!(await allowed(env.CHAT_LIMIT, 'chat', request))) {
       log('rate-limited');
       return json({ ok: false, error: 'rate_limited' }, 429);
     }
     if (!env.ANTHROPIC_API_KEY) {
       log('not-configured');
       return json({ ok: false, error: 'not_configured' }, 503);
+    }
+    // Every earlier reply must be one this Worker wrote: the page sends back the signature it got with each one, so a
+    // script can't write the assistant's side of the conversation to talk it round.
+    const seal = await signer(env.ANTHROPIC_API_KEY);
+    const sent = data.messages as SignedTurn[];
+    for (const [i, t] of turns.entries()) {
+      if (t.role === 'assistant' && !(await seal.check(t.content, sent[i]?.sig))) {
+        log('forged-reply');
+        return json({ ok: false, error: 'invalid_request' }, 400);
+      }
     }
 
     const c = content.chat;
@@ -179,14 +191,16 @@ export function chatWith(on: { enableChat: boolean; sendEnquiryConfirmation: boo
 
     if (message.stop_reason === 'refusal') {
       log('refusal', { turns: turnCount });
-      return json({ ok: true, reply: fill(c.refusal) });
+      const reply = fill(c.refusal);
+      return json({ ok: true, reply, sig: await seal.sign(reply) });
     }
 
     const call = message.content.find((b): b is Anthropic.ToolUseBlock => b.type === 'tool_use' && b.name === PASS_TO_TEAM.name);
     if (call) {
-      const sent = await passOn(call.input as Record<string, unknown>, url, env, ctx, on, confirm);
-      log(sent ? 'passed-on' : 'pass-on-failed', { turns: turnCount });
-      return json(sent ? { ok: true, reply: fill(c.passedOn), done: true } : { ok: true, reply: fill(c.passOnFailed) });
+      const passed = await passOn(call.input as Record<string, unknown>, url, env, ctx, on, confirm);
+      log(passed ? 'passed-on' : 'pass-on-failed', { turns: turnCount });
+      const reply = fill(passed ? c.passedOn : c.passOnFailed);
+      return json(passed ? { ok: true, reply, done: true } : { ok: true, reply, sig: await seal.sign(reply) });
     }
 
     const reply = message.content
@@ -195,7 +209,8 @@ export function chatWith(on: { enableChat: boolean; sendEnquiryConfirmation: boo
       .join('\n\n')
       .trim();
     log(reply ? 'reply' : 'empty', { turns: turnCount, stop: message.stop_reason });
-    return json({ ok: true, reply: reply || fill(c.unsure) });
+    const answer = reply || fill(c.unsure);
+    return json({ ok: true, reply: answer, sig: await seal.sign(answer) });
   };
 }
 

@@ -14,6 +14,8 @@ export const content = {
     /** Mailto subjects, for the plain email links that remain (and when the form is switched off). */
     subjects: { general: 'Website enquiry' },
     viewProject: 'View',
+    /** og:image:alt for public/og-image.png (scripts/og-image.mjs; SEO audit, 2 Nov 2026). */
+    shareImageAlt: '{SITE_NAME}: We run the back office. You run the business. Beside it, an illustration of a sample message thread with your {SITE_NAME} person.',
   },
 
   header: {
@@ -36,7 +38,9 @@ export const content = {
      * The main contact isn't technically exclusive, so the copy says "dedicated", never "working exclusively" (EC, 21 Oct 2026).
      */
     subhead:
-      '{SITE_NAME} gives your business its own trained person, dedicated to you, with our specialists in admin, finance, customer service and marketing behind them. They report back to you like part of your team. We design and build the website out front, too.',
+      // First sentence added 2 Nov 2026 (SEO audit): the page body never said what people search for (outsourced back
+      // office, Australian businesses); the page title did. The rest is unchanged.
+      '{SITE_NAME} is the outsourced back office for established Australian businesses. You get your own trained person, dedicated to you, with our specialists in admin, finance, customer service and marketing behind them. They report back to you like part of your team. We design and build the website out front, too.',
     primary: 'Talk to us',
     /** The hero's second link: to the work, or (while showProof is off) to Start here. */
     secondary: 'See our work',
@@ -119,12 +123,12 @@ export const content = {
         year: '2026',
         url: 'https://apnre.com.au/',
         linkText: 'Visit apnre.com.au',
-        /** src/assets/work/<file>.png; "phone" shots sit in a phone frame. */
+        /** src/assets/work/<file>.png; "phone" shots sit in a phone frame. alt: what the screenshot shows (it is the work itself). */
         shots: [
-          { file: 'apnre', kind: 'wide' },
-          { file: 'apnre-phone', kind: 'phone' },
-          { file: 'apnre-phone-2', kind: 'phone' },
-          { file: 'apnre-explore', kind: 'wide' },
+          { file: 'apnre', kind: 'wide', alt: 'The APN Real Estate home page on a computer: "South Australian real estate, done properly." over a view of Adelaide.' },
+          { file: 'apnre-phone', kind: 'phone', alt: 'The APN Real Estate home page on a phone, with the appraisal request box.' },
+          { file: 'apnre-phone-2', kind: 'phone', alt: 'Further down the APN Real Estate home page on a phone: one team, a named contact and free appraisals.' },
+          { file: 'apnre-explore', kind: 'wide', alt: 'The APN Real Estate home page on a computer: properties for sale, for rent and commercial.' },
         ],
         /** EC, 26 Oct 2026: APN's OK confirmed. */
         confirmed: true,
@@ -178,6 +182,8 @@ export const content = {
       body: 'Sites and products that make an established business look like what it is: clear to read, quick to load and built to win the enquiry.',
       includes: ['Websites and landing pages', 'Interface design for portals and apps', 'Copy and content structure', 'Search and performance foundations'],
       button: 'Ask about a website',
+      /** Links to /services/websites/ (SEO audit, 2 Nov 2026). */
+      more: 'More about websites',
       topic: 'Website or digital product',
     },
     also: "Need something these don't cover, like an automation between your tools or a dashboard? Tell us the job.",
@@ -418,6 +424,10 @@ export const content = {
       { label: 'LinkedIn', key: 'LINKEDIN_URL' },
     ],
     navHeading: 'On this page',
+    /** The same links on every other page, where they lead back to the home page (audit, 2 Nov 2026). */
+    navHeadingElsewhere: 'On the home page',
+    /** The service and use-case pages, linked from every page (SEO audit, 2 Nov 2026). */
+    servicesHeading: 'Services',
     copyright: '© {YEAR} {SITE_NAME}',
     /** showCareers */
     careers: 'Careers',

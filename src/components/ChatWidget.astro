@@ -74,7 +74,7 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
     const err = root.querySelector<HTMLElement>('[data-chat-err]')!;
     const hello = root.querySelector<HTMLElement>('[data-chat-hello]')!;
     const sugg = root.querySelector<HTMLElement>('[data-chat-sugg]');
-    const turns: { role: 'user' | 'assistant'; content: string }[] = [];
+    const turns: { role: 'user' | 'assistant'; content: string; sig?: string }[] = [];
     let ended = false;
     // Browser storage can be missing or blocked (private windows); the chat works without it, it just says hello again.
     const store = {
@@ -90,8 +90,9 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
     const place = () => {
       const away = [...seen.values()].some(Boolean);
       root.classList.toggle('is-away', away);
-      // Say hello once per visit, a moment after the launcher first shows, unless the chat has been opened.
-      if (!away && !helloTimer && !store.get('me2-chat-hello')) {
+      // Say hello once per visit, a moment after the launcher first shows, unless the chat has been opened. Not on a
+      // phone: there the greeting would sit over the text being read (audit, 2 Nov 2026); the launcher is enough.
+      if (!away && !helloTimer && !store.get('me2-chat-hello') && !matchMedia('(max-width: 639px)').matches) {
         helloTimer = window.setTimeout(() => {
           if (!panel.hidden || root.classList.contains('is-away')) { helloTimer = 0; return; }
           hello.hidden = false;
@@ -185,10 +186,11 @@ const privacyAfter = c.note.slice(c.note.indexOf(c.privacyLink) + c.privacyLink.
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify({ messages: turns, website: (form.elements.namedItem('website') as HTMLInputElement).value }),
         });
-        const body = (await res.json().catch(() => ({}))) as { ok?: boolean; reply?: string; done?: boolean };
+        const body = (await res.json().catch(() => ({}))) as { ok?: boolean; reply?: string; sig?: string; done?: boolean };
         typing.remove();
         if (!res.ok || !body.ok || !body.reply) throw Object.assign(new Error(String(res.status)), { status: res.status });
-        turns.push({ role: 'assistant', content: body.reply });
+        // The Worker signs each reply; it checks the signature when the conversation comes back.
+        turns.push({ role: 'assistant', content: body.reply, sig: body.sig });
         add('them', body.reply);
         if (body.done) end(msg.done);
         else if (turns.length >= maxTurns * 2) end(msg.limit);
