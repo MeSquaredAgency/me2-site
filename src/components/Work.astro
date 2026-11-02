@@ -40,7 +40,7 @@ const rows = (shots: Shot[]) => shots.reduce<Shot[][]>((acc, s) => {
             <div class:list={['row', row[0].kind]}>
               {row.map((s) => (
                 <figure class:list={['shot', s.kind]} data-shot>
-                  <Picture src={s.img!} alt="" widths={s.kind === 'phone' ? [360, 720] : [800, 1200, 1600]}
+                  <Picture src={s.img!} alt={s.alt ?? ''} widths={s.kind === 'phone' ? [360, 720] : [800, 1200, 1600]}
                     sizes={s.kind === 'phone' ? '(min-width: 1000px) 22vw, 45vw' : '(min-width: 1000px) 62vw, 100vw'}
                     formats={['avif', 'webp']} fallbackFormat="jpg" loading="lazy" decoding="async" />
                 </figure>

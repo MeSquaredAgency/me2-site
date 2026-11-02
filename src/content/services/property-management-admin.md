@@ -1,7 +1,7 @@
 ---
 slug: property-management-admin
 section: use-cases
-order: 5
+order: 6
 kicker: Use-case example
 title: "Property management admin support: an example | Me²"
 description: "An example of Me² at work: arrears follow-up, lease paperwork, maintenance and inspections handled for a property management team, with agents approving."

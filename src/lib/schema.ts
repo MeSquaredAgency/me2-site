@@ -24,8 +24,9 @@ export function jobPostingSchema(role: Role) {
     employmentType: 'FULL_TIME',
     directApply: true,
     url: `${siteUrl}/careers/${role.slug}/`,
-    hiringOrganization: { '@type': 'Organization', name: config.SITE_NAME, logo: `${siteUrl}/logo.png`, ...(sameAs.length ? { sameAs } : {}) },
-    jobLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: jobPlace.locality, addressCountry: jobPlace.country } },
+    hiringOrganization: { '@type': 'Organization', '@id': `${siteUrl}/#organization`, name: config.SITE_NAME, url: `${siteUrl}/`, logo: `${siteUrl}/logo.png`, ...(sameAs.length ? { sameAs } : {}) },
+    jobLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: jobPlace.locality, addressRegion: jobPlace.region, addressCountry: jobPlace.country } },
+    // No validThrough: the roles stay open until filled, and a made-up end date would make Google drop a live role.
     baseSalary: { '@type': 'MonetaryAmount', currency: role.facts.currency, value: { '@type': 'QuantitativeValue', minValue: role.facts.salaryFrom, unitText: 'MONTH' } },
   };
 }
@@ -107,10 +108,11 @@ export function homeSchema() {
   };
   // serviceType is the plain category a search engine files each offer under; url is the offer on the page (SEO audit, 25 Oct 2026).
   const services = [
-    { name: o.office.name, serviceType: 'Outsourced back office', description: fill(o.office.body), ...offerFrom(o.office.price) },
-    { name: o.one.name, serviceType: 'Outsourced administrative support', description: fill(o.one.body), ...offerFrom(o.one.price) },
-    { name: o.web.name, serviceType: 'Website design and development', description: o.web.body },
-  ].map((s) => ({ '@context': 'https://schema.org', '@type': 'Service', ...s, url: `${siteUrl}/#services`, provider, areaServed: 'AU' }));
+    // Each points at its own page where there is one, so the home page doesn't compete with it (SEO audit, 2 Nov 2026).
+    { name: o.office.name, serviceType: 'Outsourced back office', description: fill(o.office.body), url: `${siteUrl}/#services`, ...offerFrom(o.office.price) },
+    { name: o.one.name, serviceType: 'Outsourced administrative support', description: fill(o.one.body), url: `${siteUrl}/services/admin/`, ...offerFrom(o.one.price) },
+    { name: o.web.name, serviceType: 'Website design and development', description: o.web.body, url: `${siteUrl}/services/websites/` },
+  ].map((s) => ({ '@context': 'https://schema.org', '@type': 'Service', ...s, provider, areaServed: 'AU' }));
   const faq = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',

@@ -120,6 +120,14 @@
     "llms": "Marketing, social media and paid ads"
   },
   {
+    "path": "/services/websites/",
+    "title": "Website design and build for established businesses | Me²",
+    "description": "Websites, landing pages and app interfaces designed and built by Me²: clear to read, quick to load and built to win the enquiry. Quoted per project.",
+    "ogImage": "/og-image.png",
+    "noindex": false,
+    "llms": "Websites and digital products"
+  },
+  {
     "path": "/use-cases/property-management-admin/",
     "title": "Property management admin support: an example | Me²",
     "description": "An example of Me² at work: arrears follow-up, lease paperwork, maintenance and inspections handled for a property management team, with agents approving.",

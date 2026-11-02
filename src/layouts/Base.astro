@@ -4,7 +4,8 @@ import '../styles/global.css';
 import fontUrl from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-standard-normal.woff2?url';
 import routes from '../data/routes.json';
 import logoLight from '../assets/brand/me2-logo-light.svg?raw';
-import { config, flags, isFixture, siteUrl } from '../config';
+import { config, fill, flags, isFixture, siteUrl } from '../config';
+import { content } from '../content/site';
 
 interface Props {
   /** Path as listed in src/data/routes.json */
@@ -17,7 +18,8 @@ const route = routes.find((r) => r.path === path);
 if (!route) throw new Error(`No entry for ${path} in src/data/routes.json`);
 
 const base = isFixture ? 'https://example.com' : siteUrl;
-const canonical = new URL(path === '/404.html' ? '/' : path, base).href;
+// The 404 page answers at every missing address, so it names no canonical address of its own (SEO audit, 2 Nov 2026).
+const canonical = path === '/404.html' ? '' : new URL(path, base).href;
 const ogImage = new URL(route.ogImage, base).href;
 const ogTitle = route.ogTitle ?? route.title;
 const noindex = route.noindex || isFixture;
@@ -30,7 +32,7 @@ const fontFace = `@font-face{font-family:'Instrument Sans Variable';font-style:n
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{route.title}</title>
     <meta name="description" content={route.description} />
-    <link rel="canonical" href={canonical} />
+    {canonical && <link rel="canonical" href={canonical} />}
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
     <style is:inline set:html={fontFace} />
@@ -42,10 +44,11 @@ const fontFace = `@font-face{font-family:'Instrument Sans Variable';font-style:n
     <meta property="og:site_name" content={config.SITE_NAME} />
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={route.description} />
-    <meta property="og:url" content={canonical} />
+    {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    {route.ogImage === '/og-image.png' && <meta property="og:image:alt" content={fill(content.ui.shareImageAlt)} />}
     <meta property="og:locale" content={config.LOCALE.replace('-', '_')} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={ogTitle} />
