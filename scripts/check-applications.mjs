@@ -49,7 +49,7 @@ const json = (payload, url = LIVE, { js = true } = {}) => {
     if (k === 'cv') fd.append('cv', v ? new File([v.bytes], v.name, { type: v.type ?? '' }) : new File([], '', { type: 'application/octet-stream' }));
     else if (v !== undefined) fd.append(k, v);
   }
-  return new Request(url, { method: 'POST', headers: js ? { accept: 'application/json' } : {}, body: fd });
+  return new Request(url, { method: 'POST', headers: { origin: new URL(url).origin, ...(js ? { accept: 'application/json' } : {}) }, body: fd });
 };
 const run = async (req, e = env) => { calls = []; const res = await send(req, e); return { res, body: res.headers.get('content-type')?.includes('json') ? await res.json() : null }; };
 
@@ -101,9 +101,14 @@ for (const [name, over] of refused) {
 }
 // Marketing with work links goes through; Word files go through.
 check('Marketing with work links: ok', (await run(json(base({ role: 'operations-executive-marketing', workLinks: 'https://example.com/a https://example.com/b' })))).res.status === 200 && calls[0]?.body.text.includes('https://example.com/a'));
-const docx = Buffer.concat([Buffer.from([0x50, 0x4b, 0x03, 0x04]), Buffer.alloc(100)]);
+// A .docx is a zip holding Word's own parts; the names are plain text in the zip.
+const docx = Buffer.concat([Buffer.from([0x50, 0x4b, 0x03, 0x04]), Buffer.from('[Content_Types].xml word/document.xml'), Buffer.alloc(100)]);
+const anyZip = Buffer.concat([Buffer.from([0x50, 0x4b, 0x03, 0x04]), Buffer.from('payload.exe'), Buffer.alloc(100)]);
+const macros = Buffer.concat([docx, Buffer.from('word/vbaProject.bin')]);
 const doc = Buffer.concat([Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]), Buffer.alloc(100)]);
 check('DOCX CV: ok', (await run(json(base({ cv: { name: 'cv.docx', type: '', bytes: docx } })))).res.status === 200 && calls[0]?.body.attachments[0].filename.endsWith('.docx'));
+check('a zip that isn\'t a Word document, named .docx: refused as the CV', (await run(json(base({ cv: { name: 'cv.docx', type: '', bytes: anyZip } })))).body?.field === 'cv' && calls.length === 0);
+check('a macro-enabled Word file named .docx: refused as the CV', (await run(json(base({ cv: { name: 'cv.docx', type: '', bytes: macros } })))).body?.field === 'cv' && calls.length === 0);
 check('DOC CV: ok', (await run(json(base({ cv: { name: 'CV.DOC', type: '', bytes: doc } })))).res.status === 200 && calls[0]?.body.attachments[0].filename.endsWith('.doc'));
 // The size limit: exactly 4 MB is fine, one byte more is not.
 check('CV of exactly 4 MB: ok', (await run(json(base({ cv: { name: 'cv.pdf', type: 'application/pdf', bytes: pdf(MAX_CV_BYTES) } })))).res.status === 200);
@@ -115,14 +120,38 @@ check('CV of exactly 4 MB: ok', (await run(json(base({ cv: { name: 'cv.pdf', typ
 check('why of 1,000 characters with line breaks: ok', (await run(json(base({ why: 'x'.repeat(495) + '\r\n'.repeat(10) + 'x'.repeat(495) })))).res.status === 200);
 // Workers Free allows 10 ms of CPU a request. Handling a 4 MB CV (parsing the form, encoding the file, building the
 // email) has to stay well inside that; the slow way (spreading bytes into String.fromCharCode) took ~150 ms.
+// Browsers send Content-Length with a form upload, so the timed request does too.
+const sized = async (r) => {
+  const buf = await r.arrayBuffer();
+  const headers = new Headers(r.headers);
+  headers.set('content-length', String(buf.byteLength));
+  return new Request(r.url, { method: 'POST', headers, body: buf });
+};
 for (const js of [true, false]) {
-  const req = json(base({ cv: { name: 'cv.pdf', type: 'application/pdf', bytes: pdf(MAX_CV_BYTES) } }), LIVE, { js });
+  const req = await sized(json(base({ cv: { name: 'cv.pdf', type: 'application/pdf', bytes: pdf(MAX_CV_BYTES) } }), LIVE, { js }));
   const fd = await req.clone().formData(); // warm the parser so the timing is the handler's own work
   const t = performance.now();
   const { res } = await run(req);
   const ms = performance.now() - t;
   check(`4 MB CV ${js ? 'with' : 'without'} JavaScript: handled in under 40 ms here`, (res.status === 200 || res.status === 303) && ms < 40, `${ms.toFixed(1)} ms, ${res.status}, ${fd.get('cv').size} bytes`);
 }
+// An upload that doesn't say its length (chunked) is still cut off at the cap.
+{
+  const big = new ReadableStream({ start(c) { for (let i = 0; i < 8; i++) c.enqueue(new Uint8Array(1_000_000)); c.close(); } });
+  const { res } = await run(new Request(LIVE, { method: 'POST', headers: { origin: new URL(LIVE).origin, accept: 'application/json', 'content-type': 'multipart/form-data; boundary=x' }, body: big, duplex: 'half' }));
+  check('chunked upload over the cap: 413, nothing sent', res.status === 413 && calls.length === 0, `${res.status}`);
+}
+// Another site's page, or a script without our Origin: refused, nothing sent.
+{
+  const r = json(base());
+  const headers = new Headers(r.headers);
+  headers.set('origin', 'https://example.com');
+  const { res } = await run(new Request(r.url, { method: 'POST', headers, body: await r.arrayBuffer() }));
+  check('another site posting: 403, nothing sent', res.status === 403 && calls.length === 0, `${res.status}`);
+}
+// The page's timer: a script-sent post without it, or with a made-up time, is treated as a bot.
+check('JavaScript post without the fill timer: ok, nothing sent', (await run(json(base({ started: '' })))).res.status === 200 && calls.length === 0);
+check('fill timer from the future: ok, nothing sent', (await run(json(base({ started: String(Date.now() + 60_000) })))).res.status === 200 && calls.length === 0);
 // Resend says no, or isn't set up: the applicant is told it didn't send.
 resendStatus = 429;
 {
@@ -140,13 +169,13 @@ check('GET: 405', (await run(new Request(LIVE))).res.status === 405);
   const fd = new FormData();
   for (const [k, v] of Object.entries(base())) if (k !== 'cv') fd.append(k, v);
   fd.append('cv', new File([small], 'my cv.pdf', { type: 'application/pdf' }));
-  const { res } = await run(new Request(LIVE, { method: 'POST', body: fd }));
+  const { res } = await run(new Request(LIVE, { method: 'POST', headers: { origin: new URL(LIVE).origin }, body: fd }));
   check('no JavaScript, valid: 303 to /careers/thanks/', res.status === 303 && res.headers.get('location')?.endsWith('/careers/thanks/'), `${res.status} ${res.headers.get('location')}`);
   check('no JavaScript: CV attached byte for byte', Buffer.from(calls[0]?.body.attachments?.[0]?.content ?? '', 'base64').equals(small));
   const bad = new FormData();
   for (const [k, v] of Object.entries(base({ name: '' }))) if (k !== 'cv') bad.append(k, v);
   bad.append('cv', new File([small], 'cv.pdf', { type: 'application/pdf' }));
-  const r2 = await run(new Request(LIVE, { method: 'POST', body: bad }));
+  const r2 = await run(new Request(LIVE, { method: 'POST', headers: { origin: new URL(LIVE).origin }, body: bad }));
   check('no JavaScript, invalid: 303 to /careers/not-sent/', r2.res.status === 303 && r2.res.headers.get('location')?.endsWith('/careers/not-sent/') && calls.length === 0);
 }
 // With careers switched off, the route doesn't exist.

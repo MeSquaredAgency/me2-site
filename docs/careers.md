@@ -31,7 +31,8 @@ It never asks for date of birth, a photo, gender, nationality, ID or salary hist
 - the required fields are filled in
 - the CV is PDF or Word: its name and its first bytes have to agree
 - the CV is 4 MB or under
-- bots are dropped (a hidden field, and a form filled in under 2.5 seconds)
+- bots are dropped (a hidden field, a form filled in under 2.5 seconds or with a made-up fill time, a script-sent post without the fill time); posts from other sites get 403 and more than 4 a minute from one address get 429 (docs/forms.md)
+- a `.docx` must really be a Word document (the zip holds `word/document.xml` and `[Content_Types].xml`) and must not carry macros (`vbaProject.bin`); an upload without a Content-Length is read with the same 6 MB cap
 
 It then emails the application through Resend, from "Me² careers" `<website@…>` to people@. Reply-To is the applicant, so pressing Reply answers them, and the subject is `Application: <role> (<name>)`. Applications sent from a preview link have `[Preview] ` at the start of the subject. The Worker's logs record only the outcome and the role, never who applied.
 
@@ -45,7 +46,7 @@ It then emails the application through Resend, from "Me² careers" `<website@…
 
 ## Limits to watch
 - **Resend's free plan:** 100 emails a day and 3,000 a month, shared with the enquiry form. If applications get near that, move to a paid Resend plan; once the limit is reached, both forms say "didn't send".
-- **Rate limiting:** Cloudflare's free plan allows one rate-limiting rule. Make it cover every path that starts with `/api/` (DEPLOY.md).
+- **Rate limiting:** the Worker's own `FORM_LIMIT` binding (4 posts a minute per address per form). Cloudflare's free plan also allows one WAF rate-limiting rule; make it cover every path that starts with `/api/` (DEPLOY.md).
 - **CPU:** the Me² Cloudflare account is on Workers Free, which allows 10 ms of CPU per request. The form is always posted as multipart (by the page's script, or by the browser without JavaScript), and the Worker encodes the CV with the built-in `toBase64()`, which takes about 1 ms for 4 MB. `check-applications.mjs` times a 4 MB CV both ways. After a change to the route, send a near-4 MB CV from a preview and read the CPU time in Workers Logs.
 
 ## Testing

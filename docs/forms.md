@@ -29,7 +29,10 @@ Once the enquiry has reached hello@, the live site emails the visitor a confirma
 | Sent | The page goes to `/thanks/` (with or without JavaScript): "Enquiry sent. We'll reply to the email you gave us, usually within 2 hours." (EC, 20 Oct 2026: "usually", since nobody is on shift overnight), then an animated "What happens next" in three steps (EC, 27 Oct 2026; words in `thanks` in `src/content/site.ts`). `/thanks/` is noindex and only reached by sending, so it is the Google Ads "contact received" page and a GA4 page view. On the live site, the automatic confirmation email follows |
 | Couldn't send (not set up yet, Cloudflare error, no connection) | "Your enquiry didn't send. What you wrote is still here: try again, or email us at hello@….", with the address as a link; what they typed stays in the form |
 | No JavaScript | The buttons jump to the form at the foot of the page; it posts normally and lands on `/thanks/` or `/not-sent/` |
-| A bot (fills the hidden field, or submits within 2.5 seconds) | Told it worked; nothing is sent |
+| A bot (fills the hidden field, submits within 2.5 seconds, sends a made-up fill time, or posts by script without the page's fill time) | Told it worked; nothing is sent |
+| Posted without JavaScript (so no fill time) | Sent to hello@ as usual, but **no** automatic confirmation goes to the address typed in, so the form can't be used to email strangers |
+| Posted from another site, or with no Origin/Referer from our pages | Refused (403); nothing is sent |
+| More than 4 posts a minute from one address (an IPv6 /64 counts as one), per form | Refused (429); nothing is sent (`FORM_LIMIT` in `wrangler.jsonc`, `worker/guard.ts`) |
 
 ## Changing the wording
 All the form's words are in `form` (and `thanks`, and `enquiryConfirmation` for the confirmation email) in `src/content/site.ts`.
@@ -40,3 +43,6 @@ Locally: `npm run build`, then `npx wrangler dev --local --local-protocol https`
 ## Sender names and the footer
 
 Every email the site sends names Me² as the sender: "Me²" for the visitor's confirmation, "Me² website" for enquiries and chat hand-overs to hello@, "Me² careers" for applications to people@ (EC, 23 Oct 2026; the name goes out as an RFC 2047 encoded-word so the ² survives every mail program). The confirmation is the one email that leaves Me², so it carries the same compliance footer Google Workspace adds to the team's mail, with the logo (`worker/email.ts`; wording in `content.emailFooter`). Google can't add its own footer here: these emails go out through Resend, never through Gmail.
+
+## Abuse controls (security audit, 2 Nov 2026)
+`worker/guard.ts` holds the shared checks for the enquiry, careers and assessment routes and the chat: the same-origin check, the per-address rate limit (`FORM_LIMIT`, 4 a minute per form; `CHAT_LIMIT`, 8 a minute), the fill timer (2.5 seconds to 24 hours) and `label()`, which keeps the topic and source to words and simple punctuation, since they reach the email subject and the logs. Bodies are read with a real size cap. Cloudflare Turnstile would stop scripted posts outright; it needs a site key from the Cloudflare dashboard, so it isn't on yet.
