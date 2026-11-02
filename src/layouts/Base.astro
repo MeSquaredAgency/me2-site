@@ -61,10 +61,16 @@ const fontFace = `@font-face{font-family:'Instrument Sans Variable';font-style:n
           window.gtag = function () { window.dataLayer.push(arguments); };
           window.gtag('js', new Date());
           window.gtag('config', ga4Id);
-          const tag = document.createElement('script');
-          tag.async = true;
-          tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + ga4Id;
-          document.head.appendChild(tag);
+          // Google's script is ~200 KB of JavaScript: fetch it once the page has loaded and the browser is idle, so it
+          // never competes with the page itself (mobile audit, 2 Nov 2026). The calls above wait in dataLayer until then.
+          const load = () => {
+            const tag = document.createElement('script');
+            tag.async = true;
+            tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + ga4Id;
+            document.head.appendChild(tag);
+          };
+          const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(load, { timeout: 3000 }) : setTimeout(load, 1500));
+          document.readyState === 'complete' ? idle() : addEventListener('load', idle, { once: true });
         }
       </script>
     )}
