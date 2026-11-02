@@ -85,7 +85,7 @@ export async function signer(secret: string) {
 }
 
 /** Reads a request body, giving up once it passes `max` bytes whatever Content-Length said (a chunked upload has none). */
-export async function readCapped(request: Request, max: number): Promise<Uint8Array | null> {
+export async function readCapped(request: Request, max: number): Promise<Uint8Array<ArrayBuffer> | null> {
   if (!request.body) return new Uint8Array();
   const reader = request.body.getReader();
   const parts: Uint8Array[] = [];
