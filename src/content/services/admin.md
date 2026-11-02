@@ -4,7 +4,7 @@ order: 2
 kicker: Admin and operations
 title: "Outsourced admin and operations support | Me²"
 description: "Data entry, scheduling, the inbox, client intake and quote follow-up, run by a trained Me² person backed by AI. Start with one job. Quoted per business."
-h1: Admin and operations, handled
+h1: Admin and operations, handled.
 serviceType: Outsourced administrative support
 topic: An extra set of hands
 ---

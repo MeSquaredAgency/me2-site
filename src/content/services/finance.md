@@ -4,7 +4,7 @@ order: 1
 kicker: Finance and accounting
 title: "Outsourced bookkeeping support and invoice chasing | Me²"
 description: "Me² chases overdue invoices, codes your bills and sends a weekly report, done by a trained finance specialist backed by AI. Quoted for your business."
-h1: Finance and accounting, off your plate
+h1: Finance and accounting, off your plate.
 serviceType: Outsourced bookkeeping and accounts support
 topic: The whole back office
 ---

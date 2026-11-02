@@ -99,7 +99,31 @@ for (const r of withMarkdown) {
   markdownPages++;
 }
 
+// The security policy allows exactly the inline scripts the build wrote, by their SHA-256, instead of 'unsafe-inline'
+// (security audit, 2 Nov 2026): if anything ever slipped a script into a page, the browser wouldn't run it.
+// JSON-LD isn't run, and scripts with a src are covered by the host list.
+const { createHash } = await import('node:crypto');
+const { readdirSync, statSync } = await import('node:fs');
+const htmlFiles = [];
+const walk = (dir) => { for (const f of readdirSync(dir)) { const p = `${dir}/${f}`; statSync(p).isDirectory() ? walk(p) : p.endsWith('.html') && htmlFiles.push(p); } };
+walk(outDir);
+const hashes = new Set();
+for (const f of htmlFiles) {
+  for (const m of readFileSync(f, 'utf8').matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
+    const attrs = m[1] ?? '';
+    if (/\bsrc=/.test(attrs) || /application\/ld\+json/.test(attrs)) continue;
+    hashes.add(`'sha256-${createHash('sha256').update(m[2]).digest('base64')}'`);
+  }
+}
+const headersFile = `${outDir}/_headers`;
+if (existsSync(headersFile)) {
+  const headers = readFileSync(headersFile, 'utf8');
+  const next = headers.replace(/(script-src 'self') 'unsafe-inline'/, `$1 ${[...hashes].sort().join(' ')}`);
+  if (next === headers) console.warn("[postbuild] _headers: script-src has no 'unsafe-inline' to replace");
+  writeFileSync(headersFile, next);
+}
+
 for (const f of ['index.html', '404.html']) {
   if (!existsSync(`${outDir}/${f}`)) console.warn(`[postbuild] missing ${outDir}/${f}`);
 }
-console.log(`[postbuild] ${outDir}: sitemap (${indexable.length} url), robots.txt, llms.txt, markdown for ${markdownPages} page(s)`);
+console.log(`[postbuild] ${outDir}: sitemap (${indexable.length} url), robots.txt, llms.txt, markdown for ${markdownPages} page(s), ${hashes.size} inline script hash(es) in _headers`);

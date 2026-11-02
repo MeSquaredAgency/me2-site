@@ -4,7 +4,7 @@ order: 3
 kicker: Customer service and support
 title: "Outsourced customer service, evenings and weekends | Me²"
 description: "Customer emails and messages answered in your voice by a trained Me² person, usually within 2 hours, evenings and weekends included. Quoted per business."
-h1: Customer service in your voice, evenings and weekends too
+h1: Customer service in your voice, evenings and weekends too.
 serviceType: Outsourced customer service
 topic: The whole back office
 ---

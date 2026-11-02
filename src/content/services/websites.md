@@ -4,7 +4,7 @@ order: 5
 kicker: Websites and digital products
 title: "Website design and build for established businesses | Me²"
 description: "Websites, landing pages and app interfaces designed and built by Me²: clear to read, quick to load and built to win the enquiry. Quoted per project."
-h1: Websites and digital products, designed and built
+h1: Websites and digital products, designed and built.
 serviceType: Website design and development
 topic: Website or digital product
 ---

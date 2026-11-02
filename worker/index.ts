@@ -45,40 +45,60 @@ interface Ctx {
 
 const LIMITS = { name: 100, email: 254, message: 2000, topic: 120, source: 60 };
 
+// The security headers public/_headers gives every static file, for the responses the Worker builds itself (redirects,
+// form and chat answers), which the asset rules never see (security audit, 2 Nov 2026). The CSP stays with the pages.
+const SECURITY_HEADERS: [string, string][] = [
+  ['Strict-Transport-Security', 'max-age=31536000; includeSubDomains'],
+  ['X-Content-Type-Options', 'nosniff'],
+  ['Referrer-Policy', 'strict-origin-when-cross-origin'],
+  ['X-Frame-Options', 'DENY'],
+];
+export function secured(res: Response): Response {
+  if (SECURITY_HEADERS.every(([k]) => res.headers.has(k))) return res;
+  // Response.redirect() and fetched responses can have immutable headers, so copy before adding.
+  const out = new Response(res.body, res);
+  for (const [k, v] of SECURITY_HEADERS) if (!out.headers.has(k)) out.headers.set(k, v);
+  return out;
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: Ctx): Promise<Response> {
-    const url = new URL(request.url);
-    const isWww = url.hostname.startsWith('www.');
-    // workers.dev and local previews are left alone; only real domains are redirected.
-    const isRealDomain = !url.hostname.endsWith('.workers.dev') && url.hostname !== 'localhost' && url.hostname !== '127.0.0.1';
-    if (isRealDomain && (isWww || url.protocol === 'http:')) {
-      url.protocol = 'https:';
-      if (isWww) url.hostname = url.hostname.slice(4);
-      return Response.redirect(url.toString(), 301);
-    }
-    if (url.pathname === '/api/assessments') return assessment(request, env);
-    if (url.pathname === '/api/enquiry') return enquiry(request, env, ctx);
-    if (url.pathname === '/api/applications') return application(request, env);
-    if (url.pathname === '/api/chat') return chat(request, env, ctx);
-    if (request.method === 'GET' || request.method === 'HEAD') {
-      const md = url.pathname.endsWith('/index.html.md') ? url.pathname
-        : url.pathname.endsWith('/') && prefersMarkdown(request.headers.get('accept')) ? `${url.pathname}index.html.md` : '';
-      const page = md && (await markdown(request, env, md));
-      if (page) return page;
-    }
-    const res = await env.ASSETS.fetch(request);
-    // The asset handler sends /careers to /careers/ (and /index.html to /) with a 307; these are permanent, so say so with a 301.
-    if (res.status === 307) {
-      const to = res.headers.get('location');
-      if (to) return Response.redirect(new URL(to, url).toString(), 301);
-    }
-    // Pages now come in two versions at one address, so caches must keep them apart by the Accept header.
-    if (!(res.headers.get('content-type') ?? '').startsWith('text/html')) return res;
-    const html = new Response(res.body, res);
-    html.headers.append('Vary', 'Accept');
-    return html;
+    return secured(await route(request, env, ctx));
   },
 };
+
+async function route(request: Request, env: Env, ctx: Ctx): Promise<Response> {
+  const url = new URL(request.url);
+  const isWww = url.hostname.startsWith('www.');
+  // workers.dev and local previews are left alone; only real domains are redirected.
+  const isRealDomain = !url.hostname.endsWith('.workers.dev') && url.hostname !== 'localhost' && url.hostname !== '127.0.0.1';
+  if (isRealDomain && (isWww || url.protocol === 'http:')) {
+    url.protocol = 'https:';
+    if (isWww) url.hostname = url.hostname.slice(4);
+    return Response.redirect(url.toString(), 301);
+  }
+  if (url.pathname === '/api/assessments') return assessment(request, env);
+  if (url.pathname === '/api/enquiry') return enquiry(request, env, ctx);
+  if (url.pathname === '/api/applications') return application(request, env);
+  if (url.pathname === '/api/chat') return chat(request, env, ctx);
+  if (request.method === 'GET' || request.method === 'HEAD') {
+    const md = url.pathname.endsWith('/index.html.md') ? url.pathname
+      : url.pathname.endsWith('/') && prefersMarkdown(request.headers.get('accept')) ? `${url.pathname}index.html.md` : '';
+    const page = md && (await markdown(request, env, md));
+    if (page) return page;
+  }
+  const res = await env.ASSETS.fetch(request);
+  // The asset handler sends /careers to /careers/ (and /index.html to /) with a 307; these are permanent, so say so with a 301.
+  if (res.status === 307) {
+    const to = res.headers.get('location');
+    if (to) return Response.redirect(new URL(to, url).toString(), 301);
+  }
+  // Pages now come in two versions at one address, so caches must keep them apart by the Accept header.
+  if (!(res.headers.get('content-type') ?? '').startsWith('text/html')) return res;
+  const html = new Response(res.body, res);
+  html.headers.append('Vary', 'Accept');
+  return html;
+}
 
 /** True when the Accept header ranks text/markdown at least as high as text/html (q-values; a bare type is q=1). */
 export function prefersMarkdown(accept: string | null): boolean {

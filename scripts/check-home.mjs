@@ -77,11 +77,11 @@ check('main panel name and quote line', offerText.includes('The whole back offic
 check('no price figures on the page', !/\$\s?\d/.test(text) && !JSON.stringify(ld).includes('minPrice'));
 check('FAQ: cost answer says it is quoted', has('Every quote is built around what your business needs.'));
 // EC, 20 Oct 2026: nobody is on shift overnight ("No - but we are often awake"), so the reply time is "usually within 2 hours".
-check('form promises a reply, usually within 2 hours', decode(html).includes("We'll reply to the email you gave us, usually within 2 hours."));
+// Since 27 Oct 2026 a sent enquiry lands on /thanks/, so the form's reply promise is checked there (below), not on the home page.
 check('FAQ: reply time, in the page, FAQ schema and llms.txt', has('Usually within 2 hours, evenings and weekends included.') && ld.some((x) => x['@type'] === 'FAQPage' && x.mainEntity.some((e) => e.name === 'How quickly will you reply?' && e.acceptedAnswer?.text === 'Usually within 2 hours, evenings and weekends included.')) && llms.includes('How quickly will you reply? Usually within 2 hours, evenings and weekends included.'));
 check('no "day or night" promise left (page, structured data, llms.txt)', lacks('day or night') && !JSON.stringify(ld).includes('day or night') && !llms.includes('day or night'));
 const thanksHtml = decode(readFileSync('dist/thanks/index.html', 'utf8'));
-check('/thanks/: usually within 2 hours, on the page and in its description', thanksHtml.includes("We'll reply to the email you gave us, usually within 2 hours.") && thanksHtml.includes('We will reply to the email you gave us, usually within 2 hours.'));
+check('form promise, on /thanks/ where a sent enquiry lands: usually within 2 hours, on the page and in its description', thanksHtml.includes("We'll reply to the email you gave us, usually within 2 hours.") && thanksHtml.includes('We will reply to the email you gave us, usually within 2 hours.'));
 check('location: Phnom Penh in the hero, FAQ, schema and llms.txt, no Adelaide', has('Our team is based in Phnom Penh, Cambodia.') && has('In Phnom Penh, Cambodia, at our Command Centre.') && ld.find((x) => x['@type'] === 'Organization')?.address?.addressLocality === 'Phnom Penh' && llms.includes('Where is the team based?') && !text.replace(/Selected work.*?More projects are being added\./s, '').includes('Adelaide')); // APN's offices are named in the work section; Me² itself is never placed in Adelaide
 // EC, 19 Oct 2026: the team is only in Phnom Penh, so the privacy page's overseas disclosure says so.
 const privacyHtml = decode(readFileSync('dist/privacy/index.html', 'utf8'));
