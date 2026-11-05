@@ -1,0 +1,15 @@
+// The chat's relay to Anthropic (relay/index.ts), deployed before the site by .github/workflows/publish.yml.
+// Account: Me² (tech: elliot.crabb@mesquaredagency.com). Never deploy this from the APN Real Estate account.
+{
+  "name": "mesquared-chat-relay",
+  "account_id": "813537406785f2957804689d03560623",
+  "compatibility_date": "2026-10-06",
+  "main": "index.ts",
+  // Runs in US East, next to Anthropic, wherever the visitor is: the Anthropic API refuses calls from some
+  // Cloudflare data centres (Hong Kong: 403). The site itself stays at the edge (EC, 5 Nov 2026).
+  "placement": { "region": "aws:us-east-1" },
+  // No public URL: only the site Worker reaches it, through its ANTHROPIC_RELAY service binding.
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true }
+}

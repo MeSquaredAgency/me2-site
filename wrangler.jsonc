@@ -36,10 +36,10 @@
     // form, so a script can't make the site send hundreds of emails (security audit, 2 Nov 2026).
     { "name": "FORM_LIMIT", "namespace_id": "1002", "simple": { "limit": 4, "period": 60 } }
   ],
-  // Run the worker in the US, not at the visitor's nearest data centre. The Anthropic API refuses calls from
-  // unsupported regions: visitors routed through Hong Kong got a 403 and a broken chat (EC, 28 Oct 2026).
-  // The pages themselves are still served from the edge; only the worker's code moves.
-  "placement": { "region": "aws:us-east-1" },
+  // The chat's Anthropic calls go through the US relay (relay/, Worker "mesquared-chat-relay"): the Anthropic API
+  // refuses calls from some Cloudflare data centres (Hong Kong: 403). This Worker stays at the edge, so pages stay
+  // fast; pinning it to the US instead added about 0.35 s to every request (EC, 5 Nov 2026).
+  "services": [{ "binding": "ANTHROPIC_RELAY", "service": "mesquared-chat-relay" }],
   // Workers Logs: each enquiry logs one line (sent / dropped / failed, the topic, never the person's details).
   "observability": { "enabled": true },
   // The live site is only on mesquaredagency.com; previews come from `npx wrangler versions upload`.

@@ -18,6 +18,9 @@ export interface ChatEnv {
   RESEND_API_KEY?: string;
   /** Workers rate limiting binding (wrangler.jsonc): a few messages a minute from each address. */
   CHAT_LIMIT?: RateLimit;
+  /** Service binding to the US relay (relay/index.ts), which makes the Anthropic call for us. Without it (local
+   * runs, tests) the call goes straight to Anthropic. */
+  ANTHROPIC_RELAY?: { fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> };
 }
 
 interface Ctx {
@@ -173,7 +176,15 @@ export function chatWith(on: { enableChat: boolean; sendEnquiryConfirmation: boo
     const c = content.chat;
     let message: Anthropic.Message;
     try {
-      const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 1, timeout: 25_000 });
+      // Through the US relay when it's bound: the Anthropic API refuses calls from some Cloudflare data centres
+      // (Hong Kong: 403), and this Worker runs at whichever one is nearest the visitor.
+      const relay = env.ANTHROPIC_RELAY;
+      const client = new Anthropic({
+        apiKey: env.ANTHROPIC_API_KEY,
+        maxRetries: 1,
+        timeout: 25_000,
+        ...(relay && { fetch: (input: RequestInfo | URL, init?: RequestInit) => relay.fetch(input, init) }),
+      });
       message = await client.messages.create({
         model: MODEL,
         // Room for its thinking as well as a reply of a few sentences.

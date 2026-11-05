@@ -57,6 +57,12 @@ jobs:
         if: steps.token.outputs.ok == 'true'
         run: npm run build
 
+      # The chat's US relay to Anthropic (relay/). It goes first because the site Worker's service binding needs it
+      # to exist. Only from main: previews call the live relay, which just forwards Messages API calls.
+      - name: Publish the chat relay (main)
+        if: steps.token.outputs.ok == 'true' && github.ref == 'refs/heads/main'
+        run: npx wrangler deploy --config relay/wrangler.jsonc --message "main ${GITHUB_SHA::7}"
+
       - name: Publish live (main)
         if: steps.token.outputs.ok == 'true' && github.ref == 'refs/heads/main'
         run: |

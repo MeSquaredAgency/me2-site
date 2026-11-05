@@ -115,6 +115,8 @@ One-time setup (EC; about 15 minutes):
 5. **Give the key to the site as a secret**, the same safe way as the Resend key: `npx wrangler versions secret put ANTHROPIC_API_KEY` (paste the key when asked). That adds it without publishing anything; see the warning above before using the dashboard. Previews use the same secret, so the chat works on the branch preview straight away.
 6. **Test on the preview:** ask a few questions (what you do, prices, something off topic), then leave your own details and confirm. An email "[Preview] Website chat: <your name>" should reach hello@ within a minute. Workers Logs shows one `chat` line per message.
 
+**US relay:** the chat's calls to Anthropic go through a second Worker, `mesquared-chat-relay` (`relay/`), pinned to US East and reached only through the site Worker's `ANTHROPIC_RELAY` service binding. The Anthropic API refuses calls from some Cloudflare data centres (Hong Kong returned 403, 28 Oct 2026), and the site Worker runs at whichever is nearest the visitor. The relay holds no secrets and forwards `POST /v1/messages` only. Pushes to `main` deploy it before the site.
+
 **Rate limit:** `CHAT_LIMIT` in `wrangler.jsonc` (Workers rate limiting, no dashboard step) allows 8 messages a minute from one address. The chat also stops after 12 visitor messages.
 
 **Changing the key:** create a new key in the Console, replace the secret with `npx wrangler versions secret put ANTHROPIC_API_KEY` and push `main`, then delete the old key in the Console.
