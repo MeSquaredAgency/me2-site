@@ -45,6 +45,43 @@
   .on-paper { background: var(--color-paper); color: var(--color-ink); }
   .on-paper :focus-visible { outline-color: var(--color-ink); }
 
+  /*
+   * Depth (EC, 8 Nov 2026: the flat "block of colour" didn't read as tech). Every section sits on a faint grid of
+   * squares, the brand's own unit, faded out where the words start, and the dark sections are lit by a slow drift of
+   * the logo's coral and navy. Everything is paint and transform only: no images, no scripts; still with reduced motion.
+   */
+  section.on-dark, footer.on-dark, section.on-paper { position: relative; isolation: isolate; overflow: clip; }
+  section.on-dark::before, footer.on-dark::before, section.on-paper::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    --grid-line: rgb(244 239 231 / 0.085);
+    background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: var(--grid) var(--grid);
+    background-position: calc(var(--gutter) - 1px) 0;
+    /* Clear where the words sit (left of centre), full at the edges and on the right. */
+    mask-image: radial-gradient(70% 85% at 18% 50%, transparent 28%, #000 100%);
+    -webkit-mask-image: radial-gradient(70% 85% at 18% 50%, transparent 28%, #000 100%);
+  }
+  section.on-paper::before { --grid-line: rgb(27 35 44 / 0.1); }
+  /* The light: coral and navy, drifting across each dark section. The close keeps its own, larger light. */
+  section.on-dark:not(.contact)::after {
+    content: ''; position: absolute; z-index: -1; pointer-events: none;
+    width: max(90vmax, 900px); aspect-ratio: 1; left: 60%; top: 10%;
+    background: radial-gradient(closest-side, rgb(var(--glow) / 0.2), rgb(27 56 83 / 0.42) 38%, transparent 70%);
+    transform: translate(-50%, -50%);
+  }
+  /* Paper sections: a soft warm highlight at the top left, so the light reads as coming from one place. */
+  section.on-paper::after {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(70% 60% at 0% 0%, rgb(255 253 249 / 0.75), transparent 70%), radial-gradient(50% 45% at 100% 100%, rgb(var(--glow) / 0.07), transparent 70%);
+  }
+  @media (prefers-reduced-motion: no-preference) and (min-width: 1000px) {
+    section.on-dark:not(.contact)::after { animation: ambient 34s var(--ease) infinite alternate; }
+  }
+  @keyframes ambient {
+    from { transform: translate(-62%, -58%) scale(1); }
+    to { transform: translate(-32%, -30%) scale(1.18); }
+  }
+
   /* Sections below the first screens are only laid out near the screen (faster phones). */
   .render-later { content-visibility: auto; contain-intrinsic-size: auto 1000px; }
   .render-all .render-later { content-visibility: visible; }

@@ -34,7 +34,10 @@
   --glow: 231 120 92;
   /* Display type: one family, pulled narrower and tighter as it grows. */
   --display-stretch: 88%;
+  /* The background grid of squares (global.css, "Depth"). */
+  --grid: 64px;
 }
+@media (min-width: 1000px) { :root { --grid: 88px; } }
 @media (min-width: 640px) { :root { --gutter: 40px; } }
 @media (min-width: 1000px) { :root { --section-y: 176px; --gutter: 56px; } }
 @media (min-width: 1600px) { :root { --gutter: 72px; } }

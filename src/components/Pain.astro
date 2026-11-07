@@ -4,28 +4,53 @@ import { content } from '../content/site';
 const c = content.pain;
 // "Finance · owned by Me²" → what is picked up, and by whom (two lines on desktop).
 const stamp = (text: string) => { const [what, who] = fill(text).split(' · '); return { what, who }; };
+const stamps = c.rows.map((r) => stamp(r.stamp));
+// The board's header reuses the hero's person: the same Me² person who messaged you is the one picking these up.
+const person = fill(content.hero.chat.who);
 ---
 <!--
   Where your week goes: five pains, one per row. As each row settles on screen it lights up and is
   "picked up": its square goes outline → half → solid coral (the Command Centre board's stages) and the stamp appears.
+  On wide screens the stamps gather on a board that stays beside the rows as they scroll (your Me² person's board
+  for the week), so the right half of the screen is never empty; on narrower screens each row carries its own stamp.
   Without JavaScript or with reduced motion, everything is shown, stamps already landed.
 -->
 <section class="pain on-dark" aria-labelledby="pain-title" data-pain>
   <div class="wrap">
     <h2 id="pain-title" class="kicker">{c.label}</h2>
-    <ol class="rows">
-      {c.rows.map((r) => (
-        <li class="row" data-pain-row>
-          <p class="line">{r.line}</p>
-          <p class="cost">{r.cost}</p>
-          <p class="stamp"><span class="sq" aria-hidden="true"></span><span class="stamp-text"><span class="what">{stamp(r.stamp).what}</span><span class="sep"> · </span><span class="who">{stamp(r.stamp).who}</span></span></p>
-        </li>
-      ))}
-    </ol>
-    <div class="turn">
-      <p class="turn-line">{fill(c.turn)}</p>
-      <p class="lede turn-body">{c.turnBody}</p>
-      <a href="#services" class="tlink">{c.link}</a>
+    <div class="stage">
+      <ol class="rows">
+        {c.rows.map((r, i) => (
+          <li class="row" data-pain-row>
+            <p class="line">{r.line}</p>
+            <p class="cost">{r.cost}</p>
+            <p class="stamp"><span class="sq" aria-hidden="true"></span><span class="stamp-text"><span class="what">{stamps[i].what}</span><span class="sep"> · </span><span class="who">{stamps[i].who}</span></span></p>
+          </li>
+        ))}
+      </ol>
+      <div class="turn">
+        <p class="turn-line">{fill(c.turn)}</p>
+        <p class="lede turn-body">{c.turnBody}</p>
+        <a href="#services" class="tlink">{c.link}</a>
+      </div>
+      <!-- The board repeats the stamps for the eye only; screen readers get each row's own stamp. -->
+      <aside class="board-col" aria-hidden="true" data-markdown="skip">
+        <div class="board" data-pain-board>
+          <div class="board-top">
+            <span class="avatar"><span class="avatar-sq"></span></span>
+            <span class="board-who"><span class="board-name">{person}</span><span class="board-role">{c.label}</span></span>
+          </div>
+          <span class="rail">{stamps.map(() => <i data-pain-rail></i>)}</span>
+          <ol class="items">
+            {stamps.map((s) => (
+              <li class="item" data-pain-item>
+                <span class="item-sq"></span>
+                <span class="item-text"><span class="item-what">{s.what}</span><span class="item-who">{s.who}</span></span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </aside>
     </div>
   </div>
 </section>
@@ -33,16 +58,24 @@ const stamp = (text: string) => { const [what, who] = fill(text).split(' · '); 
 <script>
   // Rows only dim once the visitor scrolls toward the section, so nobody (and no checker) meets faint text they aren't
   // scrolling to. Rows already on screen at that moment are left lit and stamped; the rest light up as they rise into view.
+  // The board's items light with their rows.
   const el = document.querySelector<HTMLElement>('[data-pain]');
   if (el && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const rows = [...el.querySelectorAll<HTMLElement>('[data-pain-row]')];
+    const items = [...el.querySelectorAll<HTMLElement>('[data-pain-item]')];
+    const rail = [...el.querySelectorAll<HTMLElement>('[data-pain-rail]')];
+    const light = (row: HTMLElement, ...cls: string[]) => {
+      row.classList.add(...cls);
+      items[rows.indexOf(row)]?.classList.add(...cls);
+      rail[rows.indexOf(row)]?.classList.add(...cls);
+    };
     // A row lights as its line reaches the middle of the screen.
     const lightUp = new IntersectionObserver((entries) => {
-      for (const e of entries) if (e.isIntersecting) { e.target.closest('[data-pain-row]')!.classList.add('is-on'); lightUp.unobserve(e.target); }
+      for (const e of entries) if (e.isIntersecting) { light(e.target.closest<HTMLElement>('[data-pain-row]')!, 'is-on'); lightUp.unobserve(e.target); }
     }, { rootMargin: '0px 0px -50% 0px' });
     const start = () => {
       removeEventListener('scroll', start);
-      rows.forEach((r) => { if (r.getBoundingClientRect().top < innerHeight) r.classList.add('is-on', 'is-early'); });
+      rows.forEach((r) => { if (r.getBoundingClientRect().top < innerHeight) light(r, 'is-on', 'is-early'); });
       el.classList.add('is-live');
       rows.forEach((r) => { if (!r.classList.contains('is-on')) lightUp.observe(r.querySelector('.line')!); });
     };
@@ -56,7 +89,7 @@ const stamp = (text: string) => { const [what, who] = fill(text).split(' · '); 
 </script>
 
 <style>
-  .pain { padding-block: clamp(110px, 16vh, 200px) clamp(96px, 14vh, 180px); border-top: 1px solid var(--color-line-dark); }
+  .pain { padding-block: clamp(96px, 14vh, 176px) clamp(96px, 14vh, 180px); border-top: 1px solid var(--color-line-dark); }
   /* An h2 for screen readers, set like every other section label. */
   .kicker { margin-bottom: clamp(24px, 4vw, 48px); font-stretch: 100%; line-height: 1.6; }
   .rows { list-style: none; margin: 0; padding: 0; }
@@ -72,23 +105,48 @@ const stamp = (text: string) => { const [what, who] = fill(text).split(' · '); 
   .stamp .sep { display: none; }
   .stamp .who { white-space: nowrap; color: var(--color-haze); font-weight: 500; }
   .sq { width: 14px; height: 14px; flex: none; margin-top: calc(0.65em - 7px); box-sizing: border-box; background: var(--color-coral); box-shadow: 0 0 20px 3px rgb(var(--glow) / 0.5); }
-  .turn { display: grid; justify-items: start; gap: 22px; padding-top: clamp(64px, 10vh, 120px); border-top: 1px solid var(--color-line-dark); }
+  .turn { display: grid; justify-items: start; gap: 22px; padding-top: clamp(56px, 8vh, 104px); border-top: 1px solid var(--color-line-dark); }
   .turn-line {
     font-size: clamp(2.4rem, 6vw, 6.2rem); font-weight: 540; font-stretch: 88%;
     letter-spacing: -0.05em; line-height: 0.98; max-width: 14ch; color: var(--color-mist); text-wrap: balance;
   }
   .turn-body { max-width: 46ch; }
 
-  /* Desktop: the pain on the left, the stamp landing opposite it. */
+  /* The board only exists on wide screens. */
+  .board-col { display: none; }
+
+  /* Desktop: the pains on the left; the board stays beside them, collecting each one as it is picked up. */
   @media (min-width: 1000px) {
-    .row {
-      min-height: 62vh; align-content: center; column-gap: clamp(40px, 5vw, 96px);
-      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); grid-template-areas: 'line stamp' 'cost stamp';
+    .stage { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 0.9fr); grid-template-rows: auto auto; column-gap: clamp(40px, 5vw, 96px); align-items: start; }
+    .rows { grid-column: 1; }
+    .turn { grid-column: 1; }
+    .board-col { grid-column: 2; grid-row: 1 / span 2; }
+    .row { min-height: 52vh; align-content: center; padding-block: clamp(32px, 5vh, 56px); }
+    .rows .row:first-child { border-top: 0; }
+    /* Each row's own stamp stays for screen readers; the eye reads it on the board. */
+    .stamp { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .board-col { display: block; position: sticky; top: max(88px, calc(50vh - 260px)); align-self: start; padding-top: 12px; }
+    .board {
+      position: relative; border-radius: 18px; padding: clamp(20px, 2vw, 28px);
+      background: linear-gradient(160deg, rgb(16 32 47 / 0.92), rgb(18 29 40 / 0.92));
+      box-shadow: 0 40px 100px -30px rgb(0 0 0 / 0.7), inset 0 1px 0 rgb(244 239 231 / 0.09), inset 0 0 0 1px rgb(244 239 231 / 0.06);
     }
-    .line { grid-area: line; }
-    .cost { grid-area: cost; }
-    .stamp { grid-area: stamp; align-self: center; margin-top: 0; gap: 16px; font-size: clamp(1.1rem, 1.5vw, 1.4rem); }
-    .stamp .sq { width: 18px; height: 18px; margin-top: calc(0.65em - 9px); }
+    .board-top { display: flex; align-items: center; gap: 12px; padding: 2px 2px 16px; }
+    /* The rail: one small square per item, each lit as the item is picked up. */
+    .rail { display: grid; grid-auto-flow: column; gap: 6px; padding-bottom: 16px; border-bottom: 1px solid var(--color-line-dark); }
+    .rail i { display: block; height: 3px; background: var(--color-coral); box-shadow: 0 0 10px 1px rgb(var(--glow) / 0.4); }
+    .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--color-navy); display: grid; place-items: center; flex: none; box-shadow: inset 0 0 0 1px rgb(244 239 231 / 0.08); }
+    .avatar-sq { width: 10px; height: 10px; background: var(--color-coral); box-shadow: 0 0 14px 2px rgb(var(--glow) / 0.5); }
+    .board-who { display: grid; gap: 2px; }
+    .board-name { font-weight: 600; font-size: 0.98rem; letter-spacing: -0.005em; color: var(--color-mist); }
+    .board-role { font-size: 0.82rem; color: var(--color-haze); }
+    .items { list-style: none; margin: 0; padding: 0; display: grid; }
+    .item { display: flex; align-items: flex-start; gap: 16px; padding: 18px 2px; border-bottom: 1px solid var(--color-line-dark); }
+    .item:last-child { border-bottom: 0; padding-bottom: 6px; }
+    .item-sq { width: 16px; height: 16px; flex: none; margin-top: 3px; box-sizing: border-box; background: var(--color-coral); box-shadow: 0 0 18px 3px rgb(var(--glow) / 0.5); }
+    .item-text { display: grid; gap: 2px; min-width: 0; }
+    .item-what { font-weight: 560; font-size: 1.05rem; line-height: 1.3; letter-spacing: -0.01em; color: var(--color-mist); }
+    .item-who { font-size: 0.9rem; line-height: 1.3; color: var(--color-haze); }
   }
 
   /* Motion: a row is faint until it reaches the upper part of the screen, then lights and is picked up. */
@@ -106,4 +164,16 @@ const stamp = (text: string) => { const [what, who] = fill(text).split(' · '); 
     45% { border-style: solid; border-color: var(--color-coral); background: linear-gradient(0deg, var(--color-coral) 50%, transparent 50%); }
     100% { border-style: solid; border-color: var(--color-coral); background: var(--color-coral); box-shadow: 0 0 20px 3px rgb(var(--glow) / 0.5); }
   }
+  /* The board: an item waits (dashed outline, dim) until its row lights, then is picked up the same way. */
+  .is-live .rail i { background: rgb(244 239 231 / 0.12); box-shadow: none; transition: background-color 500ms var(--ease) 900ms, box-shadow 500ms var(--ease) 900ms; }
+  .is-live .rail i.is-on { background: var(--color-coral); box-shadow: 0 0 10px 1px rgb(var(--glow) / 0.4); }
+  .is-live .rail i.is-early { transition: none; }
+  .is-live .item-sq { background: transparent; border: 1.5px dashed rgb(244 239 231 / 0.4); box-shadow: none; }
+  .is-live .item-what { color: var(--color-haze); transition: color 600ms var(--ease) 500ms; }
+  .is-live .item-who { opacity: 0; transform: translateY(4px); transition: opacity 600ms var(--ease) 1100ms, transform 600ms var(--ease-out) 1100ms; }
+  .is-live .item.is-on .item-sq { animation: pick 1000ms var(--ease-out) 500ms forwards; }
+  .is-live .item.is-on .item-what { color: var(--color-mist); }
+  .is-live .item.is-on .item-who { opacity: 1; transform: none; }
+  .is-live .item.is-early .item-sq { animation: none; border: 0; background: var(--color-coral); box-shadow: 0 0 18px 3px rgb(var(--glow) / 0.5); }
+  .is-live .item.is-early .item-what, .is-live .item.is-early .item-who { transition: none; }
 </style>
