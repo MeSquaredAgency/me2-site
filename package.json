@@ -35,5 +35,9 @@
     "lighthouse": "^13.5.0",
     "linkinator": "^8.1.0",
     "wrangler": "^4.149.0"
+  },
+  "overrides": {
+    "glob": "^14.0.4",
+    "minimatch": "^11.0.5"
   }
 }
