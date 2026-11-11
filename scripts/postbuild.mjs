@@ -28,7 +28,7 @@ const indexable = routes.filter((r) => !r.noindex && (!r.flag || flagOn(r.flag))
 // lastmod is the date of the last commit that changed what a page is built from, not the build date, so each page's
 // date only moves when that page does (SEO audit, 2 Nov 2026: every page used to carry the site-wide date).
 // Shared parts (layout, header, footer, styles, config, routes) count for every page.
-// The publish workflow checks out the full history for this; without git it falls back to today.
+// Cloudflare's build command fetches the full history for this (git fetch --unshallow); without git it falls back to today.
 const today = new Date().toISOString().slice(0, 10);
 const shared = ['src/layouts', 'src/styles', 'src/config', 'src/lib', 'src/data/routes.json', 'src/components/Header.astro', 'src/components/Footer.astro', 'src/components/Logo.astro', 'public'];
 const sourcesFor = (path) => {

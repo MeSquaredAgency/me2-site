@@ -10,18 +10,21 @@
 | Domains | `mesquaredagency.com` (the site) and `www.mesquaredagency.com` (redirects to it). Cloudflare manages their DNS records and HTTPS certificates |
 | Redirects | Every `http://` and `www.` address goes to `https://mesquaredagency.com` in one 301 (done in `worker/index.ts`, because the zone's "Always Use HTTPS" setting is off) |
 | Email | Google Workspace. MX, SPF, DKIM, DMARC and verification records are separate from the site's records; connecting the site didn't touch them |
-| Code | GitHub **MeSquaredAgency/me2-site** (private). A GitHub Actions workflow builds and publishes it (below) |
-| Node | Builds use Node 26 (`.node-version`, read by the workflow), which has the `toBase64()` the job application route uses, as Workers do. The build imports `.ts` config files directly, which needs Node 23.6 or later |
+| Code | GitHub **MeSquaredAgency/me2-site** (private). Cloudflare's own Git builds (Workers Builds) build and publish it (below) |
+| Node | Builds use Node 26 (`.node-version`, read by Cloudflare's builds), which has the `toBase64()` the job application route uses, as Workers do. The build imports `.ts` config files directly, which needs Node 23.6 or later |
 
 **Never publish from the APN Real Estate Cloudflare account.** `account_id` in `wrangler.jsonc` pins every command to the Me² account.
 
-## Publishing a change (from GitHub)
-A GitHub Actions workflow (`.github/workflows/publish.yml`) publishes every push to the Me² Cloudflare account:
+## Publishing a change (Cloudflare Workers Builds)
+Since 11 Nov 2026, Cloudflare builds and publishes the site itself (Workers Builds): the `mesquared` Worker in the Me² account is connected to GitHub **MeSquaredAgency/me2-site**, and every push starts a build there. (Before then a GitHub Actions workflow did this; Actions stopped running for the repo on about 5 Nov 2026, so the workflow was retired. See DECISIONS.md, 11 Nov 2026.)
 
-| Push to | The workflow runs | Result |
+| Push to | Cloudflare runs | Result |
 | --- | --- | --- |
-| `main` | `npm ci`, `npm run build`, then `npx wrangler deploy` | **Live on mesquaredagency.com** a couple of minutes after the push |
-| any other branch | `npm ci`, `npm run build`, then `npx wrangler versions upload` | A **preview URL** (not live), shown in the run's summary (GitHub → Actions → the run) |
+| `main` | `npm clean-install`, `(git fetch --unshallow --quiet \|\| true) && npm run build`, then `npx wrangler deploy` | **Live on mesquaredagency.com** a couple of minutes after the push |
+| any other branch | the same install and build, then `npx wrangler versions upload` | A **preview URL** (not live), on the commit's Cloudflare check in GitHub and in the build log |
+| `main`, when a file in `relay/` changed | `npx wrangler deploy --config relay/wrangler.jsonc` on the `mesquared-chat-relay` Worker | The chat's US relay is updated (it has its own connection, so it never deploys over the site) |
+
+The build uses Node from `.node-version`. `git fetch --unshallow` gives the build the full history, which `scripts/postbuild.mjs` needs to date the sitemap; without it every page would carry the build date.
 
 So `main` is always exactly what's live. Every change goes on a branch first. Then:
 
@@ -31,29 +34,25 @@ So `main` is always exactly what's live. Every change goes on a branch first. Th
    npm run verify
    ```
 
-2. Push the branch. In GitHub → **Actions**, open the run for that push; its summary has the preview link. Check it on a phone and a laptop.
+2. Push the branch. The commit's **Cloudflare Workers** check in GitHub (or Cloudflare → Workers & Pages → `mesquared` → Deployments / Builds) has the preview link. Check it on a phone and a laptop.
 
-3. **With EC's go-ahead only**, merge the branch into `main` (a pull request, then merge) and push. That publishes it. Then check https://mesquaredagency.com shows the change.
+3. **With EC's go-ahead only**, merge the branch into `main` (a pull request, then merge). That publishes it. Then check https://mesquaredagency.com shows the change.
 
-**If a run fails**, the live site stays as it was. The log is in GitHub → Actions → the failed run.
+**If a build fails**, the live site stays as it was. The log is in Cloudflare → Workers & Pages → `mesquared` → Builds, linked from the commit's check in GitHub.
 
 **Rolling back:** fastest is `npx wrangler rollback` (puts the previous version back live in seconds; `npx wrangler deployments list` shows the history). Then revert the commit on `main` too, or the next push will publish it again.
 
-### Why GitHub Actions and not Cloudflare's own Git builds
-Cloudflare's Git builds (Workers Builds) work through the "Cloudflare Workers and Pages" GitHub app, and a GitHub account or organisation can only point to one Cloudflare account. The **MeSquaredAgency** organisation is already linked to the **APN** Cloudflare account, whose Pages project `apnre-flagship-site` builds from MeSquaredAgency/APNRE-Agency-Site (checked 9 Oct 2026). Linking the organisation to the Me² account instead would likely stop the APNRE site deploying. GitHub Actions needs no GitHub app link, just a Cloudflare API token.
+### The build settings (Cloudflare → Workers & Pages → `mesquared` → Settings → Builds)
+- **Repository connection:** MeSquaredAgency/me2-site, through the "Cloudflare Workers and Pages" GitHub app that is already installed on the MeSquaredAgency organisation (the Me² Workers `mesquared-os` and `serenive-site` build the same way). The APN account's link to MeSquaredAgency/APNRE-Agency-Site is separate and untouched.
+- **Live (main):** branch `main`; build command `(git fetch --unshallow --quiet || true) && npm run build`; deploy command `npx wrangler deploy`.
+- **Preview (other branches):** every branch except `main`; same build command; deploy command `npx wrangler versions upload`.
+- **Chat relay** (on the `mesquared-chat-relay` Worker): branch `main`, only when `relay/*` changes; no build command; deploy command `npx wrangler deploy --config relay/wrangler.jsonc`.
+- **Build token:** the account's "Workers Builds" token (created 10 Nov 2026). Replace it under Account → API Tokens and the Worker's build settings.
 
-### The token (one-time setup)
-1. In Cloudflare, signed in to the **Me²** account: My Profile → **API Tokens** → **Create Token** → template **Edit Cloudflare Workers**.
-   - Account Resources: **Include → Me²** (not the APN account).
-   - Zone Resources: **Include → Specific zone → mesquaredagency.com**.
-   - Create it and copy the token (Cloudflare shows it once).
-2. In GitHub → MeSquaredAgency/me2-site → **Settings → Secrets and variables → Actions → New repository secret**: name `CLOUDFLARE_API_TOKEN`, paste the token, save.
-3. Re-run the latest workflow run (Actions → the run → Re-run jobs), or push a commit. Until the secret exists, runs finish with a warning and publish nothing.
-
-To replace the token: create a new one the same way, update the secret, then delete the old token in Cloudflare.
+**Never put the relay deploy in the site's deploy command.** Workers Builds forces the connected Worker's name onto every `wrangler deploy` in the build, so `wrangler deploy --config relay/wrangler.jsonc` run from the site's build publishes the relay's code *as the site*. That happened for about 7 seconds on 11 Nov 2026 (04:48:14–04:48:21 UTC) while this was being set up. For the same reason, if Cloudflare opens a pull request "fixing" the Worker name in `relay/wrangler.jsonc`, close it: the name `mesquared-chat-relay` is right.
 
 ### Publishing by hand (fallback)
-If GitHub is unavailable: `npm run build` on the right branch, then `npx wrangler versions upload` for a preview, or, **with EC's go-ahead only**, `npx wrangler deploy` (live immediately; uploads whatever is in `dist/`). Push the same commit to `main` afterwards so the repo still matches the live site.
+If Cloudflare's builds are unavailable: `npm run build` on the right branch, then `npx wrangler versions upload` for a preview, or, **with EC's go-ahead only**, `npx wrangler deploy` (live immediately; uploads whatever is in `dist/`), plus `npx wrangler deploy --config relay/wrangler.jsonc` if `relay/` changed. Make sure the same commit is on `main` afterwards so the repo still matches the live site.
 
 ## Signing in on another computer
 ```bash
