@@ -1,4 +1,4 @@
-// The chat's relay to Anthropic (relay/index.ts), deployed before the site by .github/workflows/publish.yml.
+// The chat's relay to Anthropic (relay/index.ts), deployed by its own Cloudflare Workers Build when relay/ changes on main (DEPLOY.md). Keep this name: Cloudflare may open a PR to rename it, close it.
 // Account: Me² (tech: elliot.crabb@mesquaredagency.com). Never deploy this from the APN Real Estate account.
 {
   "name": "mesquared-chat-relay",
