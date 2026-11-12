@@ -141,11 +141,15 @@ export const content = {
         year: '2026',
         url: 'https://serenive.com.au/',
         linkText: 'Visit serenive.com.au',
-        /** Captured 12 Nov 2026. The hero and treatment photos show people, and the treatments list shows prices, so neither is used. */
+        /**
+         * Recaptured 12 Nov 2026 after EC said the first set "isn't what the site looks like": the hero now leads. The person in
+         * it is seen from behind and isn't identifiable, which is what the no-people rule guards against. The treatments list
+         * (a face in its photo, and prices) stays out.
+         */
         shots: [
-          { file: 'serenive', kind: 'wide', alt: 'The Serenive Beauty & Spa home page on a computer: "At Serenive, we believe true wellness comes from nurturing both body and mind."' },
-          { file: 'serenive-phone', kind: 'phone', alt: 'The Serenive home page on a phone, with its treatments and a booking bar along the bottom.' },
-          { file: 'serenive-phone-2', kind: 'phone', alt: 'Further down the Serenive home page on a phone: a sign-up for the Serenive community.' },
+          { file: 'serenive', kind: 'wide', alt: 'The Serenive Beauty & Spa home page on a computer: "More Than Beauty. A Feeling of Wellbeing." over a bath by a window.' },
+          { file: 'serenive-phone', kind: 'phone', alt: 'The Serenive home page on a phone: the same headline, "Book a treatment", and a booking bar along the bottom.' },
+          { file: 'serenive-phone-2', kind: 'phone', alt: 'Further down the Serenive home page on a phone: "A sanctuary from the everyday", with photos of the space.' },
         ],
         /** EC, 12 Nov 2026: Serenive's OK confirmed; Design and Build, 2026. */
         confirmed: true,
@@ -159,11 +163,15 @@ export const content = {
         year: '2026',
         url: 'https://www.mesquaredmedia.com/',
         linkText: 'Visit mesquaredmedia.com',
-        /** Captured 12 Nov 2026. The hero and the edits menu show prices, so neither is used. */
+        /**
+         * Recaptured 12 Nov 2026 after EC called the first set "awful": the hero and the edits menu now lead, before-and-after
+         * photos included. They show Me² Media's own per-photo prices (the page is priced throughout); the no-figures rule is
+         * about Me²'s back-office quotes, not a product's price list. EC to confirm.
+         */
         shots: [
-          { file: 'mesquared-media', kind: 'wide', alt: 'The {SITE_NAME} Media home page on a computer: how it works in four steps, and "Nothing about the home gets invented."' },
-          { file: 'mesquared-media-phone', kind: 'phone', alt: 'The {SITE_NAME} Media home page on a phone: "Upload to listing-ready, four taps."' },
-          { file: 'mesquared-media-phone-2', kind: 'phone', alt: 'Further down the {SITE_NAME} Media home page on a phone: the list of things every edit is checked against.' },
+          { file: 'mesquared-media', kind: 'wide', alt: 'The {SITE_NAME} Media home page on a computer: "Pro media, made in minutes." with a before-and-after of a room, and the menu of edits below.' },
+          { file: 'mesquared-media-phone', kind: 'phone', alt: 'The {SITE_NAME} Media home page on a phone: "Pro media, made in minutes." and a before-and-after of a virtual renovation.' },
+          { file: 'mesquared-media-phone-2', kind: 'phone', alt: 'Further down the {SITE_NAME} Media home page on a phone: "Every edit, every price", with before-and-after pairs for each edit.' },
         ],
         /** EC, 12 Nov 2026: Design and Build, 2026; happy to show it although the service is AI-first (the page itself doesn't offer AI). */
         confirmed: true,
