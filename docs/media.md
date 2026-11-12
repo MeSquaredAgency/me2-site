@@ -12,8 +12,8 @@ Screenshots of real Me² projects, in `src/assets/work/<image>.png`, named by th
 | File | What it is | Status |
 | --- | --- | --- |
 | `src/assets/work/apnre.png` | The home page of apnre.com.au at 1600×1000, captured 9 Oct 2026 (hero only; no staff photos) | Waiting on EC: confirm APN Real Estate is a Me² project and the client is happy to be shown |
-| `src/assets/work/serenive.png`, `serenive-phone.png`, `serenive-phone-2.png` | serenive.com.au at 1600×1000 and on a 390×844 phone (at 2×), captured 12 Nov 2026: the "Why we exist" section and the community sign-up. The hero and treatment photos show people and the treatments list shows prices, so they are left out | In use since EC asked to add Serenive (12 Nov 2026) |
-| `src/assets/work/mesquared-media.png`, `mesquared-media-phone.png`, `mesquared-media-phone-2.png` | mesquaredmedia.com (Me²'s own photo-editing service) at the same sizes, captured 12 Nov 2026: "How it works" and "Nothing about the home gets invented". The hero and the edits menu show prices, so they are left out | In use since EC asked to add Me² Media (12 Nov 2026) |
+| `src/assets/work/serenive.png`, `serenive-phone.png`, `serenive-phone-2.png` | serenive.com.au at 1600×1000 and on a 390×844 phone (at 2×), captured 12 Nov 2026: the "Why we exist" section and the community sign-up. The hero and treatment photos show people and the treatments list shows prices, so they are left out | EC, 12 Nov 2026: Serenive's OK confirmed |
+| `src/assets/work/mesquared-media.png`, `mesquared-media-phone.png`, `mesquared-media-phone-2.png` | mesquaredmedia.com (Me²'s own photo-editing service) at the same sizes, captured 12 Nov 2026: "How it works" and "Nothing about the home gets invented". The hero and the edits menu show prices, so they are left out | EC, 12 Nov 2026: approved, although Me² Media is AI-first |
 
 Never use a screenshot that shows or names an individual person (team pages, agent profiles, reviews). A project without an image is not shown.
 

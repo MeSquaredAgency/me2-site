@@ -147,7 +147,7 @@ export const content = {
           { file: 'serenive-phone', kind: 'phone', alt: 'The Serenive home page on a phone, with its treatments and a booking bar along the bottom.' },
           { file: 'serenive-phone-2', kind: 'phone', alt: 'Further down the Serenive home page on a phone: a sign-up for the Serenive community.' },
         ],
-        /** EC, 12 Nov 2026: asked to add it. */
+        /** EC, 12 Nov 2026: Serenive's OK confirmed; Design and Build, 2026. */
         confirmed: true,
       },
       {
@@ -165,7 +165,7 @@ export const content = {
           { file: 'mesquared-media-phone', kind: 'phone', alt: 'The {SITE_NAME} Media home page on a phone: "Upload to listing-ready, four taps."' },
           { file: 'mesquared-media-phone-2', kind: 'phone', alt: 'Further down the {SITE_NAME} Media home page on a phone: the list of things every edit is checked against.' },
         ],
-        /** EC, 12 Nov 2026: asked to add it. */
+        /** EC, 12 Nov 2026: Design and Build, 2026; happy to show it although the service is AI-first (the page itself doesn't offer AI). */
         confirmed: true,
       },
     ],
