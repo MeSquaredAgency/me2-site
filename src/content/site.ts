@@ -108,7 +108,7 @@ export const content = {
 
   work: {
     kicker: 'Selected work',
-    /** "designed and built", not "and run": the only project (APN Real Estate) is Design and Build. */
+    /** "designed and built", not "and run": every project here (APN Real Estate, Serenive, Me² Media) is Design and Build. */
     h2: 'Work we have designed and built.',
     /**
      * Real projects only, each with the client's OK (EC). `confirmed: false` items are for the mock-up
@@ -131,6 +131,41 @@ export const content = {
           { file: 'apnre-explore', kind: 'wide', alt: 'The APN Real Estate home page on a computer: properties for sale, for rent and commercial.' },
         ],
         /** EC, 26 Oct 2026: APN's OK confirmed. */
+        confirmed: true,
+      },
+      {
+        key: 'serenive',
+        name: 'Serenive Beauty & Spa',
+        what: 'A website for a beauty and spa business in Salisbury, South Australia: facials, massage, signature spa rituals and gift cards, with booking a tap away on every page.',
+        services: ['Design', 'Build'],
+        year: '2026',
+        url: 'https://serenive.com.au/',
+        linkText: 'Visit serenive.com.au',
+        /** Captured 12 Nov 2026. The hero and treatment photos show people, and the treatments list shows prices, so neither is used. */
+        shots: [
+          { file: 'serenive', kind: 'wide', alt: 'The Serenive Beauty & Spa home page on a computer: "At Serenive, we believe true wellness comes from nurturing both body and mind."' },
+          { file: 'serenive-phone', kind: 'phone', alt: 'The Serenive home page on a phone, with its treatments and a booking bar along the bottom.' },
+          { file: 'serenive-phone-2', kind: 'phone', alt: 'Further down the Serenive home page on a phone: a sign-up for the Serenive community.' },
+        ],
+        /** EC, 12 Nov 2026: asked to add it. */
+        confirmed: true,
+      },
+      {
+        key: 'mesquared-media',
+        /** Me²'s own service, so it is named from the config. */
+        name: '{SITE_NAME} Media',
+        what: 'Our own photo-editing service for real estate agents and photographers: upload a shoot, choose the edits for each photo, and every edit is checked against the original before it comes back.',
+        services: ['Design', 'Build'],
+        year: '2026',
+        url: 'https://www.mesquaredmedia.com/',
+        linkText: 'Visit mesquaredmedia.com',
+        /** Captured 12 Nov 2026. The hero and the edits menu show prices, so neither is used. */
+        shots: [
+          { file: 'mesquared-media', kind: 'wide', alt: 'The {SITE_NAME} Media home page on a computer: how it works in four steps, and "Nothing about the home gets invented."' },
+          { file: 'mesquared-media-phone', kind: 'phone', alt: 'The {SITE_NAME} Media home page on a phone: "Upload to listing-ready, four taps."' },
+          { file: 'mesquared-media-phone-2', kind: 'phone', alt: 'Further down the {SITE_NAME} Media home page on a phone: the list of things every edit is checked against.' },
+        ],
+        /** EC, 12 Nov 2026: asked to add it. */
         confirmed: true,
       },
     ],
