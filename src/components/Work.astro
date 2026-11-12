@@ -1,6 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
 import { content } from '../content/site';
+import { fill } from '../config';
 const c = content.work;
 // Project screenshots live in src/assets/work/<file>.png (real sites; never pictures of individual people).
 const images = import.meta.glob<{ default: ImageMetadata }>('../assets/work/*.png', { eager: true });
@@ -27,20 +28,20 @@ const rows = (shots: Shot[]) => shots.reduce<Shot[][]>((acc, s) => {
     {items.map((p) => (
       <article class="case" aria-labelledby={`case-${p.key}`}>
         <div class="info">
-          <h3 id={`case-${p.key}`} class="name">{p.name}</h3>
-          <p class="what">{p.what}</p>
+          <h3 id={`case-${p.key}`} class="name">{fill(p.name)}</h3>
+          <p class="what">{fill(p.what)}</p>
           <dl class="facts">
             {p.services.length > 0 && <div><dt>What we did</dt><dd>{p.services.join(' and ')}</dd></div>}
             {p.year && <div><dt>Year</dt><dd>{p.year}</dd></div>}
           </dl>
-          {p.url && <a href={p.url} class="tlink visit" target="_blank" rel="noopener">{p.linkText}</a>}
+          {p.url && <a href={p.url} class="tlink visit" target="_blank" rel="noopener">{fill(p.linkText)}</a>}
         </div>
         <div class="media" data-media>
           {rows(p.shots).map((row) => (
             <div class:list={['row', row[0].kind]}>
               {row.map((s) => (
                 <figure class:list={['shot', s.kind]} data-shot>
-                  <Picture src={s.img!} alt={s.alt ?? ''} widths={s.kind === 'phone' ? [360, 720] : [800, 1200, 1600]}
+                  <Picture src={s.img!} alt={fill(s.alt ?? '')} widths={s.kind === 'phone' ? [360, 720] : [800, 1200, 1600]}
                     sizes={s.kind === 'phone' ? '(min-width: 1000px) 22vw, 45vw' : '(min-width: 1000px) 62vw, 100vw'}
                     formats={['avif', 'webp']} fallbackFormat="jpg" loading="lazy" decoding="async" />
                 </figure>
