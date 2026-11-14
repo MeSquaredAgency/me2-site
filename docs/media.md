@@ -11,7 +11,7 @@ Screenshots of real Me² projects, in `src/assets/work/<image>.png`, named by th
 
 | File | What it is | Status |
 | --- | --- | --- |
-| `src/assets/work/apnre.png` | The home page of apnre.com.au at 1600×1000, captured 9 Oct 2026 (hero only; no staff photos) | Waiting on EC: confirm APN Real Estate is a Me² project and the client is happy to be shown |
+| `src/assets/work/apnre.png`, `apnre-phone.png`, `apnre-phone-2.png` | The home page of apnre.com.au at 1600×1000 and on a 390×844 phone (at 2×), captured 9 Oct 2026 (hero and the "one team" section; no staff photos). A fourth, wide "explore" shot was dropped on 14 Nov 2026 (EC: the top three are fine without it), so every project shows three | EC, 26 Oct 2026: APN's OK confirmed |
 | `src/assets/work/serenive.png`, `serenive-phone.png`, `serenive-phone-2.png` | serenive.com.au at 1600×1000 and on a 390×844 phone (at 2×), recaptured 12 Nov 2026 after EC said the first set (mid-page sections) "isn't what the site looks like": the hero on computer and phone, and "A sanctuary from the everyday" on the phone. The person in the hero is seen from behind, not identifiable. The treatments list (a face, and prices) is left out | EC, 12 Nov 2026: Serenive's OK confirmed |
 | `src/assets/work/mesquared-media.png`, `mesquared-media-phone.png`, `mesquared-media-phone-2.png` | mesquaredmedia.com (Me²'s own photo-editing service) at the same sizes, recaptured 12 Nov 2026 after EC called the first set "awful": the hero with its before-and-after on computer and phone, and the edits menu on the phone. They show Me² Media's own per-photo prices; EC to confirm that's fine | EC, 12 Nov 2026: approved, although Me² Media is AI-first |
 
