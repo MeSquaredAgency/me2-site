@@ -128,7 +128,6 @@ export const content = {
           { file: 'apnre', kind: 'wide', alt: 'The APN Real Estate home page on a computer: "South Australian real estate, done properly." over a view of Adelaide.' },
           { file: 'apnre-phone', kind: 'phone', alt: 'The APN Real Estate home page on a phone, with the appraisal request box.' },
           { file: 'apnre-phone-2', kind: 'phone', alt: 'Further down the APN Real Estate home page on a phone: one team, a named contact and free appraisals.' },
-          { file: 'apnre-explore', kind: 'wide', alt: 'The APN Real Estate home page on a computer: properties for sale, for rent and commercial.' },
         ],
         /** EC, 26 Oct 2026: APN's OK confirmed. */
         confirmed: true,
